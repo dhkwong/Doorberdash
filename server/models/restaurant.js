@@ -3,6 +3,13 @@ const CustomerSchema = require('../models/customer');
 let test = CustomerSchema
 //console.log("test: "+JSON.stringify(test))
 // const Dish = mongoose.model('Dish')
+
+// example of mongoose populate. directly references the model
+//   fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+// });
+
+// const Story = mongoose.model('Story', storySchema);
+// const Person = mongoose.model('Person', personSchema);
 const DishSchema = new mongoose.Schema({
     name: { type: String, required: true},
     description: { type: String, default: ''},
