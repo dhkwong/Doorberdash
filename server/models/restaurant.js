@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const CustomerSchema = require('../models/customer');
 let test = CustomerSchema
-console.log("test: "+JSON.stringify(test))
+//console.log("test: "+JSON.stringify(test))
 // const Dish = mongoose.model('Dish')
 const DishSchema = new mongoose.Schema({
     name: { type: String, required: true},
