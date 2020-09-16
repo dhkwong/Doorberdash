@@ -28,7 +28,7 @@ const RestaurantSchema = new mongoose.Schema({
     //     console.log(person);
     // });
 
-    //check if the order value can be created as such
+    //check if the order value can be created as such. otherwise we need to query the customer and add an ordered dishes field to customers to find all that coincide with restaurant
     customer: [{ type: Schema.Types.ObjectId, ref: 'Customer', order:[DishSchema]}],
     dish: [DishSchema]
 }, {timestamps: true });

@@ -39,12 +39,12 @@ module.exports = {
        
         Customer.findById({_id : req.params.cid})
         .then((customer)=>{
-            let user = new Customer(customer)
+            let newcustomer = new Customer(customer)
             
             Restaurant.findOne({_id: req.params.id})
             .then(restaurant=>{
-                //returns a restaurant, which we push the user to the array of customers in the restaurant 'customer' field
-                restaurant.customer.push(user);
+                //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
+                restaurant.customer.push(newcustomer);
                 restaurant.save((data)=>{
                     res.json({newCustomer:data})
                 
