@@ -91,6 +91,13 @@ module.exports = {
             })
     },
     //TEST UPDATES and pushes one order to a customer
+    //possible solution
+    // Person.update({'items.id': 2}, {'$set'OR we could use '$push': {
+    //      maybe here, customer.$.order:'newdishtoadd'
+    //
+    //     'items.$.name': 'updated item2',
+    //     'items.$.value': 'two updated'
+    // }}, function(err) { ...
     // addCustomerOrder:(req,res)=>{
     //     Restaurant.findOne({_id:req.params.id})
     //     .then((restaurant)=>{
