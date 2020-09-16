@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
+Schema = mongoose.Schema;
 const CustomerSchema = require('../models/customer');
-let test = CustomerSchema
+
 //console.log("test: "+JSON.stringify(test))
 // const Dish = mongoose.model('Dish')
-
-// example of mongoose populate. directly references the model
-//   fans: [{ type: Schema.Types.ObjectId, ref: 'Person' }]
-// });
 
 // const Story = mongoose.model('Story', storySchema);
 // const Person = mongoose.model('Person', personSchema);
@@ -19,9 +16,21 @@ mongoose.model('Dish', DishSchema)
 const RestaurantSchema = new mongoose.Schema({
     name: { type: String, required: true},
     description: { type: String, default: ''},
-    //apparently you can't put a schema in another schema. Look up how it's done...idk if that's the solution. figure out module.export
-    customer: {CustomerSchema},
-    dish: {DishSchema}
+
+    // customer: {CustomerSchema},
+    //ref tells mongoose what model to use. In this case, Customer from customer.js where we assigned it in mongoose.model('Customer', CustomerSchema). 
+    //all schemas have a default mongodb 24 character hex ID. the possible combinations are so high, collision is minimal. schema.Types.ObjectId uses that
+    // Person
+    // .findOne({ firstname: 'Aaron' })
+    // .populate('eventsAttended') // only works if we pushed refs to person.eventsAttended. where eventsAttended is the referenced field here. Aka customer for us
+    // .exec(function(err, person) {
+    //     if (err) return handleError(err);
+    //     console.log(person);
+    // });
+
+    //check if the order value can be created as such
+    customer: [{ type: Schema.Types.ObjectId, ref: 'Customer', order:[DishSchema]}],
+    dish: [DishSchema]
 }, {timestamps: true });
 mongoose.model('Restaurant', RestaurantSchema);
 
