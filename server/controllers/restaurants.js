@@ -105,11 +105,7 @@ module.exports = {
     //         .then((customer)=>{
     //             customer.findOneAndUpdate
     //         })
-
     //     })
-
-        
-
     // },
     //TEST deletes customer
     deleteCustomer: (req, res) => {
