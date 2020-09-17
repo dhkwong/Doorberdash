@@ -65,18 +65,18 @@ module.exports = {
             '$push':
             {
                 //theoretically pushed dish to the customer found's order array
-                'customer.$.order':dish
+                'customer.$.order': dish
             }
         })
     },
     //TEST deletes order from customer
-    deleteOrder:(req,res)=>{
+    deleteOrder: (req, res) => {
         let dish = new Dish()
         Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
             '$pull':
             {
                 //theoretically pushed dish to the customer found's order array
-                'customer.$.order':dish
+                'customer.$.order': dish
             }
         })
     },
@@ -105,6 +105,7 @@ module.exports = {
 
     },
     //TEST gets ALL customers
+
     getCustomers: (req, res) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
         Restaurant.findOne({ _id: req.params.id }).populate('customer')
@@ -117,6 +118,7 @@ module.exports = {
                     res.json({ allCustomers: customer })
                 }
             })
+
     },
     //TEST get one customer only ID
     getCustomer: (req, res) => {
@@ -139,7 +141,8 @@ module.exports = {
             })
     },
 
-    //TEST deletes customer
+    //test to see if findbyidandupdate works for deleting a customer
+
     deleteCustomer: (req, res) => {
         Restaurant.findByIdAndUpdate(
             //query.findOneAndUpdate(conditions, update, options, (optional callback))
@@ -158,5 +161,5 @@ module.exports = {
                 res.json("error in deleteCustomer in restaurants.js: " + err)
             });
     },
-    
+
 }
