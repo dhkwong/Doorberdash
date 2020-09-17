@@ -3,6 +3,7 @@ const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 
 module.exports = {
+    /*Restaurant logic */
     all: async (req, res) => {
         try {
             const restaurants = await Restaurant.find();
@@ -34,6 +35,53 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
+    delete: (req, res) => {
+        Restaurant.findOneAndDelete({ _id: req.params.id })
+            .then((data) => {
+                res.json(data);
+            })
+            .catch(err => {
+                res.json(err);
+            });
+    },
+    /* Orders Logic */
+    //TEST adds order to customer
+    addOrder: (req, res) => {
+        //assume we push the dish object as POST
+        let dish = new Dish(req.body)
+        /*db.collection.update(
+            { "_id": ID, "playlists._id": "58"},
+            { "$push": 
+                {"playlists.$.musics": 
+                    {
+                        "name": "test name",
+                        "duration": "4.00"
+                    }
+                }
+            }
+        ) */
+        //no idea if this will work yet
+        Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
+            '$push':
+            {
+                //theoretically pushed dish to the customer found's order array
+                'customer.$.order':dish
+            }
+        })
+    },
+    //TEST deletes order from customer
+    deleteOrder:(req,res)=>{
+        let dish = new Dish()
+        Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
+            '$pull':
+            {
+                //theoretically pushed dish to the customer found's order array
+                'customer.$.order':dish
+            }
+        })
+    },
+
+    /* Customer logic */
     //TEST adds customer to restaurant ref
     addCustomer: (req, res) => {
         //find customer
@@ -90,26 +138,9 @@ module.exports = {
                 res.json({ order: customer.order })
             })
     },
-    //TEST UPDATES and pushes one order to a customer
-    //possible solution
-    // Person.update({'items.id': 2}, {'$set'OR we could use '$push': {
-    //      maybe here, customer.$.order:'newdishtoadd'
-    //
-    //     'items.$.name': 'updated item2',
-    //     'items.$.value': 'two updated'
-    // }}, function(err) { ...
-    // addCustomerOrder:(req,res)=>{
-    //     Restaurant.findOne({_id:req.params.id})
-    //     .then((restaurant)=>{
-    //         restaurant.findOne({_id:req.params.cid})
-    //         .then((customer)=>{
-    //             customer.findOneAndUpdate
-    //         })
-    //     })
-    // },
+
     //TEST deletes customer
     deleteCustomer: (req, res) => {
-        //possible way to delete from the array of customerIds in restaurant model
         Restaurant.findByIdAndUpdate(
             //query.findOneAndUpdate(conditions, update, options, (optional callback))
             { _id: req.params.id }, { $pull: { 'customer': { _id: req.params.cid } } }, { safe: true, upsert: true }
@@ -126,22 +157,6 @@ module.exports = {
             .catch(err => {
                 res.json("error in deleteCustomer in restaurants.js: " + err)
             });
-        //example code
-        // Node.findByIdAndUpdate(
-        //     req.params.id, { $pull: { "configuration.links": { _id: req.params.linkId } } }, { safe: true, upsert: true },
-        //     function(err, node) {
-        //         if (err) { return handleError(res, err); }
-        //         return res.status(200).json(node.configuration.links);
-        //     });
-        // };
     },
-    delete: (req, res) => {
-        Restaurant.findOneAndDelete({ _id: req.params.id })
-            .then((data) => {
-                res.json(data);
-            })
-            .catch(err => {
-                res.json(err);
-            });
-    },
+    
 }
