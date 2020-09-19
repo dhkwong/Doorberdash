@@ -44,6 +44,14 @@ module.exports = {
                 res.json(err);
             });
     },
+    //TEST get all customer orders
+    getCustomerOrders: (req, res) => {
+        this.getCustomer(req, res)
+            .then((customer) => {
+                //returns all customer order
+                res.json({ order: customer.order })
+            })
+    },
     /* Orders Logic */
     //TEST adds order to customer
     addOrder: (req, res) => {
@@ -64,7 +72,7 @@ module.exports = {
         Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
             '$push':
             {
-                //theoretically pushed dish to the customer found's order array
+                //theoretically pushed dish to the customer found's order array of customer:[DishSchema]
                 'customer.$.order': dish
             }
         })
@@ -105,7 +113,6 @@ module.exports = {
 
     },
     //TEST gets ALL customers
-
     getCustomers: (req, res) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
         Restaurant.findOne({ _id: req.params.id }).populate('customer')
@@ -132,14 +139,7 @@ module.exports = {
                 err => res.json("error in getCustomer for restaurants.js: " + err)
             );
     },
-    //TEST get all customer orders
-    getCustomerOrders: (req, res) => {
-        this.getCustomer(req, res)
-            .then((customer) => {
-                //returns all customer order
-                res.json({ order: customer.order })
-            })
-    },
+
 
     //test to see if findbyidandupdate works for deleting a customer
 
