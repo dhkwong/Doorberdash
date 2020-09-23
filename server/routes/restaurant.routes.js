@@ -10,15 +10,19 @@ router
     //get one restaurant
     .get('/:id', restaurants.getOneById)
     //gets all customers from a restaurant
-    .get('/:id/:cid',restaurants.getCustomers)
+    .get('/:id/customers',restaurants.getCustomers)
+    //gets ONE customer from a restaurant
+    .get('/:id/:cid', restaurants.getCustomer)
     //get all orders from customer
     .get('/:id/:cid/order',restaurants.getCustomerOrders)
     //add order to customer
     .put('/:id/:cid/order/',restaurants.addOrder)
-    //create restaurant
+    //create a restaurant
     .post('/', restaurants.create)
     //update restaurant
     .put('/:id', restaurants.update)
+    //add dish to restaurant menu
+    .put('/:id/dish',restaurants.addDish)
     //adds customer to restaurant
     .put('/:id/:cid',restaurants.addCustomer)
     //adds one order to customer

@@ -17,6 +17,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
+    //WORKING
     create: (req, res) => {
         const customer = new Customer(req.body);
         customer.save()

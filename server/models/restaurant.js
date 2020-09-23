@@ -15,7 +15,7 @@ const DishSchema = new mongoose.Schema({
 mongoose.model('Dish', DishSchema)
 const RestaurantSchema = new mongoose.Schema({
     name: { type: String, required: true},
-    description: { type: String, default: ''},
+    description: { type: String, default: '', required: true},
 
     // customer: {CustomerSchema},
     //ref tells mongoose what model to use. In this case, Customer from customer.js where we assigned it in mongoose.model('Customer', CustomerSchema). 
