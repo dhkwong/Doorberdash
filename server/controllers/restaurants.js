@@ -83,8 +83,8 @@ module.exports = {
                     return handleError(err)
                 }
                 else {
-                    //return all customers
-                    res.json({ allCustomers: customers })
+                    //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
+                    res.json({ allCustomers: customers.customer })
                 }
             })
 
