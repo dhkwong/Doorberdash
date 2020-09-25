@@ -87,10 +87,42 @@ module.exports = {
     //WORKING add dish to menu
     addDish: (req, res) => {
         newdish = new Dish(req.body)
-        Restaurant.updateOne({ _id: req.params.id }, { $push: { dish: newdish } })
+        //maybe need $addtoset
+        //checks to see if dish ID already exists ,'dish.name': {$ne: newdish.name} 
+        //currently addtoset doesnt give me a validator, BUT it stops from updating. So I may have to check the length of the response. if It's creater than before, then it's unique. else, create my own errorhandle/validator. 
+        /*
+        
+             this.getDishes(req,res).then((alldishes)=>{
+           length = alldishes.length
+           Restaurant.updateOne({ _id: req.params.id,'dish.name': {$ne: req.body.name}},
+           { $addToSet: { dish: newdish } })
+           .then((updatedRestaurant)=>{
+               this.getDishes(req, res).then((alldishes)=>{
+                   if(alldishes.length === length){
+                       res.json(new Error("dish already exists"))
+                   }
+                   else{
+                       res.json({ updatedRestaurant: updatedRestaurant })
+                   }
+               })
+           })
+           .catch.catch(err => {
+            res.json("addDish error in restaurants.js: " + err)
+        })
+       })
+        
+        */
+      
+        Restaurant.updateOne({ _id: req.params.id,'dish.name': {$ne: req.body.name}},
+            { $addToSet: { dish: newdish } })
             .then((updatedRestaurant) => {
-                if (updatedRestaurant.ok === 1)
-                    res.json({ updatedRestaurant: true })
+                //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
+                if (updatedRestaurant.n === 1){
+                    res.json({ updatedRestaurant:true })
+                }
+                else{
+                    res.json({error:"dish already exists"})
+                }
             })
             .catch(err => {
                 res.json("addDish error in restaurants.js: " + err)
@@ -99,7 +131,8 @@ module.exports = {
     //WORKING delete dish from menu
     deleteDish: (req, res) => {
         //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
-        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } })
+        //{new:true} explicitly states to return the new updated model instead of the old one before the update goes through
+        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } },{new: true})
             .then((updatedRestaurant) => {
                 console.log("Updated restaurant: " + updatedRestaurant)
 

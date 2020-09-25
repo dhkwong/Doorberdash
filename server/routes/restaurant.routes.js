@@ -18,7 +18,7 @@ router
     //add dish to restaurant menu
     .put('/:id/dish', restaurants.addDish)
     //delete dish from restaurant menu
-    .delete('/:id/:did/dish',restaurants.deleteDish)
+    .put('/:id/:did/dish',restaurants.deleteDish)
     //delete restaurant
     .delete('/:id', restaurants.delete)
 
