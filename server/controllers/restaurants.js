@@ -4,8 +4,21 @@ const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
 
 module.exports = {
-    /*Restaurant logic */
-    //WORKING
+    //to organize, could possibly  make an orders.js and dishes.js. That way there's less code in restaurant.js and in restaurant.routes.js, it would look like .get('/:id/dish',dishes.getDishes)
+
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    *Restaurant logic
+    * 
+    * 
+    * 
+    * 
+    */
+    //WORKING gets ALL restaurants
     all: async (req, res) => {
         try {
             const restaurants = await Restaurant.find();
@@ -15,7 +28,7 @@ module.exports = {
             res.json(err);
         }
     },
-    //WORKING
+    //WORKING gets ONE restaurant
     getOneById: (req, res) => {
         Restaurant.findById({ _id: req.params.id })
             .then((data) => {
@@ -23,7 +36,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
-    //WORKING
+    //WORKING creates restaurant
     create: (req, res) => {
         const restaurant = new Restaurant(req.body);
         restaurant.save()
@@ -32,7 +45,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
-    //WORKING
+    //WORKING updates restaurant
     update: (req, res) => {
         Restaurant.updateOne({ _id: req.params.id }, req.body)
             .then((data) => {
@@ -40,7 +53,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
-    //WORKING
+    //WORKING deletes restaurant
     delete: (req, res) => {
         Restaurant.findOneAndDelete({ _id: req.params.id })
             .then((data) => {
@@ -49,6 +62,27 @@ module.exports = {
             .catch(err => {
                 res.json(err);
             });
+    },
+
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    * Dish logic for restaurant 
+    * 
+    * 
+    * 
+    * 
+    */
+    //WORKING gets ALL dishes in a restaurant's menu
+    getDishes: (req, res) => {
+        Restaurant.findOne(req.params.did)
+            .then(restaurant => {
+                res.json({ dishes: restaurant.dish })
+            })
+            .catch(err => res.json("Error in getDishes in restaurant.js: " + err))
     },
     //WORKING add dish to menu
     addDish: (req, res) => {
@@ -61,19 +95,54 @@ module.exports = {
             .catch(err => {
                 res.json("addDish error in restaurants.js: " + err)
             })
+    },
+    //WORKING delete dish from menu
+    deleteDish: (req, res) => {
+        //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
+        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } })
+            .then((updatedRestaurant) => {
+                console.log("Updated restaurant: " + updatedRestaurant)
 
-        // Restaurant.findOne({ _id: req.params.id })
-        //     .then((restaurant) => {
-        //         restaurant.dish.push(newdish)
-        //         restaurant.save((updatedRestaurant) => {
-        //             res.json({ updatedRestaurant: updatedRestaurant })
-        //         })
-        //             .catch(err => {
-        //                 res.json("addDish error in restaurants.js: " + err)
-        //             })
-        //     })
+                res.json({ updatedRestaurant: updatedRestaurant })
+            })
+            .catch(err => {
+                res.json("addDish error in restaurants.js: " + err)
+            })
     },
 
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    * Customer logic for restaurants
+    * 
+    * 
+    * 
+    * 
+    */
+    //WORKING adds customer ID to restaurant ref BUT returns null currently
+    addCustomer: (req, res) => {
+        Customer.findById({ _id: req.params.cid })
+            .then((customer) => {
+                let newcustomer = new Customer(customer)
+                Restaurant.findOne({ _id: req.params.id })
+                    .then(restaurant => {
+                        //may need to let restaurant1 = restaurt
+                        //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
+                        restaurant.customer.push(newcustomer);
+                        restaurant.save((data) => {
+                            res.json({ newCustomer: data })
+
+                        })
+                            .catch(
+                                err => res.json("error in addCustomer for restuarants.js: " + err)
+                            );
+                    })
+            })
+
+    },
     //WORKING gets ALL customers from a restaurant
     getCustomers: (req, res) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
@@ -90,17 +159,9 @@ module.exports = {
 
     },
 
-    //WORKING get one customer only ID. currently only finds the restaurant. Probably can't method chain .findOne in mongoose
+    //WORKING get one customer
     getCustomer: (req, res) => {
-        // Restaurant.findOne({ _id: req.params.id })
-        //     .findOne({ 'customer': req.params.cid })
-        //     .then((customer) => {
-        //         //return customer and theoretically the array of their orders
-        //         res.json({ customer: customer })
-        //     })
-        //     .catch(
-        //         err => res.json("error in getCustomer for restaurants.js: " + err)
-        //     );
+
         Restaurant.findOne({ '_id': req.params.id })
             .populate({
                 //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
@@ -128,30 +189,35 @@ module.exports = {
 
     //WORKING to see if findbyidandupdate works for deleting a customer
     deleteCustomer: (req, res) => {
-        Restaurant.findOneAndUpdate(
-            //query.findOneAndUpdate(conditions, update, options, (optional callback))
-            { _id: req.params.id}
-            // secondary option to .then .catch
-            // ,
-            // function(err, restaurant){
-            //     if (err) { return handleError(res, err); }
-            //     return res.status(200).json(restaurant.customer);
-            // }
-
-        ).then((restaurant) => {
-            var index = restaurant.customer.indexOf(req.params.cid)
-            console.log(restaurant.customer)
-            console.log(index)
-            //should work to delete all dishes of the customer's as well, since you're deleting the entire object at the index
-            restaurant.customer.splice(index, 1);
-            restaurant.save();
-            //returns restaurant
-            return res.status(200).json({ updatedRestaurant: restaurant})
-        })
+        Restaurant.findOneAndUpdate({ _id: req.params.id })
+            .then((restaurant) => {
+                var index = restaurant.customer.indexOf(req.params.cid)
+                console.log(restaurant.customer)
+                console.log(index)
+                //should work to delete all dishes of the customer's as well, since you're deleting the entire object at the index
+                restaurant.customer.splice(index, 1);
+                restaurant.save();
+                //returns restaurant
+                return res.status(200).json({ updatedRestaurant: restaurant })
+            })
             .catch(err => {
                 res.json("error in deleteCustomer in restaurants.js: " + err)
             });
     },
+
+
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    * Orders logic for restaurant customers
+    * 
+    * 
+    * 
+    * 
+    */
     //TEST get all customer orders
     getCustomerOrders: (req, res) => {
         this.getCustomer(req, res)
@@ -160,7 +226,6 @@ module.exports = {
                 res.json({ order: customer.order })
             })
     },
-    /* Orders Logic */
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
         //assume we push the dish object as POST
@@ -198,27 +263,6 @@ module.exports = {
     },
 
     /* Customer logic */
-    //WORKING adds customer ID to restaurant ref BUT returns null currently
-    addCustomer: (req, res) => {
-        //find customer
-        Customer.findById({ _id: req.params.cid })
-            .then((customer) => {
-                let newcustomer = new Customer(customer)
-                Restaurant.findOne({ _id: req.params.id })
-                    .then(restaurant => {
-                        //may need to let restaurant1 = restaurt
-                        //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
-                        restaurant.customer.push(newcustomer);
-                        restaurant.save((data) => {
-                            res.json({ newCustomer: data })
 
-                        })
-                            .catch(
-                                err => res.json("error in addCustomer for restuarants.js: " + err)
-                            );
-                    })
-            })
-
-    },
 
 }

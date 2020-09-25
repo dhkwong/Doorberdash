@@ -9,12 +9,16 @@ router
     .get('/', restaurants.all)
     //get one restaurant
     .get('/:id', restaurants.getOneById)
+    //gets all dishes
+    .get('/:id/dish',restaurants.getDishes)
     //create a restaurant
     .post('/', restaurants.create)
     //update restaurant
     .put('/:id', restaurants.update)
     //add dish to restaurant menu
     .put('/:id/dish', restaurants.addDish)
+    //delete dish from restaurant menu
+    .delete('/:id/:did/dish',restaurants.deleteDish)
     //delete restaurant
     .delete('/:id', restaurants.delete)
 
@@ -33,7 +37,7 @@ router
     //get all orders from customer
     .get('/:id/:cid/order', restaurants.getCustomerOrders)
     //adds one order to customer
-    .put('/:id/:cid/order/', restaurants.addOrder)
+    .put('/:id/:did/:cid/order/', restaurants.addOrder)
     //add order to customer
     .put('/:id/:cid/order/', restaurants.addOrder)
     //deletes one order from customer
