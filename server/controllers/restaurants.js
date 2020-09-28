@@ -226,9 +226,24 @@ module.exports = {
     */
     //TEST get ALL of ONE customer's orders
     getCustomerOrders: (req, res) => {
+
+        Restaurant.findOne({_id:req.params.id} ,{$match:{"customer":{_id:req.params.cid}}}).populate({path:'customer', match:{_id:req.params.cid}})
+        .exec(function (err, customers) {
+            if (err) {
+                res.json("error: "+err)
+            }
+            else {
+                //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
+                res.json({ allCustomers: customers.customer })
+            }
+        })
         //use module.exports.function instead of this.function
         //may need promise??
-        let result = module.exports.getCustomer(req, res)
+        // module.exports.getCustomer(req, res, (customer)=>{
+        //     //query using customer
+        //         res.json({ order: customer._id })
+
+        // })
             // .exec(function (err, customer) {
             //     if (err) { return { error: err }; }
             //     return res.status(200).json(customer.customer);
@@ -237,7 +252,7 @@ module.exports = {
             //     //returns all customer order
             //     res.json({ order: customer._id })
             // })
-            res.json("test:"+result+req.params.cid)
+            // res.json("test:"+result+req.params.cid)
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
