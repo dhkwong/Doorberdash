@@ -5,32 +5,32 @@ const restaurants = require('./../controllers/restaurants');
 
 router
     //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE. Consider changing to 
-    //get all restaurants
+    //WORKING get all restaurants
     .get('/', restaurants.all)
-    //get one restaurant
+    //WORKING get one restaurant
     .get('/:id', restaurants.getOneById)
-    //gets all dishes
+    //WORKING gets all dishes
     .get('/:id/dish',restaurants.getDishes)
-    //create a restaurant
+    //WORKING create a restaurant
     .post('/', restaurants.create)
-    //update restaurant
+    //WORKING update restaurant
     .put('/:id', restaurants.update)
-    //add dish to restaurant menu
+    //WORKING add dish to restaurant menu
     .put('/:id/dish', restaurants.addDish)
-    //delete dish from restaurant menu
+    //WORKING delete dish from restaurant menu
     .put('/:id/:did/dish',restaurants.deleteDish)
-    //delete restaurant
+    //WORKING delete restaurant
     .delete('/:id', restaurants.delete)
 
 
     /* restaurant customer logic */
-    //gets all customers from a restaurant
+    //WORKING gets all customers from a restaurant
     .get('/:id/customers', restaurants.getCustomers)
-    //gets ONE customer from a restaurant
+    //WORKING gets ONE customer from a restaurant
     .get('/:id/:cid', restaurants.getCustomer)
-    //adds customer to restaurant
+    //WORKING WORKING adds customer to restaurant
     .put('/:id/:cid', restaurants.addCustomer)
-    // deletes one customer from restaurant
+    //WORKING  deletes one customer from restaurant
     .delete('/:id/:cid', restaurants.deleteCustomer)
 
     /* customer orders routes */
@@ -38,8 +38,6 @@ router
     .get('/:id/:cid/order', restaurants.getCustomerOrders)
     //adds one order to customer
     .put('/:id/:did/:cid/order/', restaurants.addOrder)
-    //add order to customer
-    .put('/:id/:cid/order/', restaurants.addOrder)
     //deletes one order from customer
     .delete('/:id/:cid/order/', restaurants.deleteOrder)
 

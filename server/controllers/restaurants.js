@@ -31,6 +31,7 @@ module.exports = {
     //WORKING gets ONE restaurant
     getOneById: (req, res) => {
         Restaurant.findById({ _id: req.params.id })
+            .populate('customer')
             .then((data) => {
                 res.json({ restaurant: data })
             })
@@ -55,7 +56,7 @@ module.exports = {
     },
     //WORKING deletes restaurant
     delete: (req, res) => {
-        Restaurant.findOneAndDelete({ _id: req.params.id })
+        Restaurant.findOneAndDelete({ _id: req.params.id }, { new: true })
             .then((data) => {
                 res.json(data);
             })
@@ -84,44 +85,20 @@ module.exports = {
             })
             .catch(err => res.json("Error in getDishes in restaurant.js: " + err))
     },
-    //WORKING add dish to menu
+    //WORKING BUT finalize query to check for $ne
+    //add dish to menu
     addDish: (req, res) => {
         newdish = new Dish(req.body)
-        //maybe need $addtoset
-        //checks to see if dish ID already exists ,'dish.name': {$ne: newdish.name} 
-        //currently addtoset doesnt give me a validator, BUT it stops from updating. So I may have to check the length of the response. if It's creater than before, then it's unique. else, create my own errorhandle/validator. 
-        /*
-        
-             this.getDishes(req,res).then((alldishes)=>{
-           length = alldishes.length
-           Restaurant.updateOne({ _id: req.params.id,'dish.name': {$ne: req.body.name}},
-           { $addToSet: { dish: newdish } })
-           .then((updatedRestaurant)=>{
-               this.getDishes(req, res).then((alldishes)=>{
-                   if(alldishes.length === length){
-                       res.json(new Error("dish already exists"))
-                   }
-                   else{
-                       res.json({ updatedRestaurant: updatedRestaurant })
-                   }
-               })
-           })
-           .catch.catch(err => {
-            res.json("addDish error in restaurants.js: " + err)
-        })
-       })
-        
-        */
-      
-        Restaurant.updateOne({ _id: req.params.id,'dish.name': {$ne: req.body.name}},
+        //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
+        Restaurant.updateOne({ _id: req.params.id, 'dish.name': { $ne: req.body.name } },
             { $addToSet: { dish: newdish } })
             .then((updatedRestaurant) => {
                 //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
-                if (updatedRestaurant.n === 1){
-                    res.json({ updatedRestaurant:true })
+                if (updatedRestaurant.n === 1) {
+                    res.json({ updatedRestaurant: true })
                 }
-                else{
-                    res.json({error:"dish already exists"})
+                else {
+                    res.json({ error: "dish already exists" })
                 }
             })
             .catch(err => {
@@ -132,7 +109,7 @@ module.exports = {
     deleteDish: (req, res) => {
         //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
         //{new:true} explicitly states to return the new updated model instead of the old one before the update goes through
-        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } },{new: true})
+        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } }, { new: true })
             .then((updatedRestaurant) => {
                 console.log("Updated restaurant: " + updatedRestaurant)
 
@@ -155,27 +132,6 @@ module.exports = {
     * 
     * 
     */
-    //WORKING adds customer ID to restaurant ref BUT returns null currently
-    addCustomer: (req, res) => {
-        Customer.findById({ _id: req.params.cid })
-            .then((customer) => {
-                let newcustomer = new Customer(customer)
-                Restaurant.findOne({ _id: req.params.id })
-                    .then(restaurant => {
-                        //may need to let restaurant1 = restaurt
-                        //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
-                        restaurant.customer.push(newcustomer);
-                        restaurant.save((data) => {
-                            res.json({ newCustomer: data })
-
-                        })
-                            .catch(
-                                err => res.json("error in addCustomer for restuarants.js: " + err)
-                            );
-                    })
-            })
-
-    },
     //WORKING gets ALL customers from a restaurant
     getCustomers: (req, res) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
@@ -191,7 +147,6 @@ module.exports = {
             })
 
     },
-
     //WORKING get one customer
     getCustomer: (req, res) => {
 
@@ -206,7 +161,6 @@ module.exports = {
             //         return res.status(200).json(customer.customer);
             // })
             .then((customer) => {
-
                 //return customer
                 console.log("testing: " + customer)
                 //returns as just the object vs the array in the object. {customer} vs [{customer}]
@@ -218,11 +172,30 @@ module.exports = {
             })
 
     },
+    //WORKING adds customer ID to restaurant ref BUT returns null currently
+    addCustomer: (req, res) => {
+        Customer.findById({ _id: req.params.cid })
+            .then((customer) => {
+                let newcustomer = new Customer(customer)
+                Restaurant.findOne({ _id: req.params.id })
+                    .then(restaurant => {
+                        //may need to let restaurant1 = restaurt
+                        //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
+                        restaurant.customer.push(newcustomer);
+                        restaurant.save((data) => {
+                            res.json({ newCustomer: restaurant.customer })
 
+                        })
+                            .catch(
+                                err => res.json("error in addCustomer for restuarants.js: " + err)
+                            );
+                    })
+            })
 
+    },
     //WORKING to see if findbyidandupdate works for deleting a customer
     deleteCustomer: (req, res) => {
-        Restaurant.findOneAndUpdate({ _id: req.params.id })
+        Restaurant.findOneAndUpdate({ _id: req.params.id }, { new: true })
             .then((restaurant) => {
                 var index = restaurant.customer.indexOf(req.params.cid)
                 console.log(restaurant.customer)
@@ -251,13 +224,20 @@ module.exports = {
     * 
     * 
     */
-    //TEST get all customer orders
+    //TEST get ALL of ONE customer's orders
     getCustomerOrders: (req, res) => {
-        this.getCustomer(req, res)
-            .then((customer) => {
-                //returns all customer order
-                res.json({ order: customer.order })
-            })
+        //use module.exports.function instead of this.function
+        //may need promise??
+        let result = module.exports.getCustomer(req, res)
+            // .exec(function (err, customer) {
+            //     if (err) { return { error: err }; }
+            //     return res.status(200).json(customer.customer);
+            // })
+            // .then((customer) => {
+            //     //returns all customer order
+            //     res.json({ order: customer._id })
+            // })
+            res.json("test:"+result+req.params.cid)
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
