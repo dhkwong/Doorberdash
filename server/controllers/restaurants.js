@@ -225,18 +225,27 @@ module.exports = {
     * 
     */
     //TEST get ALL of ONE customer's orders maybe I need to add orders first. probably dont need to populate here. just match the ID. we're not returning the customer data, just the order
+    /*
+        Library.find({
+        'id': libraryID,
+        'collections.id': CollectionID,
+        'collections.subCollections.id': subCollectionID
+        }, { 'collections.subCollections.$': 1 }, function(err, data) {
+        console.log(err, data);
+        })
+    */
     getCustomerOrders: (req, res) => {
 
-        Restaurant.findOne({_id:req.params.id} ,{$match:{"customer":{_id:req.params.cid}}}).populate({path:'customer', match:{_id:req.params.cid}})
-        .exec(function (err, customers) {
-            if (err) {
-                res.json("error: "+err)
-            }
-            else {
-                //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
-                res.json({ allCustomers: customers.customer })
-            }
-        })
+        Restaurant.findOne({ _id: req.params.id }, { $match: { "customer": { _id: req.params.cid } } }).populate({ path: 'customer', match: { _id: req.params.cid } })
+            .exec(function (err, customers) {
+                if (err) {
+                    res.json("error: " + err)
+                }
+                else {
+                    //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
+                    res.json({ allCustomers: customers.customer })
+                }
+            })
         //use module.exports.function instead of this.function
         //may need promise??
         // module.exports.getCustomer(req, res, (customer)=>{
@@ -244,15 +253,15 @@ module.exports = {
         //         res.json({ order: customer._id })
 
         // })
-            // .exec(function (err, customer) {
-            //     if (err) { return { error: err }; }
-            //     return res.status(200).json(customer.customer);
-            // })
-            // .then((customer) => {
-            //     //returns all customer order
-            //     res.json({ order: customer._id })
-            // })
-            // res.json("test:"+result+req.params.cid)
+        // .exec(function (err, customer) {
+        //     if (err) { return { error: err }; }
+        //     return res.status(200).json(customer.customer);
+        // })
+        // .then((customer) => {
+        //     //returns all customer order
+        //     res.json({ order: customer._id })
+        // })
+        // res.json("test:"+result+req.params.cid)
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
