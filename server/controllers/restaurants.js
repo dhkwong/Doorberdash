@@ -224,7 +224,7 @@ module.exports = {
     * 
     * 
     */
-    //TEST get ALL of ONE customer's orders
+    //TEST get ALL of ONE customer's orders maybe I need to add orders first. probably dont need to populate here. just match the ID. we're not returning the customer data, just the order
     getCustomerOrders: (req, res) => {
 
         Restaurant.findOne({_id:req.params.id} ,{$match:{"customer":{_id:req.params.cid}}}).populate({path:'customer', match:{_id:req.params.cid}})
