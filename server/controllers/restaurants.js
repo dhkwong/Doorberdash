@@ -1,3 +1,4 @@
+const { json } = require('body-parser');
 const mongoose = require('mongoose');
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
@@ -234,34 +235,37 @@ module.exports = {
         console.log(err, data);
         })
     */
+   //I'm trying to do this without populate, but theoretically it shouldnt matter if I just  ADD THE DISH FIRST then populate will show the customer data AND the dishes
     getCustomerOrders: (req, res) => {
+        // Restaurant.find({"_id":req.params.id,"customer":req.params.cid})
+        // Restaurant.find({_id:req.params.id},{$lookup:{from:'Customer', localField:'customer',foreignField:'_id', as:"data"}})
+        // Restaurant.find({_id:req.params.id},{customer:{$in:[req.params.cid]}})
 
-        Restaurant.findOne({ _id: req.params.id }, { $match: { "customer": { _id: req.params.cid } } }).populate({ path: 'customer', match: { _id: req.params.cid } })
-            .exec(function (err, customers) {
-                if (err) {
-                    res.json("error: " + err)
-                }
-                else {
-                    //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
-                    res.json({ allCustomers: customers.customer })
-                }
-            })
-        //use module.exports.function instead of this.function
-        //may need promise??
-        // module.exports.getCustomer(req, res, (customer)=>{
-        //     //query using customer
-        //         res.json({ order: customer._id })
+        //returns just the restaurant. Still work in progress
+        Restaurant.aggregate([{$lookup:{
+            from:'Customer',
 
-        // })
-        // .exec(function (err, customer) {
-        //     if (err) { return { error: err }; }
-        //     return res.status(200).json(customer.customer);
-        // })
-        // .then((customer) => {
-        //     //returns all customer order
-        //     res.json({ order: customer._id })
-        // })
-        // res.json("test:"+result+req.params.cid)
+            // path:'customer',
+            pipeline:[
+                {$match:
+                    {'customer':
+                        
+                            [req.params.cid]
+                        
+                    }
+                }
+            ],
+            as:"customer"
+        }}])
+        .then(order=>{
+            res.json({order:order})
+        })
+        .catch(err=>{
+            res.json("error in getCustomerOrders: "+err)
+        })
+        // //returns the restaurant id
+        // Restaurant.find({ _id: req.params.id, 'customer': req.params.cid }, { 'customer.order': 0 })
+
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
