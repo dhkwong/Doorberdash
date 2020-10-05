@@ -242,29 +242,33 @@ module.exports = {
         // Restaurant.find({_id:req.params.id},{customer:{$in:[req.params.cid]}})
 
         //returns just the restaurant. Still work in progress
-        Restaurant.aggregate([{$lookup:{
-            from:'Customer',
+        // Restaurant.aggregate([{$lookup:{
+        //     from:'Customer',
 
-            // path:'customer',
-            pipeline:[
-                {$match:
-                    {'customer':
+        //     // path:'customer',
+        //     pipeline:[
+        //         {$match:
+        //             {'customer':
                         
-                            [req.params.cid]
+        //                     [req.params.cid]
                         
-                    }
-                }
-            ],
-            as:"customer"
-        }}])
+        //             }
+        //         }
+        //     ],
+        //     as:"customer"
+        // }}])
+        Restaurant.findOne({ '_id': req.params.id })
+            .populate({
+                //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
+                path: 'customer',
+                match: { _id: req.params.cid }
+            })
         .then(order=>{
-            res.json({order:order})
+            res.json({order:order.customer.order})
         })
         .catch(err=>{
             res.json("error in getCustomerOrders: "+err)
         })
-        // //returns the restaurant id
-        // Restaurant.find({ _id: req.params.id, 'customer': req.params.cid }, { 'customer.order': 0 })
 
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
