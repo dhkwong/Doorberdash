@@ -1,8 +1,10 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
+var mongodb = require("mongodb"),ObjectId = mongodb.ObjectID
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
+// var ObjectId = mongoose.Types.ObjectId();
 
 module.exports = {
     //to organize, could possibly  make an orders.js and dishes.js. That way there's less code in restaurant.js and in restaurant.routes.js, it would look like .get('/:id/dish',dishes.getDishes)
@@ -147,15 +149,36 @@ module.exports = {
                 }
             })
 
-    },
-    //WORKING get one customer
+    },/*
+    *
+    *
+    * 
+    * 
+    * 
+    * 
+    * 
+    * Working here
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    */
+    //TESTING NEW MODEL get one customer
     getCustomer: (req, res) => {
 
-        Restaurant.findOne({ '_id': req.params.id })
+        Restaurant.findOne({ '_id': req.params.id})
             .populate({
+                
                 //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
                 path: 'customer',
-                match: { _id: req.params.cid }
+                match: { 'customer._id': req.params.cid },
+                //NEW TESTING DEEP POPULATE
+                    // populate:{path:'customer._id'}
             })
             // .exec(function(err, customer){
             //          if (err) { return {error:err};}
@@ -164,8 +187,8 @@ module.exports = {
             .then((customer) => {
                 //return customer
                 console.log("testing: " + customer)
-                //returns as just the object vs the array in the object. {customer} vs [{customer}]
-                res.json({ customer: customer.customer[0] })
+                //returns as just the object vs the array in the object. {customer} vs [{customer}], customer.customer[0]
+                res.json({ customer: customer })
 
             })
             .catch(err => {
@@ -173,18 +196,21 @@ module.exports = {
             })
 
     },
-    //WORKING adds customer ID to restaurant ref BUT returns null currently
+    //WORKING FOR NEW MODEL, TESTING UNIQUE adds customer ID to restaurant ref. returns all customers
     addCustomer: (req, res) => {
         Customer.findById({ _id: req.params.cid })
             .then((customer) => {
                 let newcustomer = new Customer(customer)
                 Restaurant.findOne({ _id: req.params.id })
                     .then(restaurant => {
-                        //may need to let restaurant1 = restaurt
+                       
                         //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
-                        restaurant.customer.push(newcustomer);
+                        let value = req.params.cid
+                        //does not check for unique yet, BUT pushes id and an order
+                        restaurant.customer.push({'_id':mongodb.ObjectID(req.params.cid),'order':[]});
+                        res.json(restaurant.customer)
                         restaurant.save((data) => {
-                            res.json({ newCustomer: restaurant.customer })
+                            res.json({ newCustomer: restaurant })
 
                         })
                             .catch(
@@ -194,7 +220,7 @@ module.exports = {
             })
 
     },
-    //WORKING to see if findbyidandupdate works for deleting a customer
+    //WORKING WITH NEW MODEL to see if findbyidandupdate works for deleting a customer
     deleteCustomer: (req, res) => {
         Restaurant.findOneAndUpdate({ _id: req.params.id }, { new: true })
             .then((restaurant) => {
@@ -235,40 +261,32 @@ module.exports = {
         console.log(err, data);
         })
     */
-   //I'm trying to do this without populate, but theoretically it shouldnt matter if I just  ADD THE DISH FIRST then populate will show the customer data AND the dishes
+    //I'm trying to do this without populate, but theoretically it shouldnt matter if I just  ADD THE DISH FIRST then populate will show the customer data AND the dishes
     getCustomerOrders: (req, res) => {
-        // Restaurant.find({"_id":req.params.id,"customer":req.params.cid})
+
+        // Restaurant.find({"_id":req.params.id,"customer":ObjectId(req.params.cid)})
         // Restaurant.find({_id:req.params.id},{$lookup:{from:'Customer', localField:'customer',foreignField:'_id', as:"data"}})
         // Restaurant.find({_id:req.params.id},{customer:{$in:[req.params.cid]}})
+        // Restaurant.findOne({ '_id': req.params.id }).populate({path: 'customer',match: { _id: req.params.cid }})
 
         //returns just the restaurant. Still work in progress
-        // Restaurant.aggregate([{$lookup:{
-        //     from:'Customer',
+        Restaurant.aggregate([
+            {
+                $lookup:
+                {
+                    from: 'Customer',
+                    localField:'customer.$.0',
+                    
+                    as: "customer"
+                }
+            }])
+            .then(order => {
 
-        //     // path:'customer',
-        //     pipeline:[
-        //         {$match:
-        //             {'customer':
-                        
-        //                     [req.params.cid]
-                        
-        //             }
-        //         }
-        //     ],
-        //     as:"customer"
-        // }}])
-        Restaurant.findOne({ '_id': req.params.id })
-            .populate({
-                //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
-                path: 'customer',
-                match: { _id: req.params.cid }
+                res.json({ order: order })
             })
-        .then(order=>{
-            res.json({order:order.customer.order})
-        })
-        .catch(err=>{
-            res.json("error in getCustomerOrders: "+err)
-        })
+            .catch(err => {
+                res.json("error in getCustomerOrders: " + err)
+            })
 
     },
     //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
