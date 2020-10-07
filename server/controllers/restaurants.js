@@ -149,25 +149,7 @@ module.exports = {
                 }
             })
 
-    },/*
-    *
-    *
-    * 
-    * 
-    * 
-    * 
-    * 
-    * Working here
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    */
+    },
     //TESTING NEW MODEL get one customer
     getCustomer: (req, res) => {
 
@@ -251,45 +233,49 @@ module.exports = {
     * 
     * 
     */
-    //TEST get ALL of ONE customer's orders maybe I need to add orders first. probably dont need to populate here. just match the ID. we're not returning the customer data, just the order
-    /*
-        Library.find({
-        'id': libraryID,
-        'collections.id': CollectionID,
-        'collections.subCollections.id': subCollectionID
-        }, { 'collections.subCollections.$': 1 }, function(err, data) {
-        console.log(err, data);
-        })
-    */
-    //I'm trying to do this without populate, but theoretically it shouldnt matter if I just  ADD THE DISH FIRST then populate will show the customer data AND the dishes
+    //WORKING. TEST once addOrder works get ALL of ONE customer's orders
     getCustomerOrders: (req, res) => {
-
-        // Restaurant.find({"_id":req.params.id,"customer":ObjectId(req.params.cid)})
-        // Restaurant.find({_id:req.params.id},{$lookup:{from:'Customer', localField:'customer',foreignField:'_id', as:"data"}})
-        // Restaurant.find({_id:req.params.id},{customer:{$in:[req.params.cid]}})
-        // Restaurant.findOne({ '_id': req.params.id }).populate({path: 'customer',match: { _id: req.params.cid }})
-
-        //returns just the restaurant. Still work in progress
-        Restaurant.aggregate([
-            {
-                $lookup:
-                {
-                    from: 'Customer',
-                    localField:'customer.$.0',
-                    
-                    as: "customer"
-                }
-            }])
+        /*
+            db.extractSubArrayDemo.find({ '_id': 101 },{ _id: 0, ClientDetails:
+            { $elemMatch: {ClientProjectName: 'Pig Dice Game' } }}).pretty();
+            _id:0 only returns the customer and order array. without it, it also returns the restaurantID
+            From Mongodb docs:
+            _id Field Projection
+            The _id field is included in the returned documents by default unless you explicitly specify _id: 0 in the projection to suppress the field.
+        */
+        Restaurant.findOne({_id:req.params.id},{_id:0,customer:{$elemMatch:{_id:req.params.cid}}})
             .then(order => {
 
-                res.json({ order: order })
+                res.json({ order: order
+                    // .customer[0].order 
+                })
             })
             .catch(err => {
                 res.json("error in getCustomerOrders: " + err)
             })
 
     },
-    //TEST adds order to customer. reference getCustomer for query, possibly sans populate and populate function
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    * 
+    * 
+    * Working here
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    */
+    //TEST CURRENTLY MESSES WITH THE CUSTOMER ADDED TO. DROP COLLECTION SINCE YOU HAVE BLANK order[] inside 
+    //adds order to customer. reference getCustomer for query, possibly sans populate and populate function
     addOrder: (req, res) => {
         //assume we push the dish object as POST
         let dish = new Dish(req.body)
@@ -305,12 +291,18 @@ module.exports = {
             }
         ) */
         //no idea if this will work yet
-        Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
+        Restaurant.update({ '_id': req.params.id}, {'customer':{$elemMatch:{_id: req.params.cid }}}, {
             '$push':
             {
                 //theoretically pushed dish to the customer found's order array of customer:[DishSchema]
-                'customer.$.order': dish
+                'customer[0].order.order': dish
             }
+        })
+        .then(data=>{
+            res.json({"added order data":data})
+        })
+        .catch(err=>{
+            res.json("Error in addOrder restaurant.js: "+err)
         })
     },
     //TEST deletes order from customer

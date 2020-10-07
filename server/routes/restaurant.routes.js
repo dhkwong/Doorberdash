@@ -36,8 +36,8 @@ router
     /* customer orders routes */
     //get all orders from customer
     .get('/:id/:cid/order', restaurants.getCustomerOrders)
-    //adds one order to customer
-    .put('/:id/:did/:cid/order/', restaurants.addOrder)
+    //adds one order to customer final route .put('/:id/:did/:cid/order', restaurants.addOrder) unless you dont need to since front end pulls the dish from the id in the first place
+    .put('/:id/:cid/order', restaurants.addOrder)
     //deletes one order from customer
     .delete('/:id/:cid/order/', restaurants.deleteOrder)
 
