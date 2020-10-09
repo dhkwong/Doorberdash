@@ -39,6 +39,6 @@ router
     //adds one order to customer final route .put('/:id/:did/:cid/order', restaurants.addOrder) unless you dont need to since front end pulls the dish from the id in the first place
     .put('/:id/:cid/order', restaurants.addOrder)
     //deletes one order from customer
-    .delete('/:id/:cid/order/', restaurants.deleteOrder)
+    .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
 
 module.exports = router;

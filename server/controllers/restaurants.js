@@ -1,6 +1,6 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
-var mongodb = require("mongodb"),ObjectId = mongodb.ObjectID
+var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
@@ -153,14 +153,14 @@ module.exports = {
     //TESTING NEW MODEL get one customer
     getCustomer: (req, res) => {
 
-        Restaurant.findOne({ '_id': req.params.id})
+        Restaurant.findOne({ '_id': req.params.id })
             .populate({
-                
+
                 //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
                 path: 'customer',
                 match: { 'customer._id': req.params.cid },
                 //NEW TESTING DEEP POPULATE
-                    // populate:{path:'customer._id'}
+                // populate:{path:'customer._id'}
             })
             // .exec(function(err, customer){
             //          if (err) { return {error:err};}
@@ -185,12 +185,12 @@ module.exports = {
                 let newcustomer = new Customer(customer)
                 Restaurant.findOne({ _id: req.params.id })
                     .then(restaurant => {
-                       
+
                         //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
                         let value = req.params.cid
                         //does not check for unique yet, BUT pushes id and an order
-                        restaurant.customer.push({'_id':mongodb.ObjectID(req.params.cid),'order':[]});
-                        res.json(restaurant.customer)
+                        restaurant.customer.push({ '_id': mongodb.ObjectID(req.params.cid), 'order': [] });
+                        // res.json(restaurant.customer)
                         restaurant.save((data) => {
                             res.json({ newCustomer: restaurant })
 
@@ -243,10 +243,11 @@ module.exports = {
             _id Field Projection
             The _id field is included in the returned documents by default unless you explicitly specify _id: 0 in the projection to suppress the field.
         */
-        Restaurant.findOne({_id:req.params.id},{_id:0,customer:{$elemMatch:{_id:req.params.cid}}})
+        Restaurant.findOne({ _id: req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
             .then(order => {
 
-                res.json({ order: order
+                res.json({
+                    order: order
                     // .customer[0].order 
                 })
             })
@@ -255,7 +256,39 @@ module.exports = {
             })
 
     },
-    /*
+
+
+    //WORKING CHECK FOR BLANK order[] bug
+    //Adds ONE order to a customer
+    addOrder: (req, res) => {
+        //assume we push the dish object as POST
+        let dish = new Dish(req.body)
+        /*db.collection.update(
+            { "_id": ID, "playlists._id": "58"},
+            { "$push": 
+                {"playlists.$.musics": 
+                    {
+                        "name": "test name",
+                        "duration": "4.00"
+                    }
+                }
+            }
+        ) */
+        //no idea if this will work yet
+        // Restaurant.update({ '_id': req.params.id}, {'customer':{$elemMatch:{'_id': req.params.cid }}},
+        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) },{ customer: { $elemMatch: { _id: req.params.cid } }})
+            .then(data => {
+                //no need to test for uniqueness since someone can get multiple dishes
+                data.customer[0].order.push(dish)
+                data.save()
+                // returns -> {order[dishschema],_id:'customerid'}
+                res.json({ "added order data": data.customer[0]})
+            })
+            .catch(err => {
+                res.json("Error in addOrder restaurant.js: " + err)
+            })
+    },
+        /*
     *
     *
     * 
@@ -274,46 +307,23 @@ module.exports = {
     * 
     * 
     */
-    //TEST CURRENTLY MESSES WITH THE CUSTOMER ADDED TO. DROP COLLECTION SINCE YOU HAVE BLANK order[] inside 
-    //adds order to customer. reference getCustomer for query, possibly sans populate and populate function
-    addOrder: (req, res) => {
-        //assume we push the dish object as POST
-        let dish = new Dish(req.body)
-        /*db.collection.update(
-            { "_id": ID, "playlists._id": "58"},
-            { "$push": 
-                {"playlists.$.musics": 
-                    {
-                        "name": "test name",
-                        "duration": "4.00"
-                    }
-                }
-            }
-        ) */
-        //no idea if this will work yet
-        Restaurant.update({ '_id': req.params.id}, {'customer':{$elemMatch:{_id: req.params.cid }}}, {
-            '$push':
-            {
-                //theoretically pushed dish to the customer found's order array of customer:[DishSchema]
-                'customer[0].order.order': dish
-            }
-        })
-        .then(data=>{
-            res.json({"added order data":data})
-        })
-        .catch(err=>{
-            res.json("Error in addOrder restaurant.js: "+err)
-        })
-    },
     //TEST deletes order from customer
     deleteOrder: (req, res) => {
         let dish = new Dish()
-        Restaurant.update({ '_id': req.params.id, 'customer._id': req.params.cid }, {
-            '$pull':
-            {
-                //theoretically pushed dish to the customer found's order array
-                'customer.$.order': dish
+        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } }})
+        .then(data=>{
+
+            index = data.customer[0].order.indexOf(req.params.did)
+            if(index === -1){
+                res.json({err:"dish does not exist"})
             }
+            // //currently simple removing the last item
+            // data.customer[0].order.splice(index,1)
+            // data.save()
+            res.json("deleted order data: "+index)
+        })
+        .catch(err=>{
+            res.json("Error in deleteOrder at restaurant.js: "+err)
         })
     },
 
