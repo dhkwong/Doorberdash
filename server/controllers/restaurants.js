@@ -263,68 +263,56 @@ module.exports = {
     addOrder: (req, res) => {
         //assume we push the dish object as POST
         let dish = new Dish(req.body)
-        /*db.collection.update(
-            { "_id": ID, "playlists._id": "58"},
-            { "$push": 
-                {"playlists.$.musics": 
-                    {
-                        "name": "test name",
-                        "duration": "4.00"
-                    }
-                }
-            }
-        ) */
-        //no idea if this will work yet
-        // Restaurant.update({ '_id': req.params.id}, {'customer':{$elemMatch:{'_id': req.params.cid }}},
-        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) },{ customer: { $elemMatch: { _id: req.params.cid } }})
+
+        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then(data => {
                 //no need to test for uniqueness since someone can get multiple dishes
                 data.customer[0].order.push(dish)
                 data.save()
                 // returns -> {order[dishschema],_id:'customerid'}
-                res.json({ "added order data": data.customer[0]})
+                res.json({ "added order data": data.customer[0] })
             })
             .catch(err => {
                 res.json("Error in addOrder restaurant.js: " + err)
             })
     },
-        /*
-    *
-    *
-    * 
-    * 
-    * 
-    * 
-    * 
-    * Working here
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    */
+    /*
+*
+*
+* 
+* 
+* 
+* 
+* 
+* Working here
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+*/
     //TEST deletes order from customer
     deleteOrder: (req, res) => {
         let dish = new Dish()
-        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } }})
-        .then(data=>{
+        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
+            .then(data => {
 
-            index = data.customer[0].order.indexOf(req.params.did)
-            if(index === -1){
-                res.json({err:"dish does not exist"})
-            }
-            // //currently simple removing the last item
-            // data.customer[0].order.splice(index,1)
-            // data.save()
-            res.json("deleted order data: "+index)
-        })
-        .catch(err=>{
-            res.json("Error in deleteOrder at restaurant.js: "+err)
-        })
+                index = data.customer[0].order.indexOf(req.params.did)
+                if (index === -1) {
+                    res.json({ err: "dish does not exist" })
+                }
+                // //currently simple removing the last item
+                // data.customer[0].order.splice(index,1)
+                // data.save()
+                res.json("deleted order data: " + index)
+            })
+            .catch(err => {
+                res.json("Error in deleteOrder at restaurant.js: " + err)
+            })
     },
 
     /* Customer logic */
