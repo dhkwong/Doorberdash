@@ -150,22 +150,10 @@ module.exports = {
             })
 
     },
-    //TESTING NEW MODEL get one customer
+    //WORKING FOR NEW MODEL. Retrieves ONE customer and ALL their orders
     getCustomer: (req, res) => {
 
-        Restaurant.findOne({ '_id': req.params.id })
-            .populate({
-
-                //when it populates the customer array by referencing the customer table by id, we choose only those that match the cid
-                path: 'customer',
-                match: { 'customer._id': req.params.cid },
-                //NEW TESTING DEEP POPULATE
-                // populate:{path:'customer._id'}
-            })
-            // .exec(function(err, customer){
-            //          if (err) { return {error:err};}
-            //         return res.status(200).json(customer.customer);
-            // })
+        Restaurant.findOne({ '_id': req.params.id} ,{ _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
             .then((customer) => {
                 //return customer
                 console.log("testing: " + customer)
@@ -295,20 +283,28 @@ module.exports = {
 * 
 * 
 */
-    //TEST deletes order from customer
+    //WORKING WITH NEW MODEL deletes order from customer
     deleteOrder: (req, res) => {
         let dish = new Dish()
-        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
-            .then(data => {
 
-                index = data.customer[0].order.indexOf(req.params.did)
-                if (index === -1) {
-                    res.json({ err: "dish does not exist" })
+        Restaurant.findOne({ _id: req.params.id, customer: mongodb.ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
+            .then((data) => {
+
+                // index = data.customer[0].order.indexOf(req.params.did)
+
+                for (let i = 0; i < data.customer[0].order.length; i++) {
+                    console.log("test" + data.customer[0].order[i]._id)
+                    if (data.customer[0].order[i]._id == req.params.did) {
+                        data.customer[0].order.splice(i, 1)
+                        data.save()
+                        console.log("deleted order data: " + i)
+                        res.json("deleted order data: " +data.customer[0].order[i]._id+" index: "+i)
+                    }
                 }
-                // //currently simple removing the last item
-                // data.customer[0].order.splice(index,1)
-                // data.save()
-                res.json("deleted order data: " + index)
+                res.json(false)
+
+                let index = findIndex
+                
             })
             .catch(err => {
                 res.json("Error in deleteOrder at restaurant.js: " + err)
