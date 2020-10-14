@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Customer = mongoose.model('Customer')
 module.exports = {
+    //WORKING
     all: async (req, res) => {
         try {
             const customers = await Customer.find();
@@ -10,6 +11,7 @@ module.exports = {
             res.json(err);
         }
     },
+    //WORKING
     getOneById: (req, res) => {
         Customer.findById({ _id : req.params.id })
             .then((data) => {
@@ -26,6 +28,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
+    //WORKING
     update: (req, res) => {
         Customer.updateOne({ _id : req.params.id }, req.body)
             .then((data) => {
@@ -33,6 +36,7 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
+    //WORKING
     delete: (req, res) => {
         Customer.findOneAndDelete({ _id : req.params.id })
             .then((data) => {

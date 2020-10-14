@@ -3,9 +3,11 @@ const router = express.Router();
 const catchallRoute = require('./catchall.routes');
 const apiRouter = express.Router();
 const restaurantRoutes = require('./restaurant.routes');
+// api/restaurants
 apiRouter.use('/restaurants', restaurantRoutes);
-//test to see if the route ends up being /api/restaurants/customers OR just/api/customers and /api/restaurants separately
 const customerRoutes = require('./customer.routes');
+// api/customers
+// express.Router().use('/customers, router.get('/events', function (req, res, next) { logic here }))
 apiRouter.use('/customers', customerRoutes);
 router.use('/api', apiRouter)
   .use(catchallRoute);
