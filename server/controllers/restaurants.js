@@ -88,8 +88,18 @@ module.exports = {
             })
             .catch(err => res.json("Error in getDishes in restaurant.js: " + err))
     },
+    //WORKING gets ONE dish from the restaurant menu
+    // .get('/:id/:did/dish',restaurants.getDish)
+    getDish:(req,res)=>{
+        //Restaurant.findOne({ _id: req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({_id:req.params.id},{dish:{$elemMatch:{_id:req.params.did}}})
+        .then(dish=>{
+            res.json({dish:dish.dish[0]})
+        })
+    },
     //WORKING BUT finalize query to check for $ne
     //add dish to menu
+    //.put('/:id/dish', restaurants.addDish)
     addDish: (req, res) => {
         newdish = new Dish(req.body)
         //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
@@ -109,6 +119,7 @@ module.exports = {
             })
     },
     //WORKING delete dish from menu
+    //.put('/:id/:did/dish',restaurants.deleteDish)
     deleteDish: (req, res) => {
         //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
         //{new:true} explicitly states to return the new updated model instead of the old one before the update goes through
@@ -116,7 +127,7 @@ module.exports = {
             .then((updatedRestaurant) => {
                 console.log("Updated restaurant: " + updatedRestaurant)
 
-                res.json({ updatedRestaurant: updatedRestaurant })
+                res.json({ updatedDishes: updatedRestaurant.dish })
             })
             .catch(err => {
                 res.json("addDish error in restaurants.js: " + err)
@@ -136,6 +147,7 @@ module.exports = {
     * 
     */
     //WORKING gets ALL customers from a restaurant
+    //.get('/:id/customers', restaurants.getCustomers)
     getCustomers: (req, res) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
         Restaurant.findOne({ _id: req.params.id }).populate('customer')
@@ -151,6 +163,7 @@ module.exports = {
 
     },
     //WORKING FOR NEW MODEL. Retrieves ONE customer and ALL their orders
+    //.get('/:id/:cid', restaurants.getCustomer)
     getCustomer: (req, res) => {
 
         Restaurant.findOne({ '_id': req.params.id} ,{ _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
@@ -167,6 +180,7 @@ module.exports = {
 
     },
     //WORKING FOR NEW MODEL, TESTING UNIQUE adds customer ID to restaurant ref. returns all customers
+    //.put('/:id/:cid', restaurants.addCustomer)
     addCustomer: (req, res) => {
         Customer.findById({ _id: req.params.cid })
             .then((customer) => {
@@ -191,6 +205,7 @@ module.exports = {
 
     },
     //WORKING WITH NEW MODEL to see if findbyidandupdate works for deleting a customer
+    //.delete('/:id/:cid', restaurants.deleteCustomer)
     deleteCustomer: (req, res) => {
         Restaurant.findOneAndUpdate({ _id: req.params.id }, { new: true })
             .then((restaurant) => {
@@ -221,7 +236,23 @@ module.exports = {
     * 
     * 
     */
-    //WORKING. TEST once addOrder works get ALL of ONE customer's orders
+    /*
+    *
+    *
+    * 
+    * 
+    * 
+    * 
+    * 
+    * 
+    * WORKING HERE
+    * 
+    * 
+    * 
+    * 
+    */
+    //WORKING once addOrder works get ALL of ONE customer's orders
+    //.get('/:id/:cid/order', restaurants.getCustomerOrders)
     getCustomerOrders: (req, res) => {
         /*
             db.extractSubArrayDemo.find({ '_id': 101 },{ _id: 0, ClientDetails:
@@ -235,7 +266,7 @@ module.exports = {
             .then(order => {
 
                 res.json({
-                    order: order
+                    order: order.customer[0]
                     // .customer[0].order 
                 })
             })
@@ -246,19 +277,20 @@ module.exports = {
     },
 
 
-    //WORKING CHECK FOR BLANK order[] bug
-    //Adds ONE order to a customer
+    //WORKING Adds ONE order to a customer
+    //.put('/:id/:cid/order', restaurants.addOrder)
     addOrder: (req, res) => {
         //assume we push the dish object as POST
         let dish = new Dish(req.body)
 
-        Restaurant.findOne({ '_id': req.params.id, 'customer': ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({ '_id': req.params.id}, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then(data => {
                 //no need to test for uniqueness since someone can get multiple dishes
+                
                 data.customer[0].order.push(dish)
                 data.save()
                 // returns -> {order[dishschema],_id:'customerid'}
-                res.json({ "added order data": data.customer[0] })
+                res.json({ "added order data": data.customer })
             })
             .catch(err => {
                 res.json("Error in addOrder restaurant.js: " + err)
@@ -284,10 +316,11 @@ module.exports = {
 * 
 */
     //WORKING WITH NEW MODEL deletes order from customer
+    //.delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
     deleteOrder: (req, res) => {
         let dish = new Dish()
 
-        Restaurant.findOne({ _id: req.params.id, customer: mongodb.ObjectId(req.params.cid) }, { customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({ _id: req.params.id}, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then((data) => {
 
                 // index = data.customer[0].order.indexOf(req.params.did)
@@ -298,7 +331,8 @@ module.exports = {
                         data.customer[0].order.splice(i, 1)
                         data.save()
                         console.log("deleted order data: " + i)
-                        res.json("deleted order data: " +data.customer[0].order[i]._id+" index: "+i)
+                        res.json({customer:data})
+                        
                     }
                 }
                 res.json(false)

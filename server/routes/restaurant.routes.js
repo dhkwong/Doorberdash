@@ -4,13 +4,15 @@ const restaurants = require('./../controllers/restaurants');
 // const customers = require('./../controllers/customers');
 
 router
-    //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE. Consider changing to 
+    //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE.
     //WORKING get all restaurants
     .get('/', restaurants.all)
     //WORKING get one restaurant
     .get('/:id', restaurants.getOneById)
     //WORKING gets all dishes
     .get('/:id/dish',restaurants.getDishes)
+    //TEST get one dish from restaurant
+    .get('/:id/:did/dish',restaurants.getDish)
     //WORKING create a restaurant
     .post('/', restaurants.create)
     //WORKING update restaurant
@@ -18,7 +20,7 @@ router
     //WORKING add dish to restaurant menu
     .put('/:id/dish', restaurants.addDish)
     //WORKING delete dish from restaurant menu
-    .put('/:id/:did/dish',restaurants.deleteDish)
+    .delete('/:id/:did/dish',restaurants.deleteDish)
     //WORKING delete restaurant
     .delete('/:id', restaurants.delete)
 
