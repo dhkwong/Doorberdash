@@ -12,93 +12,179 @@ export class HttpService {
 
   //  Routes in restaurants.routes.js
   //  //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE.
-  //   //WORKING get all restaurants
-  //   .get('/', restaurants.all)
-  //   //WORKING get one restaurant
-  //   .get('/:id', restaurants.getOneById)
-  //   //WORKING gets all dishes
-  //   .get('/:id/dish',restaurants.getDishes)
-  //   //TEST get one dish from restaurant
-  //   .get('/:id/:did/dish',restaurants.getDish)
-  //   //WORKING create a restaurant
-  //   .post('/', restaurants.create)
-  //   //WORKING update restaurant
-  //   .put('/:id', restaurants.update)
-  //   //WORKING add dish to restaurant menu
-  //   .put('/:id/dish', restaurants.addDish)
-  //   //WORKING delete dish from restaurant menu
-  //   .delete('/:id/:did/dish',restaurants.deleteDish)
-  //   //WORKING delete restaurant
-  //   .delete('/:id', restaurants.delete)
-
-  //   /* restaurant customer logic */
-  //   //WORKING gets all customers from a restaurant
-  //   .get('/:id/customers', restaurants.getCustomers)
-  //   //WORKING gets ONE customer from a restaurant
-  //   .get('/:id/:cid', restaurants.getCustomer)
-  //   //WORKING WORKING adds customer to restaurant
-  //   .put('/:id/:cid', restaurants.addCustomer)
-  //   //WORKING  deletes one customer from restaurant
-  //   .delete('/:id/:cid', restaurants.deleteCustomer)
-
-  //   /* customer orders routes */
-  //   //get all orders from customer
-  //   .get('/:id/:cid/order', restaurants.getCustomerOrders)
-  //   //adds one order to customer final route .put('/:id/:did/:cid/order', restaurants.addOrder) unless you dont need to since front end pulls the dish from the id in the first place
-  //   .put('/:id/:cid/order', restaurants.addOrder)
-  //   //deletes one order from customer
-  //   .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
 
 
-//restaurant
-  getRestaurant(id:any) {
-    console.log("getting one restaurant in http service")
-    return this._http.get(`/api/restaurants/${id}`)
-  }
 
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * restaurant paths
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   *
+   */
+
+
+  // get all restaurants
   getRestaurants() {
     console.log("getting all restaurants in http service")
     return this._http.get(`/api/restaurants`)
   }
-  
-  getRestaurantMenu(id:any){
+  // get one restaurant
+  getRestaurant(id: any) {
+    console.log("getting one restaurant in http service")
+    return this._http.get(`/api/restaurants/${id}`)
+  }
+  // gets all dishes
+  getDishes(id: any) {
     console.log("getting menu from restaurant in http service")
     return this._http.get(`/api/restaurants/${id}/dish`)
   }
-
-  getDishFromMenu(id:any,did:any){
+  // TEST get one dish from restaurant
+  getDish(id: any, did: any) {
     console.log("getting dish from restaurant menu in http service")
     return this._http.get(`/api/restaurants/${id}/${did}/dish`)
   }
-  deleteDishFromMenu(id:any,did:any){
+  // create a restaurant
+  createRestaurant(newRestaurant: any) {
+    console.log("creating restaurant in http service")
+    return this._http.get(`/api/restaurants`, newRestaurant)
+  }
+  // update restaurant
+  updateRestaurant(id:any,updatedRestaurant){
+    console.log("getting customer from restaurant")
+    return this._http.get(`/api/restaurants/${id}`,updatedRestaurant)
+  }
+  // add dish to restaurant menu
+  addDish(id: any, dish: any) {
+    console.log("getting dish from restaurant menu in http service")
+    return this._http.get(`/api/restaurants/${id}/dish`,dish)
+  }
+  // delete dish from restaurant menu
+  deleteDish(id: any, did: any) {
     console.log("deleting dish from restaurant menu in http service")
     return this._http.get(`/api/restaurants/${id}/${did}/dish`)
   }
-//restaurant customer
-  getRestaurantCustomer(id:any,cid:any){
+  // delete restaurant
+  deleteRestaurant(id:any){
+    console.log("deleting restaurant in http service")
+    return this._http.delete(`/api/restaurants/${id}`)
+  }
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * restaurant customer paths
+   * 
+   * 
+   * 
+   * 
+   * 
+   *
+   */
+  
+  // gets all customers from a restaurant
+  getRestaurantCustomers(id: any) {
+    console.log("getting customer from restaurant")
+    return this._http.get(`/api/restaurants/${id}/customers`)
+  }
+  // gets ONE customer from a restaurant
+  getRestaurantCustomer(id: any, cid: any) {
     console.log("getting customer from restaurant")
     return this._http.get(`/api/restaurants/${id}/${cid}`)
   }
-  addRestaurantCustomer(id:any,cid:any){
+  // adds customer to restaurant
+  addRestaurantCustomer(id: any, cid: any) {
     console.log("adding customer to restaurant")
     //null body since cid is used to reference the customer
-    return this._http.put(`/api/restaurants/${id}/${cid}`,null)
+    return this._http.put(`/api/restaurants/${id}/${cid}`, null)
   }
-  deleteRestaurantCustomer(id:any,cid:any){
+  //deletes one customer from restaurant
+  deleteRestaurantCustomer(id: any, cid: any) {
     console.log("deleting customer from restaurant")
     //null body since cid is used to reference the customer
     return this._http.delete(`/api/restaurants/${id}/${cid}`)
   }
 
-//customer user
-  getCustomer(cid:any) {
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * restaurant customer order routes
+   * 
+   * 
+   * 
+   * 
+   *
+   */
+  //gets all dishes in customer's order
+  getCustomerOrder(id: any, cid: any) {
+    console.log("getting customer's orders in http service")
+    return this._http.get(`/api/restaurants/${id}/${cid}/order`)
+  }
+  //adds order to customer's order
+  addOrder(id: any, cid: any, dish: any) {
+    console.log("adding order to customer in http service")
+    return this._http.put(`/api/restaurants/${id}/${cid}/order`, dish)
+  }
+  //deletes one order from customer
+  // could change to pass an array of all orders. If we choose to do so, we need to change to PUT since DELETE does not allow data to be sent in the body of the request. however, I think runtime would be the same, since you'll either iterate through the array on front end, or back end. the difference is simply security 
+  deleteOrder(id: any, cid: any,did:any) {
+    console.log("deleting order from customer in http service")
+    return this._http.delete(`/api/restaurants/${id}/${cid}/${did}/order`)
+  }
+
+
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * Customer user paths
+   * 
+   * 
+   * 
+   * 
+   *
+   */
+  
+  getCustomers() {
+    console.log("getting all customers in http service")
+    return this._http.get(`/api/customers/`)
+  }
+  getCustomer(cid: any) {
     console.log("getting one customer in http service")
     return this._http.get(`/api/customers/${cid}`)
   }
+  createCustomer(newCustomer:any){
+    console.log("creating customer in http service")
+    return this._http.post(`/api/customers/`,newCustomer)
+  }
 
-  getCustomers(){
-    console.log("getting all customers in http service")
-    return this._http.get(`/api/customers/`)
+  updateCustomer(cid:any, newCustomer:any){
+    console.log("updating customer in http service")
+    return this._http.put(`/api/customers/${cid}`,newCustomer)
+  }
+
+  deleteCustomer(cid:any){
+    console.log("deleting customer in http service")
+    return this._http.delete(`/api/customer/${cid}`)
   }
 
 }
