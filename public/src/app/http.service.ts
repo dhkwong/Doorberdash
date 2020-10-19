@@ -164,24 +164,27 @@ export class HttpService {
    *
    */
   
+  //gets all customers  
   getCustomers() {
     console.log("getting all customers in http service")
     return this._http.get(`/api/customers/`)
   }
+  //gets one customer
   getCustomer(cid: any) {
     console.log("getting one customer in http service")
     return this._http.get(`/api/customers/${cid}`)
   }
+  //creates customer
   createCustomer(newCustomer:any){
     console.log("creating customer in http service")
     return this._http.post(`/api/customers/`,newCustomer)
   }
-
+  //updates customer
   updateCustomer(cid:any, newCustomer:any){
     console.log("updating customer in http service")
     return this._http.put(`/api/customers/${cid}`,newCustomer)
   }
-
+  //deletes customer
   deleteCustomer(cid:any){
     console.log("deleting customer in http service")
     return this._http.delete(`/api/customer/${cid}`)
