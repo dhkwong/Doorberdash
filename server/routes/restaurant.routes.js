@@ -1,10 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const restaurants = require('./../controllers/restaurants');
+// require passport for jwt authentication
+const passport = require('passport')
 // const customers = require('./../controllers/customers');
 
+function loggedIn(req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
 router
+    //TESTING login
+    // 'local' field indicates that we're using the 'local' strategy of authentication vs say, heroku or facebook
+    .post('/login',passport.authenticate('local'),restaurants.login)
     //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE.
+
+    //theoretical passport get request using validation. setting session to false to be able to verify per request for security
+    .get('/api/users/me',
+        passport.authenticate('basic', { session: false }),
+        function(req, res) {
+            // If user is logged in, passport.js will create user object in req for every request in express.js, which you can check for existence in any middleware:
+            console.log("user data: "+req.user)
+            res.json({ id: req.user.id, username: req.user.username })
+        })
+    //or
+    //not /:id since req.user._id will be the restaurant id
+    app.get('/restaurant', loggedIn, restaurants.getOneById)
     //WORKING get all restaurants
     .get('/', restaurants.all)
     //WORKING get one restaurant

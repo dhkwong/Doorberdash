@@ -1,6 +1,8 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
+//passport for jwt auth
+var passport = require('passport')
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
@@ -22,6 +24,13 @@ module.exports = {
     * 
     */
     //WORKING gets ALL restaurants
+    //tentative login passport logic
+    login: (req, res) => {
+        // from passport documentation
+        // If this function gets called, authentication was successful.
+        // `req.user` contains the authenticated user.
+        res.json('/users/' + req.user.username);
+    },
     all: async (req, res) => {
         try {
             const restaurants = await Restaurant.find();
@@ -90,12 +99,12 @@ module.exports = {
     },
     //WORKING gets ONE dish from the restaurant menu
     // .get('/:id/:did/dish',restaurants.getDish)
-    getDish:(req,res)=>{
+    getDish: (req, res) => {
         //Restaurant.findOne({ _id: req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
-        Restaurant.findOne({_id:req.params.id},{dish:{$elemMatch:{_id:req.params.did}}})
-        .then(dish=>{
-            res.json({dish:dish.dish[0]})
-        })
+        Restaurant.findOne({ _id: req.params.id }, { dish: { $elemMatch: { _id: req.params.did } } })
+            .then(dish => {
+                res.json({ dish: dish.dish[0] })
+            })
     },
     //WORKING BUT finalize query to check for $ne
     //add dish to menu
@@ -166,7 +175,7 @@ module.exports = {
     //.get('/:id/:cid', restaurants.getCustomer)
     getCustomer: (req, res) => {
 
-        Restaurant.findOne({ '_id': req.params.id} ,{ _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({ '_id': req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
             .then((customer) => {
                 //return customer
                 console.log("testing: " + customer)
@@ -283,10 +292,10 @@ module.exports = {
         //assume we push the dish object as POST
         let dish = new Dish(req.body)
 
-        Restaurant.findOne({ '_id': req.params.id}, { customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({ '_id': req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then(data => {
                 //no need to test for uniqueness since someone can get multiple dishes
-                
+
                 data.customer[0].order.push(dish)
                 data.save()
                 // returns -> {order[dishschema],_id:'customerid'}
@@ -320,7 +329,7 @@ module.exports = {
     deleteOrder: (req, res) => {
         let dish = new Dish()
 
-        Restaurant.findOne({ _id: req.params.id}, { customer: { $elemMatch: { _id: req.params.cid } } })
+        Restaurant.findOne({ _id: req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then((data) => {
 
                 // index = data.customer[0].order.indexOf(req.params.did)
@@ -331,14 +340,14 @@ module.exports = {
                         data.customer[0].order.splice(i, 1)
                         data.save()
                         console.log("deleted order data: " + i)
-                        res.json({customer:data})
-                        
+                        res.json({ customer: data })
+
                     }
                 }
                 res.json(false)
 
                 let index = findIndex
-                
+
             })
             .catch(err => {
                 res.json("Error in deleteOrder at restaurant.js: " + err)

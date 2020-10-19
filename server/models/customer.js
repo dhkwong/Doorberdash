@@ -14,6 +14,9 @@ const CustomerSchema = new mongoose.Schema({
         },
         zip: Number
     },
+    email:{type: String, required:true /*, regex for email here */},
+    password:{type: String, required:true /*regex for pass here */}
+    //restaurants[restaurants currently ordered from. possibly populate to find the orders]
 }, {timestamps: true })
 
 mongoose.model('Customer', CustomerSchema);

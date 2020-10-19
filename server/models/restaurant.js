@@ -31,7 +31,9 @@ const RestaurantSchema = new mongoose.Schema({
     //check if the order value can be created as such. otherwise we need to query the customer and add an ordered dishes field to customers to find all that coincide with restaurant
     customer: [{ _id:{type: Schema.Types.ObjectId, ref: 'Customer'}, order:[DishSchema]}],
     //TODO uniqueness in nested array of objects
-    dish: [DishSchema]
+    dish: [DishSchema],
+    email:{type:String, required: true},
+    password:{type:String, required: true}
 }, {timestamps: true });
 mongoose.model('Restaurant', RestaurantSchema);
 

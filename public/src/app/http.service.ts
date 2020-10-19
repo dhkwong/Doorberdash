@@ -31,8 +31,6 @@ export class HttpService {
    * 
    *
    */
-
-
   // get all restaurants
   getRestaurants() {
     console.log("getting all restaurants in http service")
@@ -78,6 +76,8 @@ export class HttpService {
     console.log("deleting restaurant in http service")
     return this._http.delete(`/api/restaurants/${id}`)
   }
+
+
   /**
    * 
    * 
@@ -93,7 +93,6 @@ export class HttpService {
    * 
    *
    */
-  
   // gets all customers from a restaurant
   getRestaurantCustomers(id: any) {
     console.log("getting customer from restaurant")
@@ -116,6 +115,7 @@ export class HttpService {
     //null body since cid is used to reference the customer
     return this._http.delete(`/api/restaurants/${id}/${cid}`)
   }
+
 
   /**
    * 
@@ -163,7 +163,6 @@ export class HttpService {
    * 
    *
    */
-  
   //gets all customers  
   getCustomers() {
     console.log("getting all customers in http service")
