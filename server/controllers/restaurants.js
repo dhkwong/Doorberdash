@@ -3,10 +3,20 @@ const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
 //passport for jwt auth
 var passport = require('passport')
+const bcrypt = require('bcrypt')
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
-// var ObjectId = mongoose.Types.ObjectId();
+
+
+//local passport strategy
+passport.use(new Strategy(function (email, password, cb) {
+    restaurants.findByEmail(email, function (err, user) {
+        if (err) { return cb(err) }
+        if (!user) { return cb(null, false); }
+        if (user.password != password) { return cb(null, false) }
+    })
+}))
 
 module.exports = {
     //to organize, could possibly  make an orders.js and dishes.js. That way there's less code in restaurant.js and in restaurant.routes.js, it would look like .get('/:id/dish',dishes.getDishes)
@@ -25,11 +35,61 @@ module.exports = {
     */
     //WORKING gets ALL restaurants
     //tentative login passport logic
+    /**
+     * var passport = require('passport')
+      , LocalStrategy = require('passport-local').Strategy;
+
+    passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.findOne({ username: username }, function (err, user) {
+        if (err) { return done(err); }
+        if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+        }
+        if (!user.validPassword(password)) {
+            return done(null, false, { message: 'Incorrect password.' });
+        }
+        return done(null, user);
+        });
+    }
+    ));
+     * 
+     */
+    //findByEmail for passport local strategy
+    findByEmail: (req,res)=>{
+        Restaurant.findOne({email:req.body.email})
+        .then(restaurant=>{
+            res.json({restaurant:restaurant})
+        })
+    },
     login: (req, res) => {
         // from passport documentation
         // If this function gets called, authentication was successful.
         // `req.user` contains the authenticated user.
         res.json('/users/' + req.user.username);
+    },
+    register: (req,res)=>{
+        Restaurant.findOne({email:req.body.email})
+        .then((user)=>{
+        if(user){
+            return res.status(400).json({email:"user already exists with this email"})
+        }
+        else{
+            var newRestaurant = new Restaurant(req.body)
+            bcrypt.genSalt(10,(err,salt)=>{
+                bcrypt.hash(req.body.password,salt,(err,hash)=>{
+                    newRestaurant.password = hash
+                    newRestaurant.save();
+                })
+            })
+            
+            passport.authenticate('local')(req,res,function(){
+                console.log(`created new user ${req.body.username}`)
+                res.status(201).send()
+            })
+        
+    }})
+    //.catch(err=> if err, may need to gensalt here. should be fine though)
     },
     all: async (req, res) => {
         try {
