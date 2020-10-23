@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
 //passport for jwt auth
 var passport = require('passport')
+var LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt')
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
@@ -10,7 +11,7 @@ const Dish = mongoose.model('Dish')
 
 
 //local passport strategy
-passport.use(new Strategy(function (email, password, cb) {
+passport.use(new LocalStrategy(function (email, password, cb) {
     restaurants.findByEmail(email, function (err, user) {
         if (err) { return cb(err) }
         if (!user) { return cb(null, false); }
@@ -34,35 +35,17 @@ module.exports = {
     * 
     */
     //WORKING gets ALL restaurants
-    //tentative login passport logic
-    /**
-     * var passport = require('passport')
-      , LocalStrategy = require('passport-local').Strategy;
 
-    passport.use(new LocalStrategy(
-    function(username, password, done) {
-        User.findOne({ username: username }, function (err, user) {
-        if (err) { return done(err); }
-        if (!user) {
-            return done(null, false, { message: 'Incorrect username.' });
-        }
-        if (!user.validPassword(password)) {
-            return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
-        });
-    }
-    ));
-     * 
-     */
     //findByEmail for passport local strategy
-    findByEmail: (req,res)=>{
-        Restaurant.findOne({email:req.body.email})
-        .then(restaurant=>{
-            res.json({restaurant:restaurant})
-        })
-    },
+    // findByEmail: (req,res)=>{
+    //     Restaurant.findOne({email:req.body.email})
+    //     .then(restaurant=>{
+    //         res.json({restaurant:restaurant})
+    //     })
+    // },
+    //login used after passport authenticates user
     login: (req, res) => {
+        //TODO assign jwt 
         // from passport documentation
         // If this function gets called, authentication was successful.
         // `req.user` contains the authenticated user.
@@ -83,7 +66,7 @@ module.exports = {
                 })
             })
             
-            passport.authenticate('local')(req,res,function(){
+            passport.authenticate('local',{session:false})(req,res,function(){
                 console.log(`created new user ${req.body.username}`)
                 res.status(201).send()
             })

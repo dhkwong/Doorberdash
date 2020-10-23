@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Restaurant = mongo
+// const Restaurant = mongoose.models('Restaurant')
 const restaurants = require('./../controllers/restaurants');
 // require passport for jwt authentication
 const passport = require('passport')
+var LocalStrategy = require('passport-local')
 const ensurelogin = require('connect-ensure-login').ensureLoggedIn
 // const customers = require('./../controllers/customers');
 
@@ -15,13 +16,14 @@ const ensurelogin = require('connect-ensure-login').ensureLoggedIn
 //     }
 // }
 //function for passport 'local' strategy
-passport.use(new Strategy(function (email, password, cb) {
-    restaurants.findByEmail(email, function (err, user) {
-        if (err) { return cb(err) }
-        if (!user) { return cb(null, false); }
-        if (user.password != password) { return cb(null, false) }
-    })
-}))
+// passport.use(new LocalStrategy(function (email, password, cb) {
+//     restaurants.findByEmail(email, function (err, user) {
+//         if (err) { return cb(err) }
+//         if (!user) { return cb(null, false); }
+//         if (user.password != password) { return cb(null, false) }
+//     })
+// }))
+
 router
 
     //TESTING login
