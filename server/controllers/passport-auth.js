@@ -96,18 +96,21 @@ passport.use('loginRestaurant',
     )
 )
 const opts = {
+    //extracts token from header using jwt ExtractJWT
     jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
     secretOrKey: jwtSecret
 };
 
 passport.use(
     'jwt-restaurant',
+    //opts extracts token to be handled using ExtractJWT and jwtSecret key
     new JWTstrategy(opts, (jwt_payload, done) => {
         try {
+            console.log('extrating jwt from header in jwt-restaurant from passport-auth')
             Restaurant.findOne({
                 where: {
                     //token only holds the userid
-                    _id: jwt_payload.id,
+                    _id: jwt_payload._id,
                 },
             }).then(restaurant => {
                 if (restaurant) {

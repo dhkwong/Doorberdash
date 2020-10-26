@@ -36,44 +36,7 @@ module.exports = {
     */
     //WORKING gets ALL restaurants
 
-    //findByEmail for passport local strategy
-    // findByEmail: (req,res)=>{
-    //     Restaurant.findOne({email:req.body.email})
-    //     .then(restaurant=>{
-    //         res.json({restaurant:restaurant})
-    //     })
-    // },
-    //login used after passport authenticates user
-    login: (req, res) => {
-        //TODO assign jwt 
-        // from passport documentation
-        // If this function gets called, authentication was successful.
-        // `req.user` contains the authenticated user.
-        res.json('/users/' + req.user.username);
-    },
-    register: (req,res)=>{
-        Restaurant.findOne({email:req.body.email})
-        .then((user)=>{
-        if(user){
-            return res.status(400).json({email:"user already exists with this email"})
-        }
-        else{
-            var newRestaurant = new Restaurant(req.body)
-            bcrypt.genSalt(10,(err,salt)=>{
-                bcrypt.hash(req.body.password,salt,(err,hash)=>{
-                    newRestaurant.password = hash
-                    newRestaurant.save();
-                })
-            })
-            
-            passport.authenticate('local',{session:false})(req,res,function(){
-                console.log(`created new user ${req.body.username}`)
-                res.status(201).send()
-            })
-        
-    }})
-    //.catch(err=> if err, may need to gensalt here. should be fine though)
-    },
+    //login and reg moved to ../controllers/loginreg.js
     all: async (req, res) => {
         try {
             const restaurants = await Restaurant.find();
