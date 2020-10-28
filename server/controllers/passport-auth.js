@@ -75,7 +75,7 @@ passport.use('loginRestaurant',
                 }).then(restaurant => {
                     //no restaurant
                     if (restaurant === null) {
-                        //done is a method called internally by Strategy implementation.Then navigates to one internal success / error / fail methods. similar to next
+                        //done is a method called internally by Strategy implementation.Then navigates to one internal success / error / fail methods. similar to next. also, allows you to pass forward a user/an object
                         return done(null, false, { message: 'bad username' });
                     } else {
                         bcrypt.compare(password, restaurant.password).then(response => {
@@ -116,6 +116,7 @@ passport.use(
                 if (restaurant) {
                     console.log('restaurant found in db in passport');
                     // note the return removed with passport JWT - add this return for passport local
+                    //return done causes the function to end right there. done
                     done(null, restaurant);
                 } else {
                     console.log('restaurant not found in db');
@@ -188,6 +189,7 @@ passport.use('registerCustomer',
 )
 passport.use('loginCustomer',
     new LocalStrategy(
+        //check documentation for these fields
         {
             usernameField: 'email',
             passwordField: 'password',

@@ -3,21 +3,13 @@ const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
 //passport for jwt auth
 var passport = require('passport')
-var LocalStrategy = require('passport-local')
-const bcrypt = require('bcrypt')
+// var LocalStrategy = require('passport-local')
+// const bcrypt = require('bcrypt')
 const Restaurant = mongoose.model('Restaurant')
 const Customer = mongoose.model('Customer')
 const Dish = mongoose.model('Dish')
 
 
-//local passport strategy
-passport.use(new LocalStrategy(function (email, password, cb) {
-    restaurants.findByEmail(email, function (err, user) {
-        if (err) { return cb(err) }
-        if (!user) { return cb(null, false); }
-        if (user.password != password) { return cb(null, false) }
-    })
-}))
 
 module.exports = {
     //to organize, could possibly  make an orders.js and dishes.js. That way there's less code in restaurant.js and in restaurant.routes.js, it would look like .get('/:id/dish',dishes.getDishes)
@@ -46,8 +38,32 @@ module.exports = {
             res.json(err);
         }
     },
+    //TESTING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
+    findRestaurant:(req,res,next)=>{
+        //authenticates with token in req.header before proceeding
+        passport.authenticate('jwt-restaurant', {session:false},(err, restaurant, info)=>{
+            //checking for errors
+            if(err){
+                console.log(err)
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if(info!=undefined){
+                console.log(info.message)
+                res.json(info.message)
+            }else{
+                Restaurant.findById({_id:req.params.id})
+                    .populate('customer')
+                    .then(data=>{
+                        //if everything checks out, return restaurant with populated customer data
+                        res.json({restaurant:data})
+                    })
+
+            }
+        })
+    },
     //WORKING gets ONE restaurant
     getOneById: (req, res) => {
+        
         Restaurant.findById({ _id: req.params.id })
             .populate('customer')
             .then((data) => {

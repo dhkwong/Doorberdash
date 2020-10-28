@@ -1,14 +1,16 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
-const Restaurant  = mongoose.Model('Restaurant')
-const Customer = mongoose.Model('Customer')
+const Restaurant  = mongoose.model('Restaurant')
+const Customer = mongoose.model('Customer')
+// import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken')
 //temporary jwt secret. move to env variable after testing
 const jwtSecret = 'tempjwtsecret'
-import jwt from 'jsonwebtoken';
-import passport from 'passport';
+// import passport from 'passport'
+const passport = require('passport')
 
-module.exports={
+module.exports = {
     restaurantRegister:(req,res,next)=>{
         passport.authenticate('registerRestaurant', (err, user, info) => {
             if (err) {
@@ -103,7 +105,7 @@ module.exports={
                         }
                     }).then(user=>{
                         //create signed token
-                        const token = jwt.sign({id:user._id},jwtSecret)
+                        const token = jwt.sign({_id:user._id},jwtSecret)
                         res.status(200).json({
                             auth:true,
                             token:token,
@@ -166,5 +168,5 @@ module.exports={
             }
           //setup for callback capabilities
           })(req, res, next);
-    }
+    },
 }
