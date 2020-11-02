@@ -7,7 +7,7 @@ app.get('/findUser', (req, res, next) => {
 }
 *        
 */
-import passport from 'passport';
+const passport = require('passport');
 module.exports={
     //example for restaurant.js
     findRestaurant: (req, res, next) => {

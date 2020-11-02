@@ -1,31 +1,35 @@
+const { json } = require('body-parser');
 const express = require('express');
 const router = express.Router();
 // const Restaurant = mongoose.models('Restaurant')
+const loginreg = require('./../controllers/loginreg');
 const restaurants = require('./../controllers/restaurants');
-const authenticate = require('./../controllers/loginreg');
 
 // require passport for jwt authentication
-const passport = require('passport')
-var LocalStrategy = require('passport-local')
-const ensurelogin = require('connect-ensure-login').ensureLoggedIn
+// const passport = require('passport')
+
+// const ensurelogin = require('connect-ensure-login').ensureLoggedIn
 
 
 router
-
-    //TESTING loginreg
-    .post('/restaurantlogin',authenticate.restaurantLogin)
-    .post('/restaurantregister',authenticate.restaurantRegister)
-    .post('/customerlogin',authenticate.customerLogin)
-    .post('/customerregister',authenticate.customerRegister)
-    
-
-
-
     //currently organized by organize by restaurant, customer, and customer order  THEN by request type. GET, POST, PUT, DELETE.
     //WORKING get all restaurants
     .get('/', restaurants.all)
+    //route looks like this:
+    //localhost:8000/api/restaurants/restaurantregister
+    //WORKING
+    .post('/restaurantlogin',loginreg.restaurantLogin)
+    //WORKING
+    .post('/restaurantregister',loginreg.restaurantRegister)
+    .post('/customerlogin', loginreg.customerLogin)
+    .post('/customerregister',loginreg.customerRegister)
+
+    //dont need to pass in /:tokenid since the token is stored within req.header
+    .get('/findrestaurant/', restaurants.findLoggedInRestaurant)
+    
     //WORKING get one restaurant, uses passport require('connect-ensure-login').ensureLoggedIn to verify login
-    .get('/:id', ensurelogin, restaurants.getOneById)
+    .get('/:id',restaurants.getOneById)
+
     //WORKING gets all dishes
     .get('/:id/dish', restaurants.getDishes)
     //TEST get one dish from restaurant
@@ -41,6 +45,7 @@ router
     //WORKING delete restaurant
     .delete('/:id', restaurants.delete)
 
+  //TESTING loginreg
 
     /* restaurant customer logic */
     //WORKING gets all customers from a restaurant

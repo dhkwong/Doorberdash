@@ -7,9 +7,10 @@ const bp = require('body-parser');
 
 
 const passport = require('passport')
-// or wherever you choose to set up passport logic
-// require('./config/passport')
+// need this to be able to call the passport strategies created
+require('./server/controllers/passport-auth')
 app.use(passport.initialize())
+// require(path.join(__dirname, 'server/controllers/loginreg'))(passport); //Load passport config
 const router = require('./server/routes');
 app.use(express.urlencoded({extended: true}));
 app.use(bp.urlencoded({ extended: false }))

@@ -2,7 +2,7 @@ const { json } = require('body-parser');
 const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
 //passport for jwt auth
-var passport = require('passport')
+const passport = require('passport')
 // var LocalStrategy = require('passport-local')
 // const bcrypt = require('bcrypt')
 const Restaurant = mongoose.model('Restaurant')
@@ -12,6 +12,7 @@ const Dish = mongoose.model('Dish')
 
 
 module.exports = {
+
     //to organize, could possibly  make an orders.js and dishes.js. That way there's less code in restaurant.js and in restaurant.routes.js, it would look like .get('/:id/dish',dishes.getDishes)
 
     /*
@@ -39,23 +40,25 @@ module.exports = {
         }
     },
     //TESTING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
-    findRestaurant:(req,res,next)=>{
+    findLoggedInRestaurant: (req, res, next) => {
         //authenticates with token in req.header before proceeding
-        passport.authenticate('jwt-restaurant', {session:false},(err, restaurant, info)=>{
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+
             //checking for errors
-            if(err){
+            if (err) {
                 console.log(err)
             }
             //checking for authorization issues in jwt-restaurant strategy
-            if(info!=undefined){
+            if (info != undefined) {
                 console.log(info.message)
                 res.json(info.message)
-            }else{
-                Restaurant.findById({_id:req.params.id})
+            } else {
+                console.log(`found restaurant: ${restaurant}`)
+                Restaurant.findById({ _id: restaurant.id })
                     .populate('customer')
-                    .then(data=>{
+                    .then(data => {
                         //if everything checks out, return restaurant with populated customer data
-                        res.json({restaurant:data})
+                        res.json({ restaurant: data })
                     })
 
             }
@@ -63,7 +66,7 @@ module.exports = {
     },
     //WORKING gets ONE restaurant
     getOneById: (req, res) => {
-        
+
         Restaurant.findById({ _id: req.params.id })
             .populate('customer')
             .then((data) => {

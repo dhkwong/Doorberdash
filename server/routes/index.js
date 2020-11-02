@@ -3,6 +3,7 @@ const router = express.Router();
 const catchallRoute = require('./catchall.routes');
 const apiRouter = express.Router();
 const restaurantRoutes = require('./restaurant.routes');
+
 // api/restaurants
 apiRouter.use('/restaurants', restaurantRoutes);
 const customerRoutes = require('./customer.routes');

@@ -1,55 +1,68 @@
-//passportjs strategys 
-//jwtsecret import
-import bcrypt from 'bcrypt'
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 
-const SALT_ROUNDS = 12
-const passport = require('passport'),
-    LocalStrategy = require('passport-local'),
-    Restaurant = require('./restaurants'),
-    Customer = require('./customers'),
+const BCRYPT_SALT_ROUNDS = 12
+var passport = require('passport'),
+    localStrategy = require('passport-local').Strategy,
     JWTStrategy = require('passport-jwt').Strategy
+const Restaurant = mongoose.model('Restaurant')
+const Customer = mongoose.model('Customer')
 //placed here for testing purpose right now, move to env variable once testing is done
-const jwtsecret = 'tempjwtsecret'
-ExtractJWT = require('passport-jwt').ExtractJwt;
+const jwtsecret = 'tempjwtsecret',
+    ExtractJWT = require('passport-jwt').ExtractJwt;
 
 //restaurant verification Strategy logic. Both Local and JWT
 passport.use('registerRestaurant',
-    //By default, LocalStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
-    new LocalStrategy({
+    //By default, localStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
+    new localStrategy({
+        //set usernamefield to look for a field specifically named email
         usernameField: 'email',
+        //set passwordfield to look for a field named password
         passwordField: 'password',
-        session: false
+        //deactivate session as we're using JWT
+        session: false,
+        passReqToCallback:true
     },
-        (email, password, done) => {
+        (req,email, password, done) => {
+            
             try {
                 Restaurant.findOne({
-                    where: {
-                        email: email,
-                    },
+                    
+                        email: email
+                    
                 }).then(user => {
-                    if (user != null) {
+                    console.log(`user in passport auth: ${user}`)
+                    if (user !== null) {
                         console.log('email already taken');
                         return done(null, false, { message: 'email already taken' });
                     } else {
                         bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
                             //create new restaurant document to save
-                            let newRestaurant = new Restaurant(req.body)
-                            newRestaurant.password = hashedPassword
-                            newRestaurant.save()
-                                .then(user => {
+                            // let newRestaurant = new Restaurant(user)
+                            // newRestaurant.password = hashedPassword
+                            // newRestaurant.save()
+                            //     .then(user => {
 
-                                    console.log('restaurant created');
-                                    // note the return needed with passport local - remove this return for passport JWT to work
-                                    //returns the entire user theoretically, including _id for us to use in loginreg.js
-                                    return done(null, user);
-                                })
-                                //originally only partly creates the Restaurant document for modularization.loginreg.js 
+                            //         console.log('restaurant created');
+                            //         // note the return needed with passport local - remove this return for passport JWT to work
+                            //         //returns the entire user theoretically, including _id for us to use in loginreg.js
+                            //         return done(null, user);
+                            //     })
+                            //originally only partly creates the Restaurant document for modularization.loginreg.js 
                             //In case newRestaurant.save() doesnt work
-                            //   User.create({ username, password: hashedPassword }).then(user => {
-                            //     console.log('user created');
-                            //     // note the return needed with passport local - remove this return for passport JWT to work
-                            //     return done(null, user);
-                            //   });
+
+                            // console.log(req.body)
+                            //creates restaurant but doesnt return, aka the request never ends
+                            Restaurant.create({
+                                name: req.body.name,
+                                email: email,
+                                description: req.body.description,
+                                password: hashedPassword
+                            }).then(user => {
+                                console.log('user created');
+                                // note the return needed with passport local - remove this return for passport JWT to work
+                                return done(null, user);
+                            });
                         });
                     }
                 });
@@ -60,7 +73,7 @@ passport.use('registerRestaurant',
     )
 )
 passport.use('loginRestaurant',
-    new LocalStrategy(
+    new localStrategy(
         {
             usernameField: 'email',
             passwordField: 'password',
@@ -69,9 +82,9 @@ passport.use('loginRestaurant',
         (email, password, done) => {
             try {
                 Restaurant.findOne({
-                    where: {
+                    
                         email: email
-                    },
+                    
                 }).then(restaurant => {
                     //no restaurant
                     if (restaurant === null) {
@@ -98,20 +111,20 @@ passport.use('loginRestaurant',
 const opts = {
     //extracts token from header using jwt ExtractJWT
     jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
-    secretOrKey: jwtSecret
+    secretOrKey: jwtsecret
 };
 
 passport.use(
     'jwt-restaurant',
     //opts extracts token to be handled using ExtractJWT and jwtSecret key
-    new JWTstrategy(opts, (jwt_payload, done) => {
+    new JWTStrategy(opts, (jwt_payload, done) => {
         try {
             console.log('extrating jwt from header in jwt-restaurant from passport-auth')
             Restaurant.findOne({
-                where: {
+                
                     //token only holds the userid
                     _id: jwt_payload._id,
-                },
+                
             }).then(restaurant => {
                 if (restaurant) {
                     console.log('restaurant found in db in passport');
@@ -144,8 +157,8 @@ passport.use(
 
 //restaurant verification Strategy logic. Both Local and JWT
 passport.use('registerCustomer',
-    //By default, LocalStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
-    new LocalStrategy({
+    //By default, localStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
+    new localStrategy({
         usernameField: 'email',
         passwordField: 'password',
         session: false
@@ -153,9 +166,9 @@ passport.use('registerCustomer',
         (email, password, done) => {
             try {
                 Customer.findOne({
-                    where: {
+                    
                         email: email,
-                    },
+                    
                 }).then(user => {
                     if (user != null) {
                         console.log('email already taken');
@@ -171,7 +184,7 @@ passport.use('registerCustomer',
                                     // note the return needed with passport local - remove this return for passport JWT to work
                                     return done(null, user);
                                 })
-                                
+
                             //In case newCustomer.save() doesnt work
                             //   User.create({ username, password: hashedPassword }).then(user => {
                             //     console.log('user created');
@@ -188,7 +201,7 @@ passport.use('registerCustomer',
     )
 )
 passport.use('loginCustomer',
-    new LocalStrategy(
+    new localStrategy(
         //check documentation for these fields
         {
             usernameField: 'email',
@@ -198,9 +211,9 @@ passport.use('loginCustomer',
         (email, password, done) => {
             try {
                 Customer.findOne({
-                    where: {
+                    
                         email: email
-                    },
+                    
                 }).then(customer => {
                     //no customer found
                     if (customer === null) {
@@ -224,20 +237,20 @@ passport.use('loginCustomer',
         }
     )
 )
-const opts = {
-    jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
-    secretOrKey: jwtSecret
-};
+// const opts = {
+//     jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
+//     secretOrKey: jwtsecret
+// };
 
 passport.use(
     'jwt-customer',
-    new JWTstrategy(opts, (jwt_payload, done) => {
+    new JWTStrategy(opts, (jwt_payload, done) => {
         try {
             Customer.findOne({
-                where: {
+                
                     //token only holds the userid
                     _id: jwt_payload.id,
-                },
+                
             }).then(customer => {
                 if (customer) {
                     console.log('customer found in db in passport');
