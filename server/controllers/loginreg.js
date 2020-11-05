@@ -86,13 +86,26 @@ module.exports = {
           }).then(user => {
             //this is where the token is signed and passed to the front end.
             //HOWEVER it's not passed to the req.header
-            const token = jwt.sign({ id: user._id }, jwtSecret);
+            const token = jwt.sign(
+              { id: user._id },
+               jwtSecret,
+               {expiresIn:'1h'}
+               );
             //OR store it in a cookie for security res.cookie("SESSIONID", jwtBearerToken, {httpOnly:true, secure:true});
-            res.status(200).json({
-              auth: true,
-              token: token,
-              message: 'Restaurant user found & logged in',
-            });
+            //need to find out how to assign bearer token to header 
+            //OR through res.cookie. Might be better
+            // res.status(200).json({
+            //   auth: true,
+            //   token: token,
+            //   Authorization: token,
+            //   message: 'Restaurant user found & logged in',
+            // });
+            // var jwtExpirySeconds = 999
+            // res.cookie("JWT", token, { maxAge: jwtExpirySeconds * 1000 })
+            //sets header and returns a json response
+            
+            res.header("JWT", token).json({login:true, restaurant:user})
+            res.end();
           });
         });
       }

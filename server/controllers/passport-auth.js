@@ -11,6 +11,43 @@ const Customer = mongoose.model('Customer')
 const jwtsecret = 'tempjwtsecret',
     ExtractJWT = require('passport-jwt').ExtractJwt;
 
+//jwt key info for jwt verification
+const opts = {
+    //extracts token from header using jwt ExtractJWT
+    jwtFromRequest: 
+    // ExtractJWT.fromHeader('JWT'),
+    ExtractJWT.fromHeader('JWT'),
+    
+    secretOrKey: jwtsecret
+};
+passport.use(
+    'jwt-restaurant',
+    //opts extracts token to be handled using ExtractJWT and jwtSecret key
+    new JWTStrategy(opts, (jwt_payload, done) => {
+        try {
+            console.log('extrating jwt from header in jwt-restaurant from passport-auth')
+            console.log(jwt_payload)
+            Restaurant.findOne({
+                
+                    //token only holds the userid
+                    _id: jwt_payload._id
+                
+            }).then(restaurant => {
+                if (restaurant) {
+                    console.log('restaurant found in db in passport');
+                    // note the return removed with passport JWT - add this return for passport local
+                    //return done causes the function to end right there. done
+                    done(null, restaurant);
+                } else {
+                    console.log('restaurant not found in db');
+                    done(null, false);
+                }
+            });
+        } catch (err) {
+            done(err);
+        }
+    }),
+);
 //restaurant verification Strategy logic. Both Local and JWT
 passport.use('registerRestaurant',
     //By default, localStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
@@ -96,7 +133,7 @@ passport.use('loginRestaurant',
                                 console.log('passwords do not match');
                                 return done(null, false, { message: 'passwords do not match' });
                             }
-                            console.log('restaurant found & authenticated');
+                            console.log('restaurant found & authenticated in Login');
                             // note the return needed with passport local - remove this return for passport JWT
                             return done(null, restaurant);
                         })
@@ -108,45 +145,15 @@ passport.use('loginRestaurant',
         }
     )
 )
-const opts = {
-    //extracts token from header using jwt ExtractJWT
-    jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
-    secretOrKey: jwtsecret
-};
 
-passport.use(
-    'jwt-restaurant',
-    //opts extracts token to be handled using ExtractJWT and jwtSecret key
-    new JWTStrategy(opts, (jwt_payload, done) => {
-        try {
-            console.log('extrating jwt from header in jwt-restaurant from passport-auth')
-            Restaurant.findOne({
-                
-                    //token only holds the userid
-                    _id: jwt_payload._id,
-                
-            }).then(restaurant => {
-                if (restaurant) {
-                    console.log('restaurant found in db in passport');
-                    // note the return removed with passport JWT - add this return for passport local
-                    //return done causes the function to end right there. done
-                    done(null, restaurant);
-                } else {
-                    console.log('restaurant not found in db');
-                    done(null, false);
-                }
-            });
-        } catch (err) {
-            done(err);
-        }
-    }),
-);
+
+
 /**
  * 
  * 
  * 
  * 
- * //customer verification Strategy logic. Both Local and JWT
+ * //customer verification Strategy logic
  * 
  * 
  * 

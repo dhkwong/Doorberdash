@@ -25,9 +25,10 @@ router
     .post('/customerregister',loginreg.customerRegister)
 
     //dont need to pass in /:tokenid since the token is stored within req.header
-    .get('/findrestaurant/', restaurants.findLoggedInRestaurant)
+    .get('/findrestaurant', restaurants.findLoggedInRestaurant)
     
     //WORKING get one restaurant, uses passport require('connect-ensure-login').ensureLoggedIn to verify login
+    //TESTING protected routes for these
     .get('/:id',restaurants.getOneById)
 
     //WORKING gets all dishes

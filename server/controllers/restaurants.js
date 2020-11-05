@@ -1,6 +1,7 @@
 const { json } = require('body-parser');
 const mongoose = require('mongoose');
 var mongodb = require("mongodb"), ObjectId = mongodb.ObjectID
+require('./passport-auth')
 //passport for jwt auth
 const passport = require('passport')
 // var LocalStrategy = require('passport-local')
@@ -40,10 +41,14 @@ module.exports = {
         }
     },
     //TESTING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
-    findLoggedInRestaurant: (req, res, next) => {
+    findLoggedInRestaurant: (req, res/*,next */) => {
         //authenticates with token in req.header before proceeding
+        // res.json({test:'test'})
+        //currently reaches here, but doesnt authenticate
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
-
+            //doesnt get here, meaning that there's an error in the jwt header verification
+            res.json({restaurantjsontest:restaurant})
+           
             //checking for errors
             if (err) {
                 console.log(err)
@@ -52,13 +57,15 @@ module.exports = {
             if (info != undefined) {
                 console.log(info.message)
                 res.json(info.message)
+                res.end()
             } else {
                 console.log(`found restaurant: ${restaurant}`)
-                Restaurant.findById({ _id: restaurant.id })
+                Restaurant.findById({ _id: restaurant._id })
                     .populate('customer')
                     .then(data => {
                         //if everything checks out, return restaurant with populated customer data
                         res.json({ restaurant: data })
+                        res.end()
                     })
 
             }
