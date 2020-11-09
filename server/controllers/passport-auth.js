@@ -11,12 +11,17 @@ const Customer = mongoose.model('Customer')
 const jwtsecret = 'tempjwtsecret',
     ExtractJWT = require('passport-jwt').ExtractJwt;
 
+    
 //jwt key info for jwt verification
 const opts = {
     //extracts token from header using jwt ExtractJWT
     jwtFromRequest: 
+    //I dont think it's an issue with token. I think there's another issue where the methods arent going through, otherwise I'd get some sort of authenication info error
+   
     // ExtractJWT.fromHeader('JWT'),
-    ExtractJWT.fromHeader('JWT'),
+    ExtractJWT.fromAuthHeaderWithScheme('JWT'),
+    // ExtractJWT.fromAuthHeaderAsBearerToken(),
+    
     
     secretOrKey: jwtsecret
 };
@@ -30,7 +35,7 @@ passport.use(
             Restaurant.findOne({
                 
                     //token only holds the userid
-                    _id: jwt_payload._id
+                    _id: jwt_payload.id
                 
             }).then(restaurant => {
                 if (restaurant) {

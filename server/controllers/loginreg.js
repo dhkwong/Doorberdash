@@ -89,7 +89,7 @@ module.exports = {
             const token = jwt.sign(
               { id: user._id },
                jwtSecret,
-               {expiresIn:'1h'}
+              //  {expiresIn:'60m'} //1 hour
                );
             //OR store it in a cookie for security res.cookie("SESSIONID", jwtBearerToken, {httpOnly:true, secure:true});
             //need to find out how to assign bearer token to header 
@@ -103,9 +103,26 @@ module.exports = {
             // var jwtExpirySeconds = 999
             // res.cookie("JWT", token, { maxAge: jwtExpirySeconds * 1000 })
             //sets header and returns a json response
-            
+
+            //for cookie option. httpOnly makes it protected from being visible through js, and prevents XSS attacks. Consequently the server side will see the cookie in req.cookie.token or.cookie.jwt whatever you name it
+
+            //look up cookieparser
+            // app.use(cookieParser());
+            // app.use(
+            //   jwt({
+            //     secret: 'secret123',
+            //     getToken: req => req.cookies.token
+            //   })
+            // );
+
+            // app.get('/jwt', (req, res) => {
+            //   const token = jsonwebtoken.sign({ user: 'johndoe' }, jwtSecret);
+            //   res.cookie('token', token, { httpOnly: true });
+            //   res.json({ token });
+            // });
+            //can pass with cookie, localsession/storage, or header. under authorization?
             res.header("JWT", token).json({login:true, restaurant:user})
-            res.end();
+            // res.end();
           });
         });
       }
