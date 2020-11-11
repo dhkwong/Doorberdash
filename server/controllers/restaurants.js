@@ -40,16 +40,16 @@ module.exports = {
             res.json(err);
         }
     },
-    //TESTING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
-    findLoggedInRestaurant: (req, res,next ) => {
+    //WORKING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
+    findLoggedInRestaurant: (req, res, next) => {
         //authenticates with token in req.header before proceeding
         // res.json({test:'test'})
         //currently reaches here, but doesnt authenticate
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
-            console.log("info"+info)
+            console.log("info" + info)
             // res.json({restaurantjsontest:restaurant})
             //doesnt get here, giving unhandled promise error
-           
+
             //checking for errors
             if (err) {
                 console.log(err)
@@ -57,7 +57,7 @@ module.exports = {
             //checking for authorization issues in jwt-restaurant strategy
             if (info != undefined) {
                 console.log(info.message)
-                res.json({error:info.message})
+                res.json({ error: info.message })
                 // res.end()
             } else {
                 console.log(`found restaurant: ${restaurant}`)
@@ -68,7 +68,7 @@ module.exports = {
                         //convert document type to json, then remove password and send to client side for security
                         temprestaurant = data.toJSON()
                         delete temprestaurant.password
-                        res.json({ restaurant: temprestaurant})
+                        res.json({ restaurant: temprestaurant })
                         res.end()
                     })
 
@@ -76,7 +76,7 @@ module.exports = {
             //being implemented as a callback, so we need the (req,res,next) twice. aka closures
             //A Closure is an inner function that has access to the outer function's variables (scope-chain) and Closures are extensively used in Node.js and JavaScript. In this case, (err,restaurant,info) have acess to req,res,next. Due to this, we need to send (req,res,next) below
         })
-        (req, res, next);
+            (req, res, next);
     },
     //WORKING gets ONE restaurant
     getOneById: (req, res) => {

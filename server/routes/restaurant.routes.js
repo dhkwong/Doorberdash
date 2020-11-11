@@ -21,8 +21,6 @@ router
     .post('/restaurantlogin',loginreg.restaurantLogin)
     //WORKING
     .post('/restaurantregister',loginreg.restaurantRegister)
-    .post('/customerlogin', loginreg.customerLogin)
-    .post('/customerregister',loginreg.customerRegister)
 
     //dont need to pass in /:tokenid since the token is stored within req.header
     .get('/findrestaurant', restaurants.findLoggedInRestaurant)

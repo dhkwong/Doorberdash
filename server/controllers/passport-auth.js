@@ -63,6 +63,7 @@ passport.use('registerRestaurant',
         passwordField: 'password',
         //deactivate session as we're using JWT
         session: false,
+        //need this to be able to use req in localStrategy
         passReqToCallback:true
     },
         (req,email, password, done) => {
@@ -173,9 +174,11 @@ passport.use('registerCustomer',
     new localStrategy({
         usernameField: 'email',
         passwordField: 'password',
-        session: false
+        session: false,
+        //need this to pass req into localStrategy
+        passReqToCallback:true
     },
-        (email, password, done) => {
+        (req,email, password, done) => {
             try {
                 Customer.findOne({
                     
@@ -258,6 +261,7 @@ passport.use(
     'jwt-customer',
     new JWTStrategy(opts, (jwt_payload, done) => {
         try {
+            console.log('extrating jwt from header in jwt-restaurant from passport-auth')
             Customer.findOne({
                 
                     //token only holds the userid
