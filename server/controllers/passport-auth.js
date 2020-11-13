@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
 const BCRYPT_SALT_ROUNDS = 12
-var passport = require('passport'),
+const passport = require('passport'),
     localStrategy = require('passport-local').Strategy,
     JWTStrategy = require('passport-jwt').Strategy
 const Restaurant = mongoose.model('Restaurant')
@@ -15,16 +15,10 @@ const jwtsecret = 'tempjwtsecret',
 //jwt key info for jwt verification
 const opts = {
     //extracts token from header using jwt ExtractJWT
-    jwtFromRequest: 
-    //I dont think it's an issue with token. I think there's another issue where the methods arent going through, otherwise I'd get some sort of authenication info error
-   
-    // ExtractJWT.fromHeader('JWT'),
-    ExtractJWT.fromAuthHeaderWithScheme('JWT'),
-    // ExtractJWT.fromAuthHeaderAsBearerToken(),
-    
-    
+    jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
     secretOrKey: jwtsecret
 };
+
 passport.use(
     'jwt-restaurant',
     //opts extracts token to be handled using ExtractJWT and jwtSecret key
@@ -34,7 +28,7 @@ passport.use(
             console.log(jwt_payload)
             Restaurant.findOne({
                 
-                    //token only holds the userid
+                    //token only holds extracted and decrypted jwt userid
                     _id: jwt_payload.id
                 
             }).then(restaurant => {
@@ -55,15 +49,15 @@ passport.use(
 );
 //restaurant verification Strategy logic. Both Local and JWT
 passport.use('registerRestaurant',
-    //By default, localStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
+    //Default localStrategy expects credentials in params username and password. Changed params to 'email' and 'password'
     new localStrategy({
-        //set usernamefield to look for a field specifically named email
+        //set usernamefield to look for field email
         usernameField: 'email',
-        //set passwordfield to look for a field named password
+        //set passwordfield to look for field password
         passwordField: 'password',
         //deactivate session as we're using JWT
         session: false,
-        //need this to be able to use req in localStrategy
+        //enable req in localStrategy
         passReqToCallback:true
     },
         (req,email, password, done) => {
@@ -170,7 +164,7 @@ passport.use('loginRestaurant',
 
 //restaurant verification Strategy logic. Both Local and JWT
 passport.use('registerCustomer',
-    //By default, localStrategy expects to find credentials in parameters named username and password. If your site prefers to name these fields differently, options are available to change the defaults.
+    //Default localStrategy expects credentials in params username and password. Changed params to 'email' and 'password'
     new localStrategy({
         usernameField: 'email',
         passwordField: 'password',
@@ -217,7 +211,7 @@ passport.use('registerCustomer',
 )
 passport.use('loginCustomer',
     new localStrategy(
-        //check documentation for these fields
+
         {
             usernameField: 'email',
             passwordField: 'password',

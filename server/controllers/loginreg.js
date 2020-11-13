@@ -12,9 +12,8 @@ const jwtSecret = 'tempjwtsecret';
 // import passport from 'passport'
 
 module.exports = {
-  //Moving methods to restaurants doesnt work, but also the all method doesnt work here
-  //route looks like this:
-  //localhost:8000/api/restaurants/restaurantregister
+  //WORKING
+  //route: localhost:8000/api/restaurants/restaurantregister
   restaurantRegister: (req, res, next) => {
     passport.authenticate('registerRestaurant', (err, user, info) => {
       console.log(`req.body: ${JSON.stringify(req.body)}`)
@@ -27,8 +26,6 @@ module.exports = {
       } else {
 
         //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
-        //seems excessive since the registerRestaurant Strategy already creates the user. The documentation argues that it's for modularization
-        //"I could have passed this extra data through to the middleware as well, but I want Passport to only handle authentication, not user creation as well. Modularization"
         //user is passed from registerRestaurant strategy in passport-auth.js where the entire document is passed forward, including _id
         req.logIn(user, err => {
           const data = {
@@ -61,7 +58,7 @@ module.exports = {
             //   });
             let temprestaurant = user.toJSON()
             delete temprestaurant.password
-            res.json({message: 'Restaurant created', restaurant:temprestaurant})
+            res.json({ message: 'Restaurant created', restaurant: temprestaurant })
           });
         });
         // res.json({message:"test error"})
@@ -69,6 +66,7 @@ module.exports = {
     })(req, res, next);
 
   },
+  //WORKING
   restaurantLogin: (req, res, next) => {
     passport.authenticate('loginRestaurant', (err, user, info) => {
       if (err) {
@@ -80,17 +78,17 @@ module.exports = {
       } else {
         req.logIn(user, err => {
           Restaurant.findOne({
-            
-              _id: user._id,
-            
+
+            _id: user._id,
+
           }).then(user => {
             //this is where the token is signed and passed to the front end.
             //HOWEVER it's not passed to the req.header
             const token = jwt.sign(
               { id: user._id },
-               jwtSecret,
+              jwtSecret,
               //  {expiresIn:'60m'} //1 hour
-               );
+            );
             //OR store it in a cookie for security res.cookie("SESSIONID", jwtBearerToken, {httpOnly:true, secure:true});
             //need to find out how to assign bearer token to header 
             //OR through res.cookie. Might be better
@@ -120,15 +118,17 @@ module.exports = {
             //   res.cookie('token', token, { httpOnly: true });
             //   res.json({ token });
             // });
-              let temprestaurant = user.toJSON()
-              delete temprestaurant.password
-            res.header("JWT", token).json({login:true, restaurant:temprestaurant})
+            let temprestaurant = user.toJSON()
+            delete temprestaurant.password
+            res.header("JWT", token).json({ login: true, restaurant: temprestaurant })
           });
         });
       }
     })(req, res, next);
 
-  },  customerRegister: (req, res, next) => {
+  },
+  //WORKING
+  customerRegister: (req, res, next) => {
     passport.authenticate('registerCustomer', (err, user, info) => {
       if (err) {
         console.log(err);
@@ -151,9 +151,9 @@ module.exports = {
 
           };
           Customer.findOne({
-            
-              _id: data._id,
-            
+
+            _id: data._id,
+
           }).then(user => {
             //previously added customer data here, but it's all in passport-auth now
             // user
@@ -177,13 +177,14 @@ module.exports = {
             let tempcustomer = user.toJSON()
             //remove hashed pass before returning to client side
             delete tempcustomer.password
-            res.json({message: 'Customer created', customer:tempcustomer})
+            res.json({ message: 'Customer created', customer: tempcustomer })
           });
         });
       }
       //setup for callback capabilities
     })(req, res, next);
   },
+  //WORKING
   customerLogin: (req, res, next) => {
     passport.authenticate('loginCustomer', (err, user, info) => {
       if (err) {
@@ -199,9 +200,9 @@ module.exports = {
         req.logIn(user, err => {
           //mongoose findOne query
           Customer.findOne({
-            
-              _id: user._id
-            
+
+            _id: user._id
+
           }).then(user => {
             //create signed token
             const token = jwt.sign({ id: user._id }, jwtSecret)
@@ -212,7 +213,7 @@ module.exports = {
             // });
             let tempcustomer = user.toJSON()
             delete tempcustomer.password
-            res.header("JWT", token).json({login:true, customer:tempcustomer})
+            res.header("JWT", token).json({ login: true, customer: tempcustomer })
           });
 
         });

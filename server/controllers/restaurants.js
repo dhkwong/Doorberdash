@@ -145,27 +145,74 @@ module.exports = {
                 res.json({ dish: dish.dish[0] })
             })
     },
+
     //WORKING BUT finalize query to check for $ne
     //add dish to menu
     //.put('/:id/dish', restaurants.addDish)
-    addDish: (req, res) => {
-        newdish = new Dish(req.body)
-        //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
-        Restaurant.updateOne({ _id: req.params.id, 'dish.name': { $ne: req.body.name } },
-            { $addToSet: { dish: newdish } })
-            .then((updatedRestaurant) => {
-                //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
-                if (updatedRestaurant.n === 1) {
-                    res.json({ updatedRestaurant: true })
-                }
-                else {
-                    res.json({ error: "dish already exists" })
-                }
-            })
-            .catch(err => {
-                res.json("addDish error in restaurants.js: " + err)
-            })
+    //restaurant id passed in header as jwt token
+    //getting a mongoose castError, so we're apparently creatind dish incorrectly
+    addDishToLoggedInRestaurant: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            console.log("addDish restaurant" + restaurant)
+            // res.json({restaurantjsontest:restaurant})
+            
+
+            //checking for errors
+            if (err) {
+                console.log({err:err})
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                console.log(req.body)
+                let newdish = new Dish(req.body)
+                newdish.id = newdish.id
+                // newdish.save()
+                //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
+                Restaurant.updateOne({ _id: restaurant._id, 'dish.name': { $ne: newdish.name } },
+                    { $addToSet: { dish: newdish } })
+                    .then((updatedRestaurant) => {
+                        //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
+                        if (updatedRestaurant.n === 1) {
+                            res.json({ updatedRestaurant: true })
+                        }
+                        else {
+                            res.json({ error: "dish already exists" })
+                            
+                        }
+                    })
+                    .catch(err => {
+                        res.json("addDish error in restaurants.js: " + err)
+                    })
+            }
+        })(req, res, next);
     },
+
+    //restaurant id passed in params
+    // addDish: (req, res,next) => {
+
+    //     newdish = new Dish(req.body)
+    //     //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
+    //     Restaurant.updateOne({ _id: req.params.id, 'dish.name': { $ne: req.body.name } },
+    //         { $addToSet: { dish: newdish } })
+    //         .then((updatedRestaurant) => {
+    //             //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
+    //             if (updatedRestaurant.n === 1) {
+    //                 res.json({ updatedRestaurant: true })
+    //             }
+    //             else {
+    //                 res.json({ error: "dish already exists" })
+    //             }
+    //         })
+    //         .catch(err => {
+    //             res.json("addDish error in restaurants.js: " + err)
+    //         })
+    // },
+
+
     //WORKING delete dish from menu
     //.put('/:id/:did/dish',restaurants.deleteDish)
     deleteDish: (req, res) => {
