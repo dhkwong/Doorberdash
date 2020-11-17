@@ -40,16 +40,9 @@ module.exports = {
             res.json(err);
         }
     },
-    //WORKING Restaurant getOneById with jwt authorization. TODO Test with token in headers through Postman. If this works, we can remove findUser.js
+    //WORKING Restaurant getOneById with jwt authorization
     findLoggedInRestaurant: (req, res, next) => {
-        //authenticates with token in req.header before proceeding
-        // res.json({test:'test'})
-        //currently reaches here, but doesnt authenticate
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
-            console.log("info" + info)
-            // res.json({restaurantjsontest:restaurant})
-            //doesnt get here, giving unhandled promise error
-
             //checking for errors
             if (err) {
                 console.log(err)
@@ -89,24 +82,45 @@ module.exports = {
             .catch(err => res.json(err));
     },
     //WORKING creates restaurant
-    create: (req, res) => {
-        const restaurant = new Restaurant(req.body);
-        restaurant.save()
-            .then((data) => {
-                res.json({ newRestaurant: data });
-            })
-            .catch(err => res.json(err));
-    },
+    //outdated by loginreg.restaurantRegister
+    // create: (req, res) => {
+    //     const restaurant = new Restaurant(req.body);
+    //     restaurant.save()
+    //         .then((data) => {
+    //             res.json({ newRestaurant: data });
+    //         })
+    //         .catch(err => res.json(err));
+    // },
+
     //WORKING updates restaurant
-    update: (req, res) => {
-        Restaurant.updateOne({ _id: req.params.id }, req.body)
-            .then((data) => {
-                res.json({ updatedRestaurant: data });
-            })
-            .catch(err => res.json(err));
+    update: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+
+            //checking for errors
+            if (err) {
+                console.log(err)
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Restaurant.findOneAndUpdate({ _id: restaurant.id }, req.body, { new: true }).then((restaurant) => {
+                    //remove password to protect data
+                    let temprestaurant = restaurant.toJSON()
+                    delete temprestaurant.password
+                    res.json({ updatedrestaurant: temprestaurant })
+
+                })
+            }
+
+        })(req, res, next)
+
     },
     //WORKING deletes restaurant
     delete: (req, res) => {
+
         Restaurant.findOneAndDelete({ _id: req.params.id }, { new: true })
             .then((data) => {
                 res.json(data);
@@ -114,6 +128,8 @@ module.exports = {
             .catch(err => {
                 res.json(err);
             });
+
+
     },
 
     /*
@@ -128,38 +144,59 @@ module.exports = {
     * 
     * 
     */
+
     //WORKING gets ALL dishes in a restaurant's menu
-    getDishes: (req, res) => {
-        Restaurant.findOne(req.params.did)
-            .then(restaurant => {
-                res.json({ dishes: restaurant.dish })
-            })
-            .catch(err => res.json("Error in getDishes in restaurant.js: " + err))
-    },
-    //WORKING gets ONE dish from the restaurant menu
-    // .get('/:id/:did/dish',restaurants.getDish)
-    getDish: (req, res) => {
-        //Restaurant.findOne({ _id: req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
-        Restaurant.findOne({ _id: req.params.id }, { dish: { $elemMatch: { _id: req.params.did } } })
-            .then(dish => {
-                res.json({ dish: dish.dish[0] })
-            })
-    },
-
-    //WORKING BUT finalize query to check for $ne
-    //add dish to menu
-    //.put('/:id/dish', restaurants.addDish)
-    //restaurant id passed in header as jwt token
-    //getting a mongoose castError, so we're apparently creatind dish incorrectly
-    addDishToLoggedInRestaurant: (req, res, next) => {
+    getDishesFromLoggedInRestaurant: (req, res, next) => {
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
-            console.log("addDish restaurant" + restaurant)
-            // res.json({restaurantjsontest:restaurant})
-            
+            if (err) {
+                console.log("Get Dishes from Restaurant error " + err)
+                res.json({ err: err })
+            }
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+            }
+            else {
 
+                Restaurant.findOne({ _id: restaurant.id })
+                    .then(restaurant => {
+                        res.json({ dishes: restaurant.dish })
+                    })
+                    .catch(err => res.json("Error in getDishes in restaurant.js: " + err))
+
+            }
+        })(req, res, next)
+    },
+
+    //WORKING gets ONE dish from the restaurant menu
+    getDishFromLoggedInRestaurant: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
             //checking for errors
             if (err) {
-                console.log({err:err})
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+
+            } else {
+
+                Restaurant.findOne({ _id: restaurant.id }, { dish: { $elemMatch: { _id: req.params.did } } })
+                    .then(dish => {
+                        res.json({ dish: dish })
+                    })
+            }
+        })(req, res, next)
+        //Restaurant.findOne({ _id: req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
+    },
+
+    //WORKING
+    addDishToLoggedInRestaurant: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
             }
             //checking for authorization issues in jwt-restaurant strategy
             if (info != undefined) {
@@ -167,12 +204,10 @@ module.exports = {
                 res.json({ error: info.message })
                 // res.end()
             } else {
-                console.log(req.body)
-                let newdish = new Dish(req.body)
-                newdish.id = newdish.id
+                console.log("dish created and added: " + req.body)
                 // newdish.save()
                 //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
-                Restaurant.updateOne({ _id: restaurant._id, 'dish.name': { $ne: newdish.name } },
+                Restaurant.updateOne({ _id: restaurant._id, 'dish.name': { $ne: req.body.name } },
                     { $addToSet: { dish: newdish } })
                     .then((updatedRestaurant) => {
                         //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
@@ -181,7 +216,7 @@ module.exports = {
                         }
                         else {
                             res.json({ error: "dish already exists" })
-                            
+
                         }
                     })
                     .catch(err => {
@@ -191,42 +226,33 @@ module.exports = {
         })(req, res, next);
     },
 
-    //restaurant id passed in params
-    // addDish: (req, res,next) => {
+    //WORKING delete dish from a restaurant menu
+    //.put('/:did/dish',restaurants.deleteDish)
+    deleteDish: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
+                //{new:true} explicitly states to return the new updated model instead of the old one before the update goes through
+                Restaurant.findByIdAndUpdate(restaurant.id, { $pull: { "dish": { _id: req.params.did } } }, { new: true })
+                    .then((updatedRestaurant) => {
+                        console.log("Updated restaurant: " + updatedRestaurant)
 
-    //     newdish = new Dish(req.body)
-    //     //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
-    //     Restaurant.updateOne({ _id: req.params.id, 'dish.name': { $ne: req.body.name } },
-    //         { $addToSet: { dish: newdish } })
-    //         .then((updatedRestaurant) => {
-    //             //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
-    //             if (updatedRestaurant.n === 1) {
-    //                 res.json({ updatedRestaurant: true })
-    //             }
-    //             else {
-    //                 res.json({ error: "dish already exists" })
-    //             }
-    //         })
-    //         .catch(err => {
-    //             res.json("addDish error in restaurants.js: " + err)
-    //         })
-    // },
-
-
-    //WORKING delete dish from menu
-    //.put('/:id/:did/dish',restaurants.deleteDish)
-    deleteDish: (req, res) => {
-        //finds by id, then pulls from the "dish" key value, specifically query by _id given. also why $pull:dish.id didn't work. there was not dish.id field in restaurant
-        //{new:true} explicitly states to return the new updated model instead of the old one before the update goes through
-        Restaurant.findByIdAndUpdate(req.params.id, { $pull: { "dish": { _id: req.params.did } } }, { new: true })
-            .then((updatedRestaurant) => {
-                console.log("Updated restaurant: " + updatedRestaurant)
-
-                res.json({ updatedDishes: updatedRestaurant.dish })
-            })
-            .catch(err => {
-                res.json("addDish error in restaurants.js: " + err)
-            })
+                        res.json({ updatedDishes: updatedRestaurant.dish })
+                    })
+                    .catch(err => {
+                        res.json("addDish error in restaurants.js: " + err)
+                    })
+            }
+        })(req,res,next)
     },
 
     /*
