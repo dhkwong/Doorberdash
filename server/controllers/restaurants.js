@@ -252,7 +252,7 @@ module.exports = {
                         res.json("addDish error in restaurants.js: " + err)
                     })
             }
-        })(req,res,next)
+        })(req, res, next)
     },
 
     /*
@@ -267,82 +267,221 @@ module.exports = {
     * 
     * 
     */
-    //WORKING gets ALL customers from a restaurant
-    //.get('/:id/customers', restaurants.getCustomers)
-    getCustomers: (req, res) => {
+    //WORKING TENTATIVELY WITH PASSPORT. TEST WITH ACTUAL DISHES  gets ALL customers from a restaurant
+    getCustomers: (req, res, next) => {
         //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
-        Restaurant.findOne({ _id: req.params.id }).populate('customer')
-            .exec(function (err, customers) {
-                if (err) {
-                    return handleError(err)
-                }
-                else {
-                    //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
-                    res.json({ allCustomers: customers.customer })
-                }
-            })
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Restaurant.findOne({ _id: restaurant.id }).populate('customer')
+                    .exec(function (err, customers) {
+                        if (err) {
+                            return handleError(err)
+                        }
+                        else {
+                            //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
+                            res.json({ allCustomers: customers.customer })
+                        }
+                    })
+            }
+
+        })(req, res, next)
+
+    },
+    //.get('/:id/customers', restaurants.getCustomers)
+    // getCustomers: (req, res) => {
+    //     //populates all of the customers from the customer table by referencing the userId's listed in the restaurant customer field
+    //     Restaurant.findOne({ _id: req.params.id }).populate('customer')
+    //         .exec(function (err, customers) {
+    //             if (err) {
+    //                 return handleError(err)
+    //             }
+    //             else {
+    //                 //return all customers as objects in allCustomers array. e.g allCustomers[{customer object},{customer object}]
+    //                 res.json({ allCustomers: customers.customer })
+    //             }
+    //         })
+
+    // },
+
+    //WORKING WITH PASSPORT AUTH
+    getCustomer: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Restaurant.findOne({ '_id': restaurant.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
+                    .then((customer) => {
+                        //return customer
+                        //returns as just the object vs the array in the object. {customer} vs [{customer}], customer.customer[0]
+                        res.json({ customer: customer.customer })
+
+                    })
+                    .catch(err => {
+                        res.json("getCustomer error in restaurants.js: " + err)
+                    })
+            }
+        })(req, res, next)
 
     },
     //WORKING FOR NEW MODEL. Retrieves ONE customer and ALL their orders
     //.get('/:id/:cid', restaurants.getCustomer)
-    getCustomer: (req, res) => {
+    // getCustomer: (req, res) => {
 
-        Restaurant.findOne({ '_id': req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
-            .then((customer) => {
-                //return customer
-                console.log("testing: " + customer)
-                //returns as just the object vs the array in the object. {customer} vs [{customer}], customer.customer[0]
-                res.json({ customer: customer })
+    //     Restaurant.findOne({ '_id': req.params.id }, { _id: 0, customer: { $elemMatch: { _id: req.params.cid } } })
+    //         .then((customer) => {
+    //             //return customer
+    //             console.log("testing: " + customer)
+    //             //returns as just the object vs the array in the object. {customer} vs [{customer}], customer.customer[0]
+    //             res.json({ customer: customer })
 
-            })
-            .catch(err => {
-                res.json("getCustomer error in restaurants.js: " + err)
-            })
+    //         })
+    //         .catch(err => {
+    //             res.json("getCustomer error in restaurants.js: " + err)
+    //         })
+
+    // },
+    //WORKING WITH PASSPORT AUTH + UNIQUENESS
+    addCustomer: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Customer.findById({ _id: req.params.cid })
+                    .then((customer) => {
+                        let newcustomer = new Customer(customer)
+                        Restaurant.findOne({ _id: restaurant.id })
+                            .then(dbrestaurant => {
+                                let temp = dbrestaurant.toJSON()
+                                var index = temp.customer.findIndex(function (customer) {
+                                    return customer._id == req.params.cid
+                                })
+
+                                if (index !== -1) {
+                                    return res.json({ error: "Customer already exists" })
+                                }
+                                else {
+                                    //returns a dbrestaurant, which we push the new customer to the array of customers in the dbrestaurant 'customer' field
+                                    dbrestaurant.customer.push({ '_id': mongodb.ObjectID(req.params.cid), 'order': [] });
+                                    dbrestaurant.save((data) => {
+                                        //returns list of all customers
+                                        res.json({ newCustomer: dbrestaurant.customer })
+
+                                    })
+                                        .catch(
+                                            err => res.json("error in addCustomer for restuarants.js: " + err)
+                                        );
+                                }
+                            })
+                    })
+            }
+        })(req, res, next)
 
     },
+    //pre-auth
     //WORKING FOR NEW MODEL, TESTING UNIQUE adds customer ID to restaurant ref. returns all customers
     //.put('/:id/:cid', restaurants.addCustomer)
-    addCustomer: (req, res) => {
-        Customer.findById({ _id: req.params.cid })
-            .then((customer) => {
-                let newcustomer = new Customer(customer)
-                Restaurant.findOne({ _id: req.params.id })
-                    .then(restaurant => {
+    // addCustomer: (req, res) => {
+    //     Customer.findById({ _id: req.params.cid })
+    //         .then((customer) => {
+    //             let newcustomer = new Customer(customer)
+    //             Restaurant.findOne({ _id: req.params.id })
+    //                 .then(restaurant => {
 
-                        //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
-                        let value = req.params.cid
-                        //does not check for unique yet, BUT pushes id and an order
-                        restaurant.customer.push({ '_id': mongodb.ObjectID(req.params.cid), 'order': [] });
-                        // res.json(restaurant.customer)
-                        restaurant.save((data) => {
-                            res.json({ newCustomer: restaurant })
+    //                     //returns a restaurant, which we push the new customer to the array of customers in the restaurant 'customer' field
+    //                     let value = req.params.cid
+    //                     //does not check for unique yet, BUT pushes id and an order
+    //                     restaurant.customer.push({ '_id': mongodb.ObjectID(req.params.cid), 'order': [] });
+    //                     // res.json(restaurant.customer)
+    //                     restaurant.save((data) => {
+    //                         res.json({ newCustomer: restaurant })
 
+    //                     })
+    //                         .catch(
+    //                             err => res.json("error in addCustomer for restuarants.js: " + err)
+    //                         );
+    //                 })
+    //         })
+
+    // },
+    //WORKING FOR PASSPORT AUTH
+    deleteCustomer: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Restaurant.findOneAndUpdate({ _id: restaurant.id }, { new: true })
+                    .then((dbrestaurant) => {
+                        let temp = dbrestaurant.toJSON()
+                        var index = temp.customer.findIndex(function (customer) {
+                            return customer._id == req.params.cid
                         })
-                            .catch(
-                                err => res.json("error in addCustomer for restuarants.js: " + err)
-                            );
-                    })
-            })
 
+                        if (index == -1) {
+                            res.json({ error: "Customer does not exist" })
+                        }
+                        else {
+                            //should work to delete all dishes of the customer's as well, since you're deleting the entire object at the index
+                            dbrestaurant.customer.splice(index, 1);
+                            dbrestaurant.save();
+                            //returns dbrestaurant
+                            return res.json({ updatedRestaurantCustomers: dbrestaurant.customer })
+                        }
+                    })
+                    .catch(err => {
+                        res.json("error in deleteCustomer in restaurants.js: " + err)
+                    })
+
+            }
+        })(req, res, next)
     },
     //WORKING WITH NEW MODEL to see if findbyidandupdate works for deleting a customer
     //.delete('/:id/:cid', restaurants.deleteCustomer)
-    deleteCustomer: (req, res) => {
-        Restaurant.findOneAndUpdate({ _id: req.params.id }, { new: true })
-            .then((restaurant) => {
-                var index = restaurant.customer.indexOf(req.params.cid)
-                console.log(restaurant.customer)
-                console.log(index)
-                //should work to delete all dishes of the customer's as well, since you're deleting the entire object at the index
-                restaurant.customer.splice(index, 1);
-                restaurant.save();
-                //returns restaurant
-                return res.status(200).json({ updatedRestaurant: restaurant })
-            })
-            .catch(err => {
-                res.json("error in deleteCustomer in restaurants.js: " + err)
-            });
-    },
+    // deleteCustomer: (req, res) => {
+    //     Restaurant.findOneAndUpdate({ _id: req.params.id }, { new: true })
+    //         .then((restaurant) => {
+    //             var index = restaurant.customer.indexOf(req.params.cid)
+    //             console.log(restaurant.customer)
+    //             console.log(index)
+    //             //should work to delete all dishes of the customer's as well, since you're deleting the entire object at the index
+    //             restaurant.customer.splice(index, 1);
+    //             restaurant.save();
+    //             //returns restaurant
+    //             return res.status(200).json({ updatedRestaurant: restaurant })
+    //         })
+    //         .catch(err => {
+    //             res.json("error in deleteCustomer in restaurants.js: " + err)
+    //         });
+    // },
 
 
     /*
@@ -443,9 +582,7 @@ module.exports = {
 
         Restaurant.findOne({ _id: req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
             .then((data) => {
-
                 // index = data.customer[0].order.indexOf(req.params.did)
-
                 for (let i = 0; i < data.customer[0].order.length; i++) {
                     console.log("test" + data.customer[0].order[i]._id)
                     if (data.customer[0].order[i]._id == req.params.did) {
@@ -453,7 +590,6 @@ module.exports = {
                         data.save()
                         console.log("deleted order data: " + i)
                         res.json({ customer: data })
-
                     }
                 }
                 res.json(false)

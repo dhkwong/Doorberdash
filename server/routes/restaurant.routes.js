@@ -24,6 +24,7 @@ router
   .get('/findrestaurant', restaurants.findLoggedInRestaurant)
 
   /* restaurant logic */
+  //organize routes by restaurants.js
   //WORKING DOES NOT NEED PASSPORTß get all restaurants
   .get('/', restaurants.all)
   //WORKING WITH PASSPORT gets all dishes
@@ -42,13 +43,17 @@ router
 
   /* restaurant customer logic */
   //WORKING gets all customers from a restaurant
-  .get('/:id/customers', restaurants.getCustomers)
+  // .get('/:id/customers', restaurants.getCustomers)
+  .get('/customers',restaurants.getCustomers)
   //WORKING gets ONE customer from a restaurant
-  .get('/:id/:cid', restaurants.getCustomer)
-  //WORKING WORKING adds customer to restaurant
-  .put('/:id/:cid', restaurants.addCustomer)
+  // .get('/:id/:cid', restaurants.getCustomer)
+  .get('/:cid',restaurants.getCustomer)
+  //WORKING adds customer to restaurant
+  // .put('/:id/:cid', restaurants.addCustomer)
+  .put('/:cid', restaurants.addCustomer)
   //WORKING  deletes one customer from restaurant
-  .delete('/:id/:cid', restaurants.deleteCustomer)
+  // .delete('/:id/:cid', restaurants.deleteCustomer)
+  .delete('/:cid/customers',restaurants.deleteCustomer)
 
   /* customer orders routes */
   //get all orders from customer
