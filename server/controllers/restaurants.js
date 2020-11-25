@@ -426,7 +426,7 @@ module.exports = {
     //         })
 
     // },
-    //WORKING FOR PASSPORT AUTH
+    //WORKING FOR PASSPORT AUTH/CHECK OTHERWISE AFTER JWTADDORDER
     deleteCustomer: (req, res, next) => {
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
             //checking for errors
@@ -445,7 +445,7 @@ module.exports = {
                         var index = temp.customer.findIndex(function (customer) {
                             return customer._id == req.params.cid
                         })
-
+                        // res.json({test:temp})
                         if (index == -1) {
                             res.json({ error: "Customer does not exist" })
                         }
@@ -455,6 +455,7 @@ module.exports = {
                             dbrestaurant.save();
                             //returns dbrestaurant
                             return res.json({ updatedRestaurantCustomers: dbrestaurant.customer })
+                            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYmVkOGY1M2QwNWVkNDRkMWYwODkxNyIsImlhdCI6MTYwNjM0MzcyNH0.owWmWiNvrTBnDGgnQ2PgrgoA6wmw941ad8CzAuLUVTg
                         }
                     })
                     .catch(err => {
@@ -496,23 +497,9 @@ module.exports = {
     * 
     * 
     */
-    /*
-    *
-    *
-    * 
-    * 
-    * 
-    * 
-    * 
-    * 
-    * WORKING HERE
-    * 
-    * 
-    * 
-    * 
-    */
+
+
     //WORKING once addOrder works get ALL of ONE customer's orders
-    //.get('/:id/:cid/order', restaurants.getCustomerOrders)
     getCustomerOrders: (req, res) => {
         /*
             db.extractSubArrayDemo.find({ '_id': 101 },{ _id: 0, ClientDetails:
@@ -535,27 +522,6 @@ module.exports = {
             })
 
     },
-
-
-    //WORKING Adds ONE order to a customer
-    //.put('/:id/:cid/order', restaurants.addOrder)
-    addOrder: (req, res) => {
-        //assume we push the dish object as POST
-        let dish = new Dish(req.body)
-
-        Restaurant.findOne({ '_id': req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
-            .then(data => {
-                //no need to test for uniqueness since someone can get multiple dishes
-
-                data.customer[0].order.push(dish)
-                data.save()
-                // returns -> {order[dishschema],_id:'customerid'}
-                res.json({ "added order data": data.customer })
-            })
-            .catch(err => {
-                res.json("Error in addOrder restaurant.js: " + err)
-            })
-    },
     /*
 *
 *
@@ -564,44 +530,165 @@ module.exports = {
 * 
 * 
 * 
-* Working here
 * 
-* 
-* 
-* 
-* 
+* WORKING HERE
 * 
 * 
 * 
 * 
 */
+    //WORKINFOR JWT AND PULLS DIRECTLY FROM EXISTING DISHES IN MENU
+    jwtAddOrder: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+
+            } else {
+                //pull dish from restaurant in jwt header ID
+                Restaurant.findOne({ _id: restaurant.id }, { dish: { $elemMatch: { _id: req.params.did } } })
+                    .then(dish => {
+
+                        //insert dish into 
+                        Restaurant.findOne({ '_id': restaurant.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
+                            .then(data => {
+
+                                const tempdish = new Dish(dish.toJSON().dish[0])
+                                // res.json({tempdish:tempdish})
+                                //if customer exists in restaurant(aka has a pre-existing order), push another dish to the customer's order
+                                if (data.customer[0] !== undefined) {
+                                    //no need to test for uniqueness since someone can get multiple dishes
+                                    data.customer[0].order.push(tempdish)
+                                    // res.json({test:data})
+                                    data.save()
+                                    // returns -> {order[dishschema],_id:'customerid'}
+                                    res.json({ "added order data": data.customer })
+                                }
+
+                                //otherwise check the customer exists through the customer table 
+                                //shouldnt have to hit here since the logic path doesnt allow for the customer to add without a pre-existing ID pulled directly from the customer table, but since we're passing customerID's through req.params, I need to make this for redundancy and safety
+                                else {
+                                    Customer.findOne({ '_id': req.params.cid })
+                                        .then((customer) => {
+                                            // res.json({customer:customer == null})
+                                            //if customer id from req.params.cid doesnt exist, return error
+                                            if (customer == null) {
+                                                res.status(409).json({
+                                                    status: false,
+                                                    error: "customer does not exist",
+                                                    user: null
+                                                })
+                                            }
+                                            //this part is necessary for first customers unlike the previous if portion
+                                            //else add customer and add an order
+                                            else {
+                                                Customer.findById({ _id: req.params.cid })
+                                                    .then((customer) => {
+                                                        let newcustomer = new Customer(customer)
+                                                        Restaurant.findOne({ _id: restaurant.id })
+                                                            .then(dbrestaurant => {
+                                                                let temp = dbrestaurant.toJSON()
+                                                                var index = temp.customer.findIndex(function (customer) {
+                                                                    return customer._id == req.params.cid
+                                                                })
+                                                                // res.json({cutomer:temp.customer,dbrestaurant:dbrestaurant,dish:dish})
+                                                                if (index !== -1) {
+                                                                    return res.json({ error: "Customer already exists" })
+                                                                }
+                                                                else {
+                                                                    //returns a dbrestaurant, which we push the new customer to the array of customers in the dbrestaurant 'customer' field
+                                                                    //pushes tempdish into order array
+                                                                    dbrestaurant.customer.push({ '_id': mongodb.ObjectID(req.params.cid), 'order': [tempdish] });
+                                                                    dbrestaurant.save((data) => {
+                                                                        //returns list of all customers
+                                                                        res.json({ newCustomer: dbrestaurant.customer })
+
+                                                                    })
+                                                                        .catch(
+                                                                            err => res.json("error in addCustomer for restuarants.js: " + err)
+                                                                        );
+                                                                }
+                                                            })
+                                                    })
+
+                                            }
+
+                                        })
+
+                                    //push dish to customer order
+                                }
+                            })
+                            .catch(err => {
+                                res.json("Error in jwtaddOrder restaurant.js: " + err)
+                                //need contingency plan for if there isn't a customer pre-existing. aka just instantiate an empty array
+                            })
+                    })
+            }
+        })(req, res, next)
+    },
+    //WORKING Adds ONE order to a customer
+    // addOrder: (req, res) => {
+
+    //     //assume we push the dish object as POST
+    //     let dish = new Dish(req.body)
+
+    //     Restaurant.findOne({ '_id': req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
+    //         .then(data => {
+    //             //no need to test for uniqueness since someone can get multiple dishes
+
+    //             data.customer[0].order.push(dish)
+    //             data.save()
+    //             // returns -> {order[dishschema],_id:'customerid'}
+    //             res.json({ "added order data": data.customer })
+    //         })
+    //         .catch(err => {
+    //             res.json("Error in addOrder restaurant.js: " + err)
+    //         })
+    // },
+
+
     //WORKING WITH NEW MODEL deletes order from customer
     //.delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
-    deleteOrder: (req, res) => {
-        let dish = new Dish()
+    deleteOrder: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
+            //checking for errors
+            if (err) {
+                res.json({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
 
-        Restaurant.findOne({ _id: req.params.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
-            .then((data) => {
-                // index = data.customer[0].order.indexOf(req.params.did)
-                for (let i = 0; i < data.customer[0].order.length; i++) {
-                    console.log("test" + data.customer[0].order[i]._id)
-                    if (data.customer[0].order[i]._id == req.params.did) {
-                        data.customer[0].order.splice(i, 1)
-                        data.save()
-                        console.log("deleted order data: " + i)
-                        res.json({ customer: data })
-                    }
-                }
-                res.json(false)
+            } else {
+                Restaurant.findOne({ _id: restaurant.id }, { customer: { $elemMatch: { _id: req.params.cid } } })
+                    .then((data) => {
+                        // index = data.customer[0].order.indexOf(req.params.did)
+                        for (let i = 0; i < data.customer[0].order.length; i++) {
+                            console.log("test" + data.customer[0].order[i]._id)
+                            if (data.customer[0].order[i]._id == req.params.did) {
+                                data.customer[0].order.splice(i, 1)
+                                data.save()
+                                console.log("deleted order data: " + i)
+                                res.json({ customer: data })
+                                //break otherwise we double delete
+                                break
+                            }
+                        }
+                        res.json(false)
+                    })
+                    .catch(err => {
+                        res.json("Error in deleteOrder at restaurant.js: " + err)
+                    })
+            }
+        })(req, res, next)
 
-                let index = findIndex
-
-            })
-            .catch(err => {
-                res.json("Error in deleteOrder at restaurant.js: " + err)
-            })
     },
-
     /* Customer logic */
 
 

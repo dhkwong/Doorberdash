@@ -59,8 +59,11 @@ router
   //get all orders from customer
   .get('/:id/:cid/order', restaurants.getCustomerOrders)
   //adds one order to customer
-  .put('/:id/:cid/order', restaurants.addOrder)
+  // .put('/:id/:cid/order', restaurants.addOrder)
+  //better addOrder uses jwt and pulls dish ID from restaurant. uses /:did/getdish logic
+  .put('/:cid/:did/order', restaurants.jwtAddOrder)
   //deletes one order from customer
-  .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
+  // .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
+  .delete('/:cid/:did/order', restaurants.deleteOrder)
 
 module.exports = router;
