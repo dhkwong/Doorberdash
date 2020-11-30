@@ -53,6 +53,7 @@ module.exports = {
         }
     },
     //WORKING
+    //OUTDATED BY findLoggedInCustomer
     getOneById: (req, res) => {
         Customer.findById({ _id: req.params.id })
             .then((data) => {
@@ -61,6 +62,7 @@ module.exports = {
             .catch(err => res.json(err));
     },
     //WORKING
+    //OUTDATED BY customerRegister
     create: (req, res) => {
         const customer = new Customer(req.body);
         customer.save()
@@ -69,15 +71,60 @@ module.exports = {
             })
             .catch(err => res.json(err));
     },
-    //WORKING
-    update: (req, res) => {
-        Customer.updateOne({ _id: req.params.id }, req.body)
-            .then((data) => {
-                res.json({ updatedCustomer: data });
-            })
-            .catch(err => res.json(err));
+    //WORKING WITH JWT AUTH
+    update: (req, res, next) => {
+        passport.authenticate('jwt-customer', { session: false }, (err, customer, info) => {
+            if (err) {
+                console.log(err)
+            }
+            //checking for authorization issues in jwt-customer strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Customer.findOneAndUpdate({ _id: customer.id }, req.body, { new: true })
+                    .then((data) => {
+                        let tempcustomer = data.toJSON()
+                        delete tempcustomer.password
+                        res.json({ updatedCustomer: tempcustomer });
+                    })
+                    .catch(err => res.json(err));
+            }
+
+        })(req, res, next)
     },
-    //WORKING
+    // update: (req, res) => {
+    //     Customer.updateOne({ _id: req.params.id }, req.body)
+    //         .then((data) => {
+    //             res.json({ updatedCustomer: data });
+    //         })
+    //         .catch(err => res.json(err));
+    // },
+
+    //WORKING WITH PASSPORT AUTH
+    //deletes logged in customer account and then returns the user that was just deleted
+    deleteLoggedInCustomer: (req, res, next) => {
+        passport.authenticate('jwt-customer', { session: false }, (err, customer, info) => {
+            if (err) {
+                console.log(err)
+            }
+            //checking for authorization issues in jwt-customer strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                Customer.findOneAndDelete({ _id: customer.id })
+                    .then(deletedcustomer => {
+                        let temp = deletedcustomer.toJSON()
+                        delete temp.password
+                        res.json({ deletedcustomer: temp })
+                    })
+            }
+        })(req, res, next)
+    },
+    //WORKING AND KEEP FOR ADMINISTRATIVE USES
     delete: (req, res) => {
         Customer.findOneAndDelete({ _id: req.params.id })
             .then((data) => {

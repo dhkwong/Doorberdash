@@ -143,6 +143,7 @@ module.exports = {
         //"I could have passed this extra data through to the middleware as well, but I want Passport to only handle authentication, not user creation as well. Modularization"
         //user is passed from registerCustomer strategy in passport-auth.js where the entire document is passed forward, including _id
         req.logIn(user, err => {
+
           const data = {
             _id: user._id,
             firstname: req.body.firstname,
