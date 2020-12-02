@@ -18,6 +18,8 @@ router
   //localhost:8000/api/restaurants/restaurantregister
   //WORKING
   .post('/restaurantlogin', loginreg.restaurantLogin)
+  //logout
+  //.post('restaurantlogout',loginreg.restaurantLogout)
   //WORKING
   .post('/restaurantregister', loginreg.restaurantRegister)
   //WORKING finds restaurant through Authorization 'JWT' token in header for id

@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
+import {CookieService} from 'ngx-cookie-service'
+import * as Rx from "rxjs/Rx";
+import { from, Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
 
   constructor(
-    private _http: HttpClient
+    private _http: HttpClient,
+
+    private cookieService: CookieService
   ) { }
 
   //  Routes in restaurants.routes.js
@@ -31,27 +36,63 @@ export class HttpService {
    * 
    *
    */
-  // get all restaurants
+  //TESTING registers restaurant
+  restaurantRegister(newRestaurant:any){
+    console.log('registering restaurant client side')
+    return this._http.post('/api/restaurants/restaurantregister',newRestaurant).pipe(
+    map((res:Response)=>{
+      let token = res.headers.get('Authorization')
+      //modify 'jwt tokenvalue' to 'tokenvalue'
+      token = token.substr(4)
+      //set cookie jwt value for interceptor to validate upon subsequent requests
+      this.cookieService.set('JWT',token)
+      res.headers.delete('Authorization')
+      return res
+    })
+    )
+  }
+
+  //TESTING logs in restaurant user
+  restaurantLogin(loginCredentials: any){
+    console.log('logging in at restaurantLogin client side')
+    return this._http.post('/api/retaurants/restaurantlogin',loginCredentials).pipe(
+      map((res:Response)=>{
+        //set jwt cookie
+        //may be res.headers.get('Authorization). reference retaurantRegister
+        this.cookieService.set('JWT',res.headers.get('JWT'))
+        //remove JWT header. May be .delete('Authorization) 
+        res.headers.delete('JWT')
+        return res
+
+      })
+    )
+  }
+  
+  // get ALL restaurants
   getRestaurants() {
     console.log("getting all restaurants in http service")
+   
     return this._http.get(`/api/restaurants`)
   }
-  // get one restaurant
-  getRestaurant(id: any) {
+  // get ONE logged in restaurant
+  getRestaurant() {
+     //header set in tokeninterceptor from cookie for jwt validation
     console.log("getting one restaurant in http service")
-    return this._http.get(`/api/restaurants/${id}`)
+    return this._http.get(`/api/restaurants/`)
   }
-  // gets all dishes
+
+  // gets ALL dishes on menu from logged in restaurant
   getDishes(id: any) {
     console.log("getting menu from restaurant in http service")
     return this._http.get(`/api/restaurants/${id}/dish`)
   }
-  // TEST get one dish from restaurant
+  //get ONE dish from restaurant
   getDish(id: any, did: any) {
     console.log("getting dish from restaurant menu in http service")
     return this._http.get(`/api/restaurants/${id}/${did}/dish`)
   }
   // create a restaurant
+  //outdated by restaurantRegister
   createRestaurant(newRestaurant: any) {
     console.log("creating restaurant in http service")
     return this._http.get(`/api/restaurants`, newRestaurant)
@@ -189,4 +230,8 @@ export class HttpService {
     return this._http.delete(`/api/customer/${cid}`)
   }
 
+  //logs out any user. Customer or restaurant
+  logout(){
+    return this.cookieService.delete('JWT')
+  }
 }

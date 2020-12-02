@@ -109,6 +109,7 @@ passport.use('registerRestaurant',
         }
     )
 )
+//logs in restaurant
 passport.use('loginRestaurant',
     new localStrategy(
         {
@@ -162,7 +163,7 @@ passport.use('loginRestaurant',
  * 
  */
 
-//restaurant verification Strategy logic. Both Local and JWT
+//registers restaurant
 passport.use('registerCustomer',
     //Default localStrategy expects credentials in params username and password. Changed params to 'email' and 'password'
     new localStrategy({
@@ -209,6 +210,7 @@ passport.use('registerCustomer',
         }
     )
 )
+//logs in customer
 passport.use('loginCustomer',
     new localStrategy(
 
@@ -250,7 +252,7 @@ passport.use('loginCustomer',
 //     jwtFromRequest: ExtractJWT.fromAuthHeaderWithScheme('JWT'),
 //     secretOrKey: jwtsecret
 // };
-
+//verifies customer is logged in/has valid jwt token
 passport.use(
     'jwt-customer',
     new JWTStrategy(opts, (jwt_payload, done) => {
