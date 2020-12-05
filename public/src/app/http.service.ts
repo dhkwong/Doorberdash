@@ -11,7 +11,6 @@ export class HttpService {
 
   constructor(
     private _http: HttpClient,
-
     private cookieService: CookieService
   ) { }
 
@@ -20,7 +19,87 @@ export class HttpService {
 
 
 
-  /**
+ /**
+  * 
+  * 
+  * 
+  * 
+  * 
+  * 
+  * Login and registration logic for customer and restaurant
+  * 
+  * 
+  * 
+  * 
+  * 
+  */
+  //TESTING registers restaurant
+  restaurantRegister(newRestaurant:any){
+    console.log('registering restaurant client side')
+    return this._http.post('/api/restaurants/restaurantregister',newRestaurant).pipe(
+    //have to .pipe(map()) in order to modify the response of the http.post request
+    map((res:Response)=>{
+      let token = res.headers.get('Authorization')
+      //modify 'jwt tokenvalue' to 'tokenvalue'
+      token = token.substr(4)
+      //set cookie jwt value for interceptor to validate upon subsequent requests
+      this.cookieService.set('JWT',token)
+      //remove the authorization jwt token header created upon registration and convert to cookie
+      res.headers.delete('Authorization')
+      return res
+    })
+    )
+  }
+
+  //TESTING logs in restaurant user
+  restaurantLogin(loginCredentials: any){
+    console.log('logging in at restaurantLogin client side')
+    return this._http.post('/api/restaurants/restaurantlogin',loginCredentials).pipe(
+      map((res:Response)=>{
+        //set jwt cookie
+        //may be res.headers.get('Authorization). reference retaurantRegister
+        this.cookieService.set('JWT',res.headers.get('JWT'))
+        //remove JWT header. May be .delete('Authorization) 
+        res.headers.delete('JWT')
+        return res
+
+      })
+    )
+  }
+
+  customerRegister(newCustomer:any){
+    console.log('registering customer client side')
+    return this._http.post('/api/restaurants/customerregister',newCustomer).pipe(
+    //have to .pipe(map()) in order to modify the response of the http.post request
+    map((res:Response)=>{
+      let token = res.headers.get('Authorization')
+      //modify 'jwt tokenvalue' to 'tokenvalue'
+      token = token.substr(4)
+      //set cookie jwt value for interceptor to validate upon subsequent requests
+      this.cookieService.set('JWT',token)
+      //remove the authorization jwt token header created upon registration and convert to cookie
+      res.headers.delete('Authorization')
+      //returns response object
+      return res
+    })
+    )
+  }
+
+  customerLogin(loginCredentials: any){
+    console.log('logging in at customerLogin client side')
+    return this._http.post('/api/customers/customerlogin',loginCredentials).pipe(
+      map((res:Response)=>{
+        //set jwt cookie
+        //may be res.headers.get('Authorization). reference cutomerRegister
+        this.cookieService.set('JWT',res.headers.get('JWT'))
+        //remove JWT header. May be .delete('Authorization) 
+        res.headers.delete('JWT')
+        return res
+
+      })
+    )
+  }
+   /**
    * 
    * 
    * 
@@ -36,38 +115,6 @@ export class HttpService {
    * 
    *
    */
-  //TESTING registers restaurant
-  restaurantRegister(newRestaurant:any){
-    console.log('registering restaurant client side')
-    return this._http.post('/api/restaurants/restaurantregister',newRestaurant).pipe(
-    map((res:Response)=>{
-      let token = res.headers.get('Authorization')
-      //modify 'jwt tokenvalue' to 'tokenvalue'
-      token = token.substr(4)
-      //set cookie jwt value for interceptor to validate upon subsequent requests
-      this.cookieService.set('JWT',token)
-      res.headers.delete('Authorization')
-      return res
-    })
-    )
-  }
-
-  //TESTING logs in restaurant user
-  restaurantLogin(loginCredentials: any){
-    console.log('logging in at restaurantLogin client side')
-    return this._http.post('/api/retaurants/restaurantlogin',loginCredentials).pipe(
-      map((res:Response)=>{
-        //set jwt cookie
-        //may be res.headers.get('Authorization). reference retaurantRegister
-        this.cookieService.set('JWT',res.headers.get('JWT'))
-        //remove JWT header. May be .delete('Authorization) 
-        res.headers.delete('JWT')
-        return res
-
-      })
-    )
-  }
-  
   // get ALL restaurants
   getRestaurants() {
     console.log("getting all restaurants in http service")

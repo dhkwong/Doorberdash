@@ -5,6 +5,9 @@ const session = require('express-session');
 const path = require('path');
 const bp = require('body-parser');
 
+//if we choose to convert to cookies on server side vs client side
+// const cookieParser = require('cookie-parser')
+// app.use(cookieParser)
 
 const passport = require('passport')
 // need this to be able to call the passport strategies created

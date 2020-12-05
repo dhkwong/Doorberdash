@@ -8,22 +8,22 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
 import { RestauranthomeComponent } from './restauranthome/restauranthome.component';
 import { CustomerhomeComponent } from './customerhome/customerhome.component';
-import { RegisterComponent } from './register/register.component';
 import { CustomerupdateComponent } from './customerupdate/customerupdate.component';
 import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.component';
+import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
+import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     RestauranthomeComponent,
     CustomerhomeComponent,
-    RegisterComponent,
     CustomerupdateComponent,
-    RestaurantupdateComponent
+    RestaurantupdateComponent,
+    RestaurantloginregComponent,
+    CustomerloginregComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +32,7 @@ import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.c
   ],
   providers: [
     CookieService,
-    //add TokeninterceptorService to the list of HTTP interceptors
+    //adding TokeninterceptorService to the list of HTTP interceptors
     {provide: HTTP_INTERCEPTORS, useClass: TokeninterceptorService, multi: true}
   ],
   bootstrap: [AppComponent]

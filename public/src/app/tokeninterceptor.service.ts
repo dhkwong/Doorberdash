@@ -31,4 +31,9 @@ export class TokeninterceptorService implements HttpInterceptor {
     //passes modified req
     return next.handle(request);
   }
+  //I dont need to intercept the response since I'll be creating a token once, setting the cookie, and then forgetting about it.
+  // possible intercept method in case we choose to modify each api response not very likely as only login/reg returns a cookie
+  // interceptResponse(response:HttpResponse<any>, next: HttpHandler): Observable <HttpEvent<any>>{
+  //   return null
+  // }
 }

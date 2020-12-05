@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { RestauranthomeComponent } from './restauranthome/restauranthome.component';
 import { CustomerhomeComponent } from './customerhome/customerhome.component';
 import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.component';
 import { CustomerupdateComponent } from './customerupdate/customerupdate.component';
+import{CustomerloginregComponent} from './customerloginreg/customerloginreg.component'
+import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
 
 //import components
 
@@ -22,7 +23,8 @@ const routes: Routes = [
 
   // login component holds registration component as well
   { path: '', pathMatch: 'full', redirectTo: 'login' },
-  { path: 'login', component: LoginComponent },
+  { path: 'customerloginreg', component: CustomerloginregComponent },
+  {path: 'restaurantloginreg', component: RestaurantloginregComponent},
   //restaurant routes
   {path: 'restaurant', children: [
       { path: 'home', component: RestauranthomeComponent},

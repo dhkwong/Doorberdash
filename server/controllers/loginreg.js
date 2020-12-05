@@ -16,52 +16,52 @@ module.exports = {
   //route: localhost:8000/api/restaurants/restaurantregister
   restaurantRegister: (req, res, next) => {
     passport.authenticate('registerRestaurant', (err, user, info) => {
-      console.log(`req.body: ${JSON.stringify(req.body)}`)
-      if (err) {
-        console.log(err);
-      }
-      if (info != undefined) {
-        console.log(info.message);
-        res.json(info.message);
-      } else {
-
-        //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
-        //user is passed from registerRestaurant strategy in passport-auth.js where the entire document is passed forward, including _id
-        req.logIn(user, err => {
-          const data = {
-            _id: user._id,
-            name: req.body.name,
-            email: req.body.email,
-
-          };
-          console.log(`data: ${JSON.stringify(data)}`)
-          Restaurant.findOne({
-
-            _id: data._id,
-            //returned null originally since findOne couldnt find the user?
-            // email:req.body.email
-
-          }).then(user => {
-            //previously added restaurant data here, but it's all in passpoert-auth now
-            // user
-            //   .update({
-            //     name: req.body.name,
-            //     description:req.body.description
-            //   })
-            //   .then(() => {
-            //     //note that it does NOT login the user. Theoretically should have to do that front end. 
-            //     //_http.registerRestaurant(newRestaurant)
-            //     //_http.loginRestaurant(newRestaurantEmailAndPassword)
-            //     console.log('user created in db');
-
-            //     res.json({ message: 'user created' });
-            //   });
-            let temprestaurant = user.toJSON()
-            delete temprestaurant.password
-            res.json({ message: 'Restaurant created', restaurant: temprestaurant })
+      try {
+        console.log(`req.body: ${JSON.stringify(req.body)}`)
+        if (err) {
+          console.log(err);
+          res.json(err)
+        }
+        if (info != undefined) {
+          console.log(info.message);
+          res.json(info.message);
+        } else {
+  
+          //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
+          //user is passed from registerRestaurant strategy in passport-auth.js where the entire document is passed forward, including _id
+          req.logIn(user, err => {
+            const data = {
+              _id: user._id,
+              name: req.body.name,
+              email: req.body.email,
+  
+            };
+            console.log(`data: ${JSON.stringify(data)}`)
+            Restaurant.findOne({
+  
+              _id: data._id,
+              // email:req.body.email
+  
+            }).then(user => {
+              try {
+                const token = jwt.sign({ id: user._id }, jwtSecret)
+                let temprestaurant = user.toJSON()
+                delete temprestaurant.password
+                //if header doesnt work, use .setHeader("JWT",token)
+                res.header("JWT",token)
+                .json({ message: 'Restaurant created', restaurant: temprestaurant })
+                
+              } catch (error) {
+                res.json({error:error})
+              }
+            })
+            
           });
-        });
-        // res.json({message:"test error"})
+          // res.json({message:"test error"})
+        }
+        
+      } catch (error) {
+        res.json({error:error})
       }
     })(req, res, next);
 
@@ -121,7 +121,10 @@ module.exports = {
             let temprestaurant = user.toJSON()
             delete temprestaurant.password
             res.header("JWT", token).json({ login: true, restaurant: temprestaurant })
-          });
+          })
+          .catch(err=>{
+            res.json({error:err})
+          })
         });
       }
     })(req, res, next);
@@ -175,11 +178,15 @@ module.exports = {
 
             //     res.status(200).json({ message: 'user created' });
             //   });
+            const token = jwt.sign({ id: user._id }, jwtSecret)
             let tempcustomer = user.toJSON()
             //remove hashed pass before returning to client side
             delete tempcustomer.password
-            res.json({ message: 'Customer created', customer: tempcustomer })
-          });
+            res.header("JWT",token).json({login:true, message: 'Customer created', customer: tempcustomer })
+          })
+          .catch(err=>{
+            res.json({error:err})
+          })
         });
       }
       //setup for callback capabilities
@@ -198,6 +205,7 @@ module.exports = {
       } else {
         //else authentication succeeded and continue
         //passport req.logIn creates a req.user field with the logged in user's data. user._id, user.order, user.name, ect
+        
         req.logIn(user, err => {
           //mongoose findOne query
           Customer.findOne({
@@ -215,7 +223,10 @@ module.exports = {
             let tempcustomer = user.toJSON()
             delete tempcustomer.password
             res.header("JWT", token).json({ login: true, customer: tempcustomer })
-          });
+          })
+          .catch(err=>{
+            res.json({error:err})
+          })
 
         });
       }
