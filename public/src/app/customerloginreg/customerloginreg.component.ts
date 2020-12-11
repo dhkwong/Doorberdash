@@ -30,14 +30,14 @@ export class CustomerloginregComponent implements OnInit {
   .subscribe(data => {
     if (JSON.stringify(data) === '{"login":false}') {
     console.log("subscribe login data: " + JSON.stringify(data))
-    this._router.navigate(['/login'])
+    this._router.navigate(['/customer//login'])
     }else{
       console.log("subscribe login data: " + JSON.stringify(data))
-      this._router.navigate(['/home'])
+      this._router.navigate(['/customer/home'])
     }
   },
   error=>{
-    this._router.navigate(['/login']);
+    this._router.navigate(['/customer/login']);
   }
   )
 }
@@ -55,7 +55,7 @@ register(formvalue: NgForm) {
         console.log('registration failed: '+loginresponse)
         //store error 
         this.replyerrors = loginresponse
-        this._router.navigate(['/login'])
+        this._router.navigate(['/customer/login'])
       }
        else {
         //else user found reroute to home
@@ -66,7 +66,7 @@ register(formvalue: NgForm) {
       //if error reroute to login
       error => {
         console.log(error.message)
-        this._router.navigate(['/customerloginreg'])
+        this._router.navigate(['/customer/login'])
       }
 
     );

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http'//allows http requests for backend
 import {CookieService} from 'ngx-cookie-service';
 import {TokeninterceptorService} from './tokeninterceptor.service';
+import { FormsModule }   from '@angular/forms';
 //allows us to add to the list of HTTP interceptors
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -28,7 +29,8 @@ import { CustomerloginregComponent } from './customerloginreg/customerloginreg.c
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [
     CookieService,

@@ -4,7 +4,7 @@ import { RestauranthomeComponent } from './restauranthome/restauranthome.compone
 import { CustomerhomeComponent } from './customerhome/customerhome.component';
 import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.component';
 import { CustomerupdateComponent } from './customerupdate/customerupdate.component';
-import{CustomerloginregComponent} from './customerloginreg/customerloginreg.component'
+import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component'
 import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
 
 //import components
@@ -19,25 +19,27 @@ const routes: Routes = [
   //     {path:':id', component:ShowmovieComponent}
   //   ]
   // },
-  // { path: '**', component: MovielistComponent }
+  
 
   // login component holds registration component as well
-  { path: '', pathMatch: 'full', redirectTo: 'login' },
-  { path: 'customerloginreg', component: CustomerloginregComponent },
-  {path: 'restaurantloginreg', component: RestaurantloginregComponent},
+  { path: '', pathMatch: 'full', redirectTo: 'blank' },
   //restaurant routes
-  {path: 'restaurant', children: [
-      { path: 'home', component: RestauranthomeComponent},
-      {path: 'update', component: RestaurantupdateComponent},
+  {
+    path: 'restaurant', children: [
+      { path: 'login', component: RestaurantloginregComponent },
+      { path: 'home', component: RestauranthomeComponent },
+      { path: 'update', component: RestaurantupdateComponent },
     ]
   },
   //customer routes
-  {path: 'customer', children: [
-      { path: 'home', component: CustomerhomeComponent},
-      {path:'update', component: CustomerupdateComponent},
+  {
+    path: 'customer', children: [
+      { path: 'login', component: CustomerloginregComponent },
+      { path: 'home', component: CustomerhomeComponent },
+      { path: 'update', component: CustomerupdateComponent },
     ]
   },
-
+{ path: '**', component: RestaurantloginregComponent }
 ];
 
 @NgModule({

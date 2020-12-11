@@ -37,40 +37,57 @@ export class RestaurantloginregComponent implements OnInit {
       }
     },
     error=>{
-      this._router.navigate(['/restaurantloginreg']);
+      this._router.navigate(['/restaurant/login']);
     }
     )
   }
   
   register(formvalue: NgForm) {
-    console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
+    console.log("Register Stringify data passing to API: " + formvalue.value)
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
     //may have to modify this as our backend may not login during registration
-    this._httpService.customerRegister(formvalue.value)
+    this._httpService.restaurantRegister(formvalue.value)
       .subscribe(data => {
-        
-        let loginresponse = data['login']
+
+        // let loginresponse = data['login']
         //if registration
-        if (loginresponse != true ){
-          //if no user found
-          console.log('registration failed: '+loginresponse)
-          //store error 
-          this.replyerrors = loginresponse
-          this._router.navigate(['/login'])
+        // if (loginresponse != true ){
+        //   //if no user found
+        //   console.log('registration failed: '+loginresponse)
+        //   //store error 
+        //   this.replyerrors = loginresponse
+          // this._router.navigate(['/restaurant/login'])
+        // }
+        if(data===null){
+          console.log('registration failed')
+          this._router.navigate(['/restaurant/login'])
         }
          else {
           //else user found reroute to home
+          console.log({data:JSON.stringify(data)})
           console.log("register in login.component navigating to /home")
-          this._router.navigate(['/customer/home']);
+          this._router.navigate(['/restaurant/home']);
         }
       },
         //if error reroute to login
-        error => {
-          console.log(error.message)
-          this._router.navigate(['/customerloginreg'])
+        (error) => {
+          /**
+           * 
+           * 
+           * Working here
+           * ERROR: we get the token. it's being created as is the restaurant. We just get a token error
+           * 
+           * 
+           */
+          
+            console.log(formvalue)
+            console.log("error in register for restaurantloginreg: "+JSON.stringify(error));
+            this._router.navigate(['login'])
+          
         }
   
       );
   }
+  
   
   }

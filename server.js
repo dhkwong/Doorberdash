@@ -4,11 +4,13 @@ const app = express();
 const session = require('express-session');
 const path = require('path');
 const bp = require('body-parser');
+// var cors = require('cors')
 
 //if we choose to convert to cookies on server side vs client side
 // const cookieParser = require('cookie-parser')
 // app.use(cookieParser)
 
+// app.use(cors({exposedHeaders:['Authorization','JWT']}))
 const passport = require('passport')
 // need this to be able to call the passport strategies created
 require('./server/controllers/passport-auth')
