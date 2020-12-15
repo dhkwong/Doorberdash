@@ -45,30 +45,33 @@ export class RestaurantloginregComponent implements OnInit {
   
   register(formvalue: NgForm) {
     console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
-    // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-    //may have to modify this as our backend may not login during registration
-    this._httpService.customerRegister(formvalue.value)
+    //backend validation working
+    this._httpService.restaurantRegister(formvalue.value)
       .subscribe(data => {
-        
-        let loginresponse = data['login']
-        //if registration
-        if (loginresponse != true ){
-          //if no user found
-          console.log('registration failed: '+loginresponse)
-          //store error 
-          this.replyerrors = loginresponse
-          this._router.navigate(['/login'])
+
+        console.log("data: "+JSON.stringify(data))
+        if(data!==null){
+          this._router.navigate(['/restaurant/home'])
         }
-         else {
-          //else user found reroute to home
-          console.log("register in login.component navigating to /home")
-          this._router.navigate(['/customer/home']);
-        }
+        // let loginresponse = data['login']
+        // //if registration
+        // if (loginresponse != true ){
+        //   //if no user found
+        //   console.log('registration failed: '+loginresponse)
+        //   //store error 
+        //   this.replyerrors = loginresponse
+        //   this._router.navigate(['/login'])
+        // }
+        //  else {
+        //   //else user found reroute to home
+        //   console.log("register in login.component navigating to /home")
+        //   this._router.navigate(['/customer/home']);
+        // }
       },
         //if error reroute to login
         error => {
           console.log(error.message)
-          this._router.navigate(['/customerloginreg'])
+          this._router.navigate(['/restaurant/login'])
         }
   
       );

@@ -22,17 +22,19 @@ const routes: Routes = [
   // { path: '**', component: MovielistComponent }
 
   // login component holds registration component as well
-  { path: '', pathMatch: 'full', redirectTo: 'restaurantloginreg' },
-  { path: 'customerloginreg', component: CustomerloginregComponent },
-  {path: 'restaurantloginreg', component: RestaurantloginregComponent},
+  { path: '', pathMatch: 'full', redirectTo: 'restaurant/login' },
+  // { path: 'customerloginreg', component: CustomerloginregComponent },
+  // {path: 'restaurantloginreg', component: RestaurantloginregComponent},
   //restaurant routes
   {path: 'restaurant', children: [
+    {path:'login', component:RestaurantloginregComponent},
       { path: 'home', component: RestauranthomeComponent},
       {path: 'update', component: RestaurantupdateComponent},
     ]
   },
   //customer routes
   {path: 'customer', children: [
+    {path:'login', component: CustomerloginregComponent},
       { path: 'home', component: CustomerhomeComponent},
       {path:'update', component: CustomerupdateComponent},
     ]

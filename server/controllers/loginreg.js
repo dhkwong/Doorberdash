@@ -46,7 +46,9 @@ module.exports = {
               try {
                 const token = jwt.sign({ id: user._id }, jwtSecret)
                 let temprestaurant = user.toJSON()
+                //hide id and pass
                 delete temprestaurant.password
+                delete temprestaurant._id
                 //if header doesnt work, use .setHeader("JWT",token)
                 res.header("JWT",token)
                 .json({ message: 'Restaurant created', restaurant: temprestaurant })

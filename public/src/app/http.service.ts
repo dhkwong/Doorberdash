@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service'
 import * as Rx from "rxjs/Rx";
 import { from, Observable, throwError } from 'rxjs';
@@ -33,22 +33,29 @@ export class HttpService {
   * 
   * 
   */
-  //TESTING registers restaurant
+  //WORKING, NOW TESTING WITH HTTP HEADERS registers restaurant
   restaurantRegister(newRestaurant:any){
     console.log('registering restaurant client side')
-    return this._http.post('/api/restaurants/restaurantregister',newRestaurant).pipe(
-    //have to .pipe(map()) in order to modify the response of the http.post request
-    map((res:Response)=>{
-      let token = res.headers.get('Authorization')
-      //modify 'jwt tokenvalue' to 'tokenvalue'
-      token = token.substr(4)
-      //set cookie jwt value for interceptor to validate upon subsequent requests
-      this.cookieService.set('JWT',token)
-      //remove the authorization jwt token header created upon registration and convert to cookie
-      res.headers.delete('Authorization')
-      return res
-    })
-    )
+    return this._http.post('/api/restaurants/restaurantregister',newRestaurant,{
+      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Access-Control-Allow-Origin', '*'),
+      observe: 'response'
+  }).pipe( map((res)=>{
+    
+    console.log(JSON.stringify("headers: "+JSON.stringify(res.headers)))
+  }))
+    // .pipe(
+    // //have to .pipe(map()) in order to modify the response of the http.post request
+    // map((res:Response)=>{
+    //   let token = res.headers.get('Authorization')
+    //   //modify 'jwt tokenvalue' to 'tokenvalue'
+    //   token = token.substr(4)
+    //   //set cookie jwt value for interceptor to validate upon subsequent requests
+    //   this.cookieService.set('JWT',token)
+    //   //remove the authorization jwt token header created upon registration and convert to cookie
+    //   res.headers.delete('Authorization')
+    //   return res
+    // })
+    // )
   }
 
   //TESTING logs in restaurant user

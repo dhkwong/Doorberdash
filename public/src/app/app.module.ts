@@ -14,6 +14,7 @@ import { CustomerupdateComponent } from './customerupdate/customerupdate.compone
 import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.component';
 import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
 import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { CustomerloginregComponent } from './customerloginreg/customerloginreg.c
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [
     CookieService,
