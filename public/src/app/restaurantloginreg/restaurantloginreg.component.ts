@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class RestaurantloginregComponent implements OnInit {
   replyerrors: any
+  
   constructor(
     private _httpService: HttpService,
     private _route: ActivatedRoute,
