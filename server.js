@@ -4,11 +4,11 @@ const app = express();
 const session = require('express-session');
 const path = require('path');
 const bp = require('body-parser');
+var cors = require('cors')
 
 //if we choose to convert to cookies on server side vs client side
 // const cookieParser = require('cookie-parser')
 // app.use(cookieParser)
-
 const passport = require('passport')
 // need this to be able to call the passport strategies created
 require('./server/controllers/passport-auth')
@@ -18,6 +18,13 @@ const router = require('./server/routes');
 app.use(express.urlencoded({extended: true}));
 app.use(bp.urlencoded({ extended: false }))
 app.use(bp.json())
+app.use(cors(
+//     {
+//     'origin':'*',
+//     'methods':'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     'exposedHeaders':['JWT', 'Authorization']
+// }
+))
 app.use(express.static( path.join(__dirname, './public/dist/public')));
 
 //only need session if we choose not to use JWT

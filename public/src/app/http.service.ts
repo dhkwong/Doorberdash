@@ -33,15 +33,20 @@ export class HttpService {
   * 
   * 
   */
-  //WORKING, NOW TESTING WITH HTTP HEADERS registers restaurant
+  //WORKING. Registers restaurant, 
   restaurantRegister(newRestaurant:any){
     console.log('registering restaurant client side')
     return this._http.post('/api/restaurants/restaurantregister',newRestaurant,{
-      headers: new HttpHeaders().set('Content-Type', 'application/json').set('Access-Control-Allow-Origin', '*'),
       observe: 'response'
   }).pipe( map((res)=>{
-    
-    console.log(JSON.stringify("headers: "+JSON.stringify(res.headers)))
+    //WORKING gets headers
+    console.log(JSON.stringify("headers: "+JSON.stringify(res.headers.get('JWT'))))
+    //may not need to delete header if it doesn't persist to client side
+    //can set cookie here optimally or move to restaurantloginreg component
+    this.cookieService.set('JWT',res.headers.get('JWT'))
+    console.log("testing cookie in httpservice reg:"+JSON.stringify(this.cookieService.get('JWT')))
+    //passes response to component
+    return res
   }))
     // .pipe(
     // //have to .pipe(map()) in order to modify the response of the http.post request

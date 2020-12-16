@@ -50,8 +50,9 @@ module.exports = {
                 delete temprestaurant.password
                 delete temprestaurant._id
                 //if header doesnt work, use .setHeader("JWT",token)
+                //alternatively, could send the token in the response body to be moved to cookies from there
                 res.header("JWT",token)
-                .json({ message: 'Restaurant created', restaurant: temprestaurant })
+                res.json({ message: 'Restaurant created', restaurant: temprestaurant })
                 
               } catch (error) {
                 res.json({error:error})
