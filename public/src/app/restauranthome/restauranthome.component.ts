@@ -21,6 +21,7 @@ export class RestauranthomeComponent implements OnInit {
   findRestaurant(){
     this._httpService.getRestaurant().subscribe(restaurant=>{
       this.loggedinrestaurant = restaurant
+      console.log(this.loggedinrestaurant)
     })
   }
 }

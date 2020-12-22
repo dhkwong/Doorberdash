@@ -42,7 +42,7 @@ export class RestaurantloginregComponent implements OnInit {
     }
     )
   }
-  
+  //WORKING but needs testing for error handling 
   register(formvalue: NgForm) {
     console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
     //backend validation working
