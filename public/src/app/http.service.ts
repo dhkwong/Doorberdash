@@ -65,37 +65,7 @@ export class HttpService {
     //   return res
     // })
     return this._http.post('/api/restaurants/restaurantregister', newRestaurant)
-      // .pipe(
-      //   map((res:Response) => {
-      //     // console.log("token jwt: " + res.headers.get('JWT'))
-      //     console.log("response: "+JSON.stringify(res.headers))
-      //     //move res.headers to login component
-      //     return res
-      //   })
-      // )
-    // .subscribe((response:Response)=>{
-    //   console.log("token auth: "+response.headers.get('Authorization'))
-    //   console.log("token jwt: "+response.headers.get('JWT'))
-    //   this.cookieService.set('JWT',response.headers.get('JWT'))
 
-    // })
-
-    // .pipe(
-    //   //have to .pipe(map()) in order to modify the response of the http.post request
-    //   map((res:Response)=>{
-    //     console.log("header2: "+JSON.stringify(res.headers))
-    //     //issue is, that I'm not getting any headers assigned
-    //     let token = res.headers.get('Authorization')
-    //     //modify 'jwt tokenvalue' to 'tokenvalue'
-    //     token = token.substr(4)
-    //     console.log("token in httpservice r-register: "+token)
-    //     //set cookie jwt value for interceptor to validate upon subsequent requests
-    //     this.cookieService.set('JWT',token)
-    //     //remove the authorization jwt token header created upon registration and convert to cookie
-    //     res.headers.delete('JWT')
-    //     return res
-    //   })
-    //   )
   }
 
   //TESTING logs in restaurant user
