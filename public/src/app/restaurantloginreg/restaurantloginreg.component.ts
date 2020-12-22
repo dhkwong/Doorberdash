@@ -44,7 +44,6 @@ export class RestaurantloginregComponent implements OnInit {
   }
   
   register(formvalue: NgForm) {
-<<<<<<< HEAD
     console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
     //backend validation working
     this._httpService.restaurantRegister(formvalue.value)
@@ -53,32 +52,6 @@ export class RestaurantloginregComponent implements OnInit {
         console.log("data: "+JSON.stringify(data))
         if(data!==null){
           this._router.navigate(['/restaurant/home'])
-=======
-    console.log("Register Stringify data passing to API: " + formvalue.value)
-    // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-    //may have to modify this as our backend may not login during registration
-    this._httpService.restaurantRegister(formvalue.value)
-      .subscribe(data => {
-
-        // let loginresponse = data['login']
-        //if registration
-        // if (loginresponse != true ){
-        //   //if no user found
-        //   console.log('registration failed: '+loginresponse)
-        //   //store error 
-        //   this.replyerrors = loginresponse
-          // this._router.navigate(['/restaurant/login'])
-        // }
-        if(data===null){
-          console.log('registration failed')
-          this._router.navigate(['/restaurant/login'])
-        }
-         else {
-          //else user found reroute to home
-          console.log({data:JSON.stringify(data)})
-          console.log("register in login.component navigating to /home")
-          this._router.navigate(['/restaurant/home']);
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
         }
         // let loginresponse = data['login']
         // //if registration
@@ -96,26 +69,9 @@ export class RestaurantloginregComponent implements OnInit {
         // }
       },
         //if error reroute to login
-<<<<<<< HEAD
         error => {
           console.log(error.message)
           this._router.navigate(['/restaurant/login'])
-=======
-        (error) => {
-          /**
-           * 
-           * 
-           * Working here
-           * ERROR: we get the token. it's being created as is the restaurant. We just get a token error
-           * 
-           * 
-           */
-          
-            console.log(formvalue)
-            console.log("error in register for restaurantloginreg: "+JSON.stringify(error));
-            this._router.navigate(['login'])
-          
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
         }
   
       );

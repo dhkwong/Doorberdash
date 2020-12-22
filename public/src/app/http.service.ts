@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
-<<<<<<< HEAD
 import { HttpClient,HttpHeaders } from '@angular/common/http';
 import {CookieService} from 'ngx-cookie-service'
 import * as Rx from "rxjs/Rx";
-=======
-import { HttpClient } from '@angular/common/http';
-import { CookieService } from 'ngx-cookie-service'
-// gave rxjs-compat error. Workaround with import observable rxjs/observable
-// import * as Rx from "rxjs/Rx";
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
 import { from, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 @Injectable({
@@ -26,7 +19,6 @@ export class HttpService {
 
 
 
-<<<<<<< HEAD
  /**
   * 
   * 
@@ -69,54 +61,6 @@ export class HttpService {
     //   return res
     // })
     // )
-=======
-  /**
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * Login and registration logic for customer and restaurant
-   * 
-   * 
-   * 
-   * 
-   * 
-   */
-  //TESTING registers restaurant
-  restaurantRegister(newRestaurant: any) {
-    console.log('registering restaurant client side')
-    // return this._http.post('/api/restaurants/restaurantregister',newRestaurant).pipe(
-    // //have to .pipe(map()) in order to modify the response of the http.post request
-    // map((res)=>{
-    //   console.log("header2: "+JSON.stringify(res.headers))
-    //   //issue is, that I'm not getting any headers assigned
-    //   let token = res.headers.get('Authorization')
-    //   //modify 'jwt tokenvalue' to 'tokenvalue'
-    //   token = token.substr(4)
-    //   console.log(token)
-    //   //set cookie jwt value for interceptor to validate upon subsequent requests
-    //   this.cookieService.set('JWT',token)
-    //   //remove the authorization jwt token header created upon registration and convert to cookie
-    //   res.headers.delete('JWT')
-    //   return res
-    // })
-    // )
-    // return this._http.post('/api/retaurants/restaurantregister',newRestaurant,{observe:'response'}).subscribe(res=>{
-    //   var token = res.headers.get('Authorization')
-    //   //modify 'jwt tokenvalue' to 'tokenvalue'
-    //   token = token.substr(4)
-    //   console.log(token)
-    //   //set cookie jwt value for interceptor to validate upon subsequent requests
-    //   this.cookieService.set('JWT',token)
-    //   //remove the authorization jwt token header created upon registration and convert to cookie
-    //   res.headers.delete('JWT')
-    //   return res
-    // })
-    return this._http.post('/api/restaurants/restaurantregister', newRestaurant)
-
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
   }
 
   //TESTING logs in restaurant user
