@@ -24,9 +24,9 @@ module.exports = {
         }
         if (info != undefined) {
           console.log(info.message);
-          res.json("error in restaurantRegister line 27"+info.message);
+          res.json("error in restaurantRegister line 27" + info.message);
         } else {
-  
+
           //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
           //user is passed from registerRestaurant strategy in passport-auth.js where the entire document is passed forward, including _id
           req.logIn(user, err => {
@@ -34,43 +34,41 @@ module.exports = {
               _id: user._id,
               name: req.body.name,
               email: req.body.email,
-  
+
             };
             console.log(`data: ${JSON.stringify(data)}`)
             Restaurant.findOne({
-  
+
               _id: data._id,
               // email:req.body.email
-  
+
             }).then(user => {
               try {
 
-                const token = jwt.sign({id: user._id}, jwtSecret)
+                const token = jwt.sign({ id: user._id }, jwtSecret)
                 let temprestaurant = user.toJSON()
                 //hide id and pass
                 delete temprestaurant.password
                 delete temprestaurant._id
                 //if header doesnt work, use .setHeader("JWT",token)
-<<<<<<< HEAD
                 //alternatively, could send the token in the response body to be moved to cookies from there
-                res.header("JWT",token)
-                res.json({ message: 'Restaurant created', restaurant: temprestaurant })
-=======
-                console.log("temprestaurant: "+temprestaurant)
-                // res.header("JWT",token).json({restaurant: temprestaurant })
-                res.header("JWT",token).json({restaurant: temprestaurant})
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
                 
+                // res.header("JWT",token)
+                // res.json({ message: 'Restaurant created', restaurant: temprestaurant })
+                console.log("temprestaurant: " + temprestaurant)
+                // res.header("JWT",token).json({restaurant: temprestaurant })
+                res.header("JWT", token).json({ restaurant: temprestaurant })
+
               } catch (error) {
-                res.json({error:'error at restaurantRegister Restaurant.findOne: '+error})
+                res.json({ error: 'error at restaurantRegister Restaurant.findOne: ' + error })
               }
             })
-            
+
           });
         }
       }
-       catch (error) {
-        res.json({message:"error in loginreg.js restaurantRegister",error:error})
+      catch (error) {
+        res.json({ message: "error in loginreg.js restaurantRegister", error: error })
       }
     })(req, res, next);
 
@@ -131,9 +129,9 @@ module.exports = {
             delete temprestaurant.password
             res.header("JWT", token).json({ login: true, restaurant: temprestaurant })
           })
-          .catch(err=>{
-            res.json({error:err})
-          })
+            .catch(err => {
+              res.json({ error: err })
+            })
         });
       }
     })(req, res, next);
@@ -191,11 +189,11 @@ module.exports = {
             let tempcustomer = user.toJSON()
             //remove hashed pass before returning to client side
             delete tempcustomer.password
-            res.header("JWT",token).json({login:true, message: 'Customer created', customer: tempcustomer })
+            res.header("JWT", token).json({ login: true, message: 'Customer created', customer: tempcustomer })
           })
-          .catch(err=>{
-            res.json({error:err})
-          })
+            .catch(err => {
+              res.json({ error: err })
+            })
         });
       }
       //setup for callback capabilities
@@ -214,7 +212,7 @@ module.exports = {
       } else {
         //else authentication succeeded and continue
         //passport req.logIn creates a req.user field with the logged in user's data. user._id, user.order, user.name, ect
-        
+
         req.logIn(user, err => {
           //mongoose findOne query
           Customer.findOne({
@@ -233,9 +231,9 @@ module.exports = {
             delete tempcustomer.password
             res.header("JWT", token).json({ login: true, customer: tempcustomer })
           })
-          .catch(err=>{
-            res.json({error:err})
-          })
+            .catch(err => {
+              res.json({ error: err })
+            })
 
         });
       }

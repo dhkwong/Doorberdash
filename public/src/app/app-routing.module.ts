@@ -22,23 +22,6 @@ const routes: Routes = [
   
 
   // login component holds registration component as well
-<<<<<<< HEAD
-  { path: '', pathMatch: 'full', redirectTo: 'restaurant/login' },
-  // { path: 'customerloginreg', component: CustomerloginregComponent },
-  // {path: 'restaurantloginreg', component: RestaurantloginregComponent},
-  //restaurant routes
-  {path: 'restaurant', children: [
-    {path:'login', component:RestaurantloginregComponent},
-      { path: 'home', component: RestauranthomeComponent},
-      {path: 'update', component: RestaurantupdateComponent},
-    ]
-  },
-  //customer routes
-  {path: 'customer', children: [
-    {path:'login', component: CustomerloginregComponent},
-      { path: 'home', component: CustomerhomeComponent},
-      {path:'update', component: CustomerupdateComponent},
-=======
   { path: '', pathMatch: 'full', redirectTo: 'blank' },
   //restaurant routes
   {
@@ -54,7 +37,6 @@ const routes: Routes = [
       { path: 'login', component: CustomerloginregComponent },
       { path: 'home', component: CustomerhomeComponent },
       { path: 'update', component: CustomerupdateComponent },
->>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
     ]
   },
 { path: '**', component: RestaurantloginregComponent }
