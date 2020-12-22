@@ -24,7 +24,7 @@ module.exports = {
         }
         if (info != undefined) {
           console.log(info.message);
-          res.json(info.message);
+          res.json("error in restaurantRegister line 27"+info.message);
         } else {
   
           //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
@@ -44,27 +44,33 @@ module.exports = {
   
             }).then(user => {
               try {
-                const token = jwt.sign({ id: user._id }, jwtSecret)
+
+                const token = jwt.sign({id: user._id}, jwtSecret)
                 let temprestaurant = user.toJSON()
                 //hide id and pass
                 delete temprestaurant.password
                 delete temprestaurant._id
                 //if header doesnt work, use .setHeader("JWT",token)
+<<<<<<< HEAD
                 //alternatively, could send the token in the response body to be moved to cookies from there
                 res.header("JWT",token)
                 res.json({ message: 'Restaurant created', restaurant: temprestaurant })
+=======
+                console.log("temprestaurant: "+temprestaurant)
+                // res.header("JWT",token).json({restaurant: temprestaurant })
+                res.header("JWT",token).json({restaurant: temprestaurant})
+>>>>>>> 27aa05ac200fe625e098745dbc6805a222dee94d
                 
               } catch (error) {
-                res.json({error:error})
+                res.json({error:'error at restaurantRegister Restaurant.findOne: '+error})
               }
             })
             
           });
-          // res.json({message:"test error"})
         }
-        
-      } catch (error) {
-        res.json({error:error})
+      }
+       catch (error) {
+        res.json({message:"error in loginreg.js restaurantRegister",error:error})
       }
     })(req, res, next);
 
