@@ -37,7 +37,7 @@ export class HttpService {
   restaurantRegister(newRestaurant: any) {
     console.log('registering restaurant client side')
     return this._http.post('/api/restaurants/restaurantregister', newRestaurant
-      , {
+      ,{
         observe: 'response'
       }).pipe(map((res) => {
         //WORKING gets headers
@@ -49,19 +49,7 @@ export class HttpService {
         //passes response to component
         return res
       }))
-    // .pipe(
-    // //have to .pipe(map()) in order to modify the response of the http.post request
-    // map((res:Response)=>{
-    //   let token = res.headers.get('Authorization')
-    //   //modify 'jwt tokenvalue' to 'tokenvalue'
-    //   token = token.substr(4)
-    //   //set cookie jwt value for interceptor to validate upon subsequent requests
-    //   this.cookieService.set('JWT',token)
-    //   //remove the authorization jwt token header created upon registration and convert to cookie
-    //   res.headers.delete('Authorization')
-    //   return res
-    // })
-    // )
+ 
   }
 
   //TESTING logs in restaurant user
