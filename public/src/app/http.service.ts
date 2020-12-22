@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
-import {CookieService} from 'ngx-cookie-service'
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service'
 import * as Rx from "rxjs/Rx";
 import { from, Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -19,66 +19,67 @@ export class HttpService {
 
 
 
- /**
-  * 
-  * 
-  * 
-  * 
-  * 
-  * 
-  * Login and registration logic for customer and restaurant
-  * 
-  * 
-  * 
-  * 
-  * 
-  */
+  /**
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * Login and registration logic for customer and restaurant
+   * 
+   * 
+   * 
+   * 
+   * 
+   */
   //WORKING. Registers restaurant, 
-  restaurantRegister(newRestaurant:any){
+  restaurantRegister(newRestaurant: any) {
     console.log('registering restaurant client side')
-    return this._http.post('/api/restaurants/restaurantregister',newRestaurant,{
-      observe: 'response'
-  }).pipe( map((res)=>{
-    //WORKING gets headers
-    console.log(JSON.stringify("headers: "+JSON.stringify(res.headers.get('JWT'))))
-    //may not need to delete header if it doesn't persist to client side
-    //can set cookie here optimally or move to restaurantloginreg component
-    this.cookieService.set('JWT',res.headers.get('JWT'))
-    console.log("testing cookie in httpservice reg:"+JSON.stringify(this.cookieService.get('JWT')))
-    //passes response to component
-    return res
-  }))
-    // .pipe(
-    // //have to .pipe(map()) in order to modify the response of the http.post request
-    // map((res:Response)=>{
-    //   let token = res.headers.get('Authorization')
-    //   //modify 'jwt tokenvalue' to 'tokenvalue'
-    //   token = token.substr(4)
-    //   //set cookie jwt value for interceptor to validate upon subsequent requests
-    //   this.cookieService.set('JWT',token)
-    //   //remove the authorization jwt token header created upon registration and convert to cookie
-    //   res.headers.delete('Authorization')
-    //   return res
-    // })
-    // )
+    return this._http.post('/api/restaurants/restaurantregister', newRestaurant
+      ,{
+        observe: 'response'
+      }).pipe(map((res) => {
+        //WORKING gets headers
+        console.log(JSON.stringify("headers: " + JSON.stringify(res.headers.get('JWT'))))
+        //may not need to delete header if it doesn't persist to client side
+        //can set cookie here optimally or move to restaurantloginreg component
+        this.cookieService.set('JWT', res.headers.get('JWT'))
+        console.log("testing cookie in httpservice reg:" + JSON.stringify(this.cookieService.get('JWT')))
+        //passes response to component
+        return res
+      }))
+ 
   }
 
   //TESTING logs in restaurant user
   restaurantLogin(loginCredentials: any) {
     console.log('logging in at restaurantLogin client side')
-    return this._http.post('/api/restaurants/restaurantlogin', loginCredentials).pipe(
-      map((res: Response) => {
-        //set jwt cookie
-        //may be res.headers.get('Authorization). reference retaurantRegister
-        console.log("headerin httpservice restaurantregister: " + res.headers.get('JWT'))
-        this.cookieService.set('JWT', res.headers.get('JWT'))
-        //remove JWT header. May be .delete('Authorization) 
-        res.headers.delete('JWT')
-        return res
-        // return res.json
+    return this._http.post('/api/restaurants/restaurantlogin', loginCredentials, {
+      observe: 'response'
+    }).pipe(map((res) => {
+      //WORKING gets headers
+      console.log(JSON.stringify("headers: " + JSON.stringify(res.headers.get('JWT'))))
+      //may not need to delete header if it doesn't persist to client side
+      //can set cookie here optimally or move to restaurantloginreg component
+      this.cookieService.set('JWT', res.headers.get('JWT'))
+      console.log("testing cookie in httpservice reg:" + JSON.stringify(this.cookieService.get('JWT')))
+      //passes response to component
+      return res
+    }))
 
-      })
-    )
+    //   ).pipe(
+    //     map((res:Response)=>{
+    //       //set jwt cookie
+    //       //may be res.headers.get('Authorization). reference retaurantRegister
+    //       this.cookieService.set('JWT',res.headers.get('JWT'))
+    //       //remove JWT header. May be .delete('Authorization) 
+    //       res.headers.delete('JWT')
+    //       return res
+
+    //     })
+    //   )
+    // }
   }
 
   customerRegister(newCustomer: any) {
