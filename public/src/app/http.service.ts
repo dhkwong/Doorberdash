@@ -140,7 +140,7 @@ export class HttpService {
   getRestaurant() {
     //header set in tokeninterceptor from cookie for jwt validation
     console.log("getting one restaurant in http service")
-    return this._http.get(`/api/restaurants/`)
+    return this._http.get(`/api/restaurants/findrestaurant/`)
   }
 
   // gets ALL dishes on menu from logged in restaurant

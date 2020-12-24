@@ -22,10 +22,11 @@ export class TokeninterceptorService implements HttpInterceptor {
   //intercepts and HttpRequest and modifies the req.header to add the jwt token
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const jwtcookie = this.cookieService.get('JWT')
+    console.log("token interceptor injecting cookie jwt to res header: "+jwtcookie)
     request = request.clone({
       setHeaders: {
         //sets header of Authorization: 'JWT jwttokenvalue' for backend to handle
-        Authorization: `JWT ${jwtcookie}`
+        'Authorization': `JWT ${jwtcookie}`
       }
     });
     //passes modified req

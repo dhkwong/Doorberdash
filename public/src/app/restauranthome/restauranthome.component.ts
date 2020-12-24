@@ -8,20 +8,22 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./restauranthome.component.css']
 })
 export class RestauranthomeComponent implements OnInit {
-  loggedinrestaurant: any
+  restaurant: any
   constructor(
     private _httpService: HttpService,
     private _route: ActivatedRoute,
     private _router: Router
   ) { }
 
-  ngOnInit(): void {
-
+  ngOnInit() {
+    this.findRestaurant()
+    
   }
   findRestaurant(){
     this._httpService.getRestaurant().subscribe(restaurant=>{
-      this.loggedinrestaurant = restaurant
-      console.log(this.loggedinrestaurant)
+      this.restaurant = restaurant
+      this.restaurant = this.restaurant.restaurant
+      console.log("logged in restaurant in restauranthome"+ JSON.stringify(this.restaurant))
     })
   }
 }
