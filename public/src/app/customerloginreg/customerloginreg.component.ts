@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpService} from './../http.service';
+import { HttpService } from './../http.service';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -10,67 +10,83 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class CustomerloginregComponent implements OnInit {
   replyerrors: any;
+  customer: {
+    firstname: string,
+    lastname: string,
+    address:{
+      state: string,
+      zip: number
+    }
+    email:string,
+    password:string
+  }
   
   constructor(
     private _httpService: HttpService,
-    private _route:ActivatedRoute,
+    private _route: ActivatedRoute,
     private _router: Router
-    ) {}
+  ) { }
 
   ngOnInit() {
   }
 
   login(form: NgForm) {
-  console.log("login data username: " + form.value.username)
-  console.log("login data password: " + form.value.password)
-  // console.log("formvalue: "+ form.value.toJSON())
-  let formvalue = form.value;
-  // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-  this._httpService.customerLogin(formvalue)
-  .subscribe(data => {
-    if (JSON.stringify(data) === '{"login":false}') {
-    console.log("subscribe login data: " + JSON.stringify(data))
-    this._router.navigate(['/customer//login'])
-    }else{
-      console.log("subscribe login data: " + JSON.stringify(data))
-      this._router.navigate(['/customer/home'])
-    }
-  },
-  error=>{
-    this._router.navigate(['/customer/login']);
+    console.log("login data username: " + form.value.username)
+    console.log("login data password: " + form.value.password)
+    this.customer.firstname = form.value.firstname
+    this.customer.lastname = form.value.lastname
+    this.customer.address.state = form.value.state
+    this.customer.address.zip = form.value.zip
+    this.customer.email = form.value.email
+    this.customer.password = form.value.password
+    // console.log("formvalue: "+ form.value.toJSON())
+    let formvalue = form.value;
+    // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
+    this._httpService.customerLogin(this.customer)
+      .subscribe(data => {
+        if (JSON.stringify(data) === '{"login":false}') {
+          console.log("subscribe login data: " + JSON.stringify(data))
+          this._router.navigate(['/customer//login'])
+        } else {
+          console.log("subscribe login data: " + JSON.stringify(data))
+          this._router.navigate(['/customer/home'])
+        }
+      },
+        error => {
+          this._router.navigate(['/customer/login']);
+        }
+      )
   }
-  )
-}
 
-register(formvalue: NgForm) {
-  console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
-  // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-  this._httpService.customerRegister(formvalue.value)
-    .subscribe(data => {
-      
-      let loginresponse = data['login']
-      //if registration
-      if (loginresponse != true ){
-        //if no user found
-        console.log('registration failed: '+loginresponse)
-        //store error 
-        this.replyerrors = loginresponse
-        this._router.navigate(['/customer/login'])
-      }
-       else {
-        //else user found reroute to home
-        console.log("register in login.component navigating to /home")
-        this._router.navigate(['/customer/home']);
-      }
-    },
-      //if error reroute to login
-      error => {
-        console.log(error.message)
-        this._router.navigate(['/customer/login'])
-      }
+  register(formvalue: NgForm) {
+    console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
+    // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
+    this._httpService.customerRegister(formvalue.value)
+      .subscribe(data => {
 
-    );
-}
+        let loginresponse = data['login']
+        //if registration
+        if (loginresponse != true) {
+          //if no user found
+          console.log('registration failed: ' + loginresponse)
+          //store error 
+          this.replyerrors = loginresponse
+          this._router.navigate(['/customer/login'])
+        }
+        else {
+          //else user found reroute to home
+          console.log("register in login.component navigating to /home")
+          this._router.navigate(['/customer/home']);
+        }
+      },
+        //if error reroute to login
+        error => {
+          console.log(error.message)
+          this._router.navigate(['/customer/login'])
+        }
+
+      );
+  }
 
 }
 

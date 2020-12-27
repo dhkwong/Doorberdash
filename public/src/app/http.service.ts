@@ -197,26 +197,26 @@ export class HttpService {
    *
    */
   // gets all customers from a restaurant
-  getRestaurantCustomers(id: any) {
+  getRestaurantCustomers() {
     console.log("getting customer from restaurant")
-    return this._http.get(`/api/restaurants/${id}/customers`)
+    return this._http.get(`/api/restaurants/customers`)
   }
   // gets ONE customer from a restaurant
-  getRestaurantCustomer(id: any, cid: any) {
+  getRestaurantCustomer(cid: any) {
     console.log("getting customer from restaurant")
-    return this._http.get(`/api/restaurants/${id}/${cid}`)
+    return this._http.get(`/api/restaurants/${cid}`)
   }
   // adds customer to restaurant
-  addRestaurantCustomer(id: any, cid: any) {
+  addRestaurantCustomer(cid: any) {
     console.log("adding customer to restaurant")
-    //null body since cid is used to reference the customer
-    return this._http.put(`/api/restaurants/${id}/${cid}`, null)
+    //pass null body since cid is used to reference the customer
+    return this._http.put(`/api/restaurants/${cid}`, null)
   }
-  //deletes one customer from restaurant
-  deleteRestaurantCustomer(id: any, cid: any) {
+  //deletes one customer from restaurant. passes restaurant ID through JWT
+  deleteRestaurantCustomer(cid: any) {
     console.log("deleting customer from restaurant")
     //null body since cid is used to reference the customer
-    return this._http.delete(`/api/restaurants/${id}/${cid}`)
+    return this._http.delete(`/api/restaurants/${cid}`)
   }
 
 

@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class RestauranthomeComponent implements OnInit {
   restaurant: any
+  error:any
   constructor(
     private _httpService: HttpService,
     private _route: ActivatedRoute,
@@ -24,6 +25,18 @@ export class RestauranthomeComponent implements OnInit {
       this.restaurant = restaurant
       this.restaurant = this.restaurant.restaurant
       console.log("logged in restaurant in restauranthome"+ JSON.stringify(this.restaurant))
+    })
+  }
+  deleteCustomer(id:any){
+    this._httpService.deleteRestaurantCustomer(id).subscribe(data=>{
+      //mongodb delete returns { "acknowledged" : true, "deletedCount" : 1 }
+        if(data[0] === true){
+          //quick fix to reload page to update customer data
+          window.location.reload();
+        }else{
+          //error for either deletion error or if jwt token doesnt match during deletion
+          this.error = "customer unable to be deleted"
+        }
     })
   }
 }
