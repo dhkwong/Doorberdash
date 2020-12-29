@@ -84,20 +84,34 @@ export class HttpService {
 
   customerRegister(newCustomer: any) {
     console.log('registering customer client side')
-    return this._http.post('/api/restaurants/customerregister', newCustomer).pipe(
-      //have to .pipe(map()) in order to modify the response of the http.post request
-      map((res: Response) => {
-        let token = res.headers.get('Authorization')
-        //modify 'jwt tokenvalue' to 'tokenvalue'
-        token = token.substr(4)
-        //set cookie jwt value for interceptor to validate upon subsequent requests
-        this.cookieService.set('JWT', token)
-        //remove the authorization jwt token header created upon registration and convert to cookie
-        res.headers.delete('Authorization')
-        //returns response object
-        return res
-      })
-    )
+    return this._http.post('/api/customers/customerregister', newCustomer
+    ,{
+      observe: 'response'
+    }).pipe(map((res) => {
+      //WORKING gets headers
+      console.log(JSON.stringify("headers: " + JSON.stringify(res.headers.get('JWT'))))
+      //may not need to delete header if it doesn't persist to client side
+      //can set cookie here optimally or move to customerloginreg component
+      this.cookieService.set('JWT', res.headers.get('JWT'))
+      console.log("testing cookie in httpservice reg:" + JSON.stringify(this.cookieService.get('JWT')))
+      //passes response to component
+      return res
+    }))
+    
+    // ).pipe(
+    //   //have to .pipe(map()) in order to modify the response of the http.post request
+    //   map((res: Response) => {
+    //     let token = res.headers.get('Authorization')
+    //     //modify 'jwt tokenvalue' to 'tokenvalue'
+    //     token = token.substr(4)
+    //     //set cookie jwt value for interceptor to validate upon subsequent requests
+    //     this.cookieService.set('JWT', token)
+    //     //remove the authorization jwt token header created upon registration and convert to cookie
+    //     res.headers.delete('Authorization')
+    //     //returns response object
+    //     return res
+    //   })
+    // )
   }
 
   customerLogin(loginCredentials: any) {

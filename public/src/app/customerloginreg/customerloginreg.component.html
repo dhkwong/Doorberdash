@@ -30,8 +30,23 @@
         <div class="col-5 inline-block  d-flex justify-content-center">
             <form (submit)="register(registerValue)" #registerValue="ngForm">
                 <h4>Register</h4>
-                <label class="mr-2" for="username">Username</label>
-                <input type="text" name="username" id="registerusername" ngModel />
+                <label class="mr-2" for="firstname">First Name</label>
+                <input type="text" name="firstname" id="registerfirstname" ngModel />
+                <p></p>
+                <label class="mr-2" for="lastname">Last Name</label>
+                <input type="text" name="lastname" id="registerlastname" ngModel />
+                <p></p>
+                <label class="mr-2" for="street">Street</label>
+                <input type="text" name="street" id="registerstreet" ngModel />
+                <p></p>
+                <label class="mr-2" for="city">City</label>
+                <input type="text" name="city" id="registercity" ngModel />
+                <p></p>
+                <label class="mr-2" for="State">State</label>
+                <input type="text" name="State" id="registerstate" ngModel />
+                <p></p>
+                <label class="mr-2" for="email">Email</label>
+                <input type="text" name="email" id="registeremail" ngModel />
                 <p></p>
                 <label class="mr-2" for="password">Password</label>
                 <input type="text" name="password" id="registerpassword" ngModel />

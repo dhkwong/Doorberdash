@@ -14,6 +14,8 @@ export class CustomerloginregComponent implements OnInit {
     firstname: string,
     lastname: string,
     address:{
+      street:string,
+      city:string,
       state: string,
       zip: number
     }
@@ -31,18 +33,11 @@ export class CustomerloginregComponent implements OnInit {
   }
 
   login(form: NgForm) {
-    console.log("login data username: " + form.value.username)
-    console.log("login data password: " + form.value.password)
-    this.customer.firstname = form.value.firstname
-    this.customer.lastname = form.value.lastname
-    this.customer.address.state = form.value.state
-    this.customer.address.zip = form.value.zip
-    this.customer.email = form.value.email
-    this.customer.password = form.value.password
+
     // console.log("formvalue: "+ form.value.toJSON())
     let formvalue = form.value;
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-    this._httpService.customerLogin(this.customer)
+    this._httpService.customerLogin(formvalue)
       .subscribe(data => {
         if (JSON.stringify(data) === '{"login":false}') {
           console.log("subscribe login data: " + JSON.stringify(data))
@@ -58,37 +53,38 @@ export class CustomerloginregComponent implements OnInit {
       )
   }
 
-  register(formvalue: NgForm) {
-    console.log("Register Stringify data: " + JSON.stringify(formvalue.value))
+  register(form: NgForm) {
+    console.log("login data username: " + form.value.username)
+    console.log("login data password: " + form.value.password)
+    this.customer.firstname = form.value.firstname
+    this.customer.lastname = form.value.lastname
+    this.customer.address.street = form.value.street
+    this.customer.address.city = form.value.city
+    this.customer.address.state = form.value.state
+    this.customer.address.zip = form.value.zip
+    this.customer.email = form.value.email
+    this.customer.password = form.value.password
+    console.log("Register Stringify data: " + JSON.stringify(this.customer))
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-    this._httpService.customerRegister(formvalue.value)
+    this._httpService.customerRegister(this.customer)
       .subscribe(data => {
 
-        let loginresponse = data['login']
-        //if registration
-        if (loginresponse != true) {
-          //if no user found
-          console.log('registration failed: ' + loginresponse)
-          //store error 
-          this.replyerrors = loginresponse
-          this._router.navigate(['/customer/login'])
-        }
-        else {
-          //else user found reroute to home
-          console.log("register in login.component navigating to /home")
-          this._router.navigate(['/customer/home']);
+        console.log("data: "+JSON.stringify(data))
+        if(data!==null){
+          this._router.navigate(['/customer/home'])
         }
       },
         //if error reroute to login
         error => {
           console.log(error.message)
-          this._router.navigate(['/customer/login'])
+          //COMMENTING OUT so we can see error messages
+          // this._router.navigate(['/customer/login'])
         }
 
-      );
+      )
   }
-
 }
+
 
 
 
