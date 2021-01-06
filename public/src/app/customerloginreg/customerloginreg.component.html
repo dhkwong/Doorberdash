@@ -2,15 +2,15 @@
 
 <div style="display:table;">
     <div style="display:table-cell;vertical-align:middle;">
-      <div style="margin-left:auto;margin-right:auto;">Customer Login and Registration</div>
+        <div style="margin-left:auto;margin-right:auto;">Customer Login and Registration</div>
     </div>
-  </div>
+</div>
 <div class="row">
     <div class="col-3">
     </div>
-        <div class="col-5 pull-right" *ngIf="replyerrors">
-            {{replyerrors}}
-        </div>
+    <div class="col-5 pull-right" *ngIf="replyerrors">
+        {{replyerrors}}
+    </div>
 </div>
 <div class="container-fluid mt-5">
     <div class="row">
@@ -27,7 +27,7 @@
                 <a class="btn btn-secondary rounded ml-2" routerLink="/login">Cancel</a>
             </form>
         </div>
-        <div class="col-5 inline-block  d-flex justify-content-center">
+        <!-- <div class="col-5 inline-block  d-flex justify-content-center">
             <form (submit)="register(registerValue)" #registerValue="ngForm">
                 <h4>Register</h4>
                 <label class="mr-2" for="firstname">First Name</label>
@@ -42,8 +42,8 @@
                 <label class="mr-2" for="city">City</label>
                 <input type="text" name="city" id="registercity" ngModel />
                 <p></p>
-                <label class="mr-2" for="State">State</label>
-                <input type="text" name="State" id="registerstate" ngModel />
+                <label class="mr-2" for="state">State</label>
+                <input type="text" name="state" id="registerstate" ngModel />
                 <p></p>
                 <label class="mr-2" for="email">Email</label>
                 <input type="text" name="email" id="registeremail" ngModel />
@@ -53,6 +53,39 @@
                 <p></p>
                 <input class="btn btn-dark rounded" type="submit" value="Register" />
                 <a class="btn btn-secondary rounded ml-2" routerLink="/login">Cancel</a>
+            </form>
+        </div> -->
+        <div class=" col-5 inline d-flex justify-content-center">
+            <form [formGroup]="customer" (ngSubmit)="register()" novalidate>
+                <label class="mr-2">First Name</label>
+                <input formControlName="firstname" />
+                <p></p>
+                <label class="mr-2">Last Name</label>
+                <input formControlName="lastname" />
+                <p></p>
+                <div formGroupName="address" novalidate>
+                    <label class="mr-2">Street</label>
+                    <input formControlName="street" />
+                    <p></p>
+                    <label class="mr-2">City</label>
+                    <input formControlName="city" />
+                    <p></p>
+                    <label class="mr-2">State</label>
+                    <input formControlName="state" />
+                    <p></p>
+                    <label class="mr-2">Zip Code</label>
+                    <input formControlName="zip" />
+                    <p></p>
+                </div>
+                <label>Email</label>
+                <input formControlName="email" />
+                <p></p>
+                <label>Password</label>
+                <input formControlName="password" />
+                <button type="submit" [disabled]="customer.pristine">Save</button>
+                <button type="reset" (click)="revert()" [disabled]="customer.pristine">
+                    Revert
+                </button>
             </form>
         </div>
     </div>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from './../http.service';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, NgForm, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -10,33 +10,65 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class CustomerloginregComponent implements OnInit {
   replyerrors: any;
-  customer: {
-    firstname: string,
-    lastname: string,
-    address:{
-      street:string,
-      city:string,
-      state: string,
-      zip: number
-    }
-    email:string,
-    password:string
-  }
-  
+  //probably use reactive forms OR template driven form template is good for 1-2, reactive is good for many. like registration
+  // customer: {
+  //   firstname: string,
+  //   lastname: string,
+  //   address: {
+  //     street: string,
+  //     city: string,
+  //     state: string,
+  //     zip: number
+  //   },
+  //   email: string,
+  //   password: string,
+  // };
+  customer: FormGroup
+
   constructor(
     private _httpService: HttpService,
     private _route: ActivatedRoute,
-    private _router: Router
-  ) { }
-
-  ngOnInit() {
+    private _router: Router,
+  ) {
+    //creates form template for form handling
+    this.customer = this.createFormGroup()
   }
 
+  ngOnInit() {
+
+  }
+  createFormGroup() {
+    return new FormGroup({
+      firstname: new FormControl,
+      lastname:new FormControl,
+      address: new FormGroup({
+        street: new FormControl(),
+        city: new FormControl(),
+        state: new FormControl(),
+        zip: new FormControl(),
+      }),
+      email: new FormControl(),
+      password: new FormControl()
+    })
+  }
+  createFormGroupWithBuilder(formBuilder: FormBuilder) {
+    return formBuilder.group({
+      firstName : '',
+      lastname : '',
+      address: formBuilder.group({
+        street: '',
+        city: '',
+        state: '',
+        zip: ''
+      }),
+      email: 'email@email.com',
+      password: ''
+    });
+  }
   login(form: NgForm) {
 
-    // console.log("formvalue: "+ form.value.toJSON())
+
     let formvalue = form.value;
-    // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
     this._httpService.customerLogin(formvalue)
       .subscribe(data => {
         if (JSON.stringify(data) === '{"login":false}') {
@@ -53,24 +85,50 @@ export class CustomerloginregComponent implements OnInit {
       )
   }
 
-  register(form: NgForm) {
-    console.log("login data username: " + form.value.username)
-    console.log("login data password: " + form.value.password)
-    this.customer.firstname = form.value.firstname
-    this.customer.lastname = form.value.lastname
-    this.customer.address.street = form.value.street
-    this.customer.address.city = form.value.city
-    this.customer.address.state = form.value.state
-    this.customer.address.zip = form.value.zip
-    this.customer.email = form.value.email
-    this.customer.password = form.value.password
-    console.log("Register Stringify data: " + JSON.stringify(this.customer))
+  // register(form: NgForm) {
+  //   console.log("login data username: " + form.value.username)
+  //   console.log("login data password: " + form.value.password)
+  //   this.customer.firstname = form.value.firstname
+  //   this.customer.lastname = form.value.lastname
+  //   this.customer.address.street = form.value.street
+  //   this.customer.address.city = form.value.city
+  //   this.customer.address.state = form.value.state
+  //   this.customer.address.zip = form.value.zip
+  //   this.customer.email = form.value.email
+  //   this.customer.password = form.value.password
+  //   console.log("Register Stringify data: " + JSON.stringify(this.customer))
+  //   // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
+  //   this._httpService.customerRegister(this.customer)
+  //     .subscribe(data => {
+
+  //       console.log("data: " + JSON.stringify(data))
+  //       if (data !== null) {
+  //         this._router.navigate(['/customer/home'])
+  //       }
+  //     },
+  //       //if error reroute to login
+  //       error => {
+  //         console.log(error.message)
+  //         //COMMENTING OUT so we can see error messages
+  //         // this._router.navigate(['/customer/login'])
+  //       }
+
+  //     );
+  // }
+  register() {
+    //theoretically create a shallow copy of the customer values from the form
+    const formdata = Object.assign({}, this.customer.value)
+    let test = {
+       "address": { "street": "asdf", "city": "asdf", "state": "asdf", "zip": "1234" },
+        "email": "email1@emial.com",
+        "password": "pass123" }
+    console.log("Register Stringify data: " + JSON.stringify(formdata))
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
-    this._httpService.customerRegister(this.customer)
+    this._httpService.customerRegister(formdata)
       .subscribe(data => {
 
-        console.log("data: "+JSON.stringify(data))
-        if(data!==null){
+        console.log("data: " + JSON.stringify(data))
+        if (data !== null) {
           this._router.navigate(['/customer/home'])
         }
       },
@@ -81,8 +139,16 @@ export class CustomerloginregComponent implements OnInit {
           // this._router.navigate(['/customer/login'])
         }
 
-      )
+      );
   }
+
+
+
+
+
+
+
+
 }
 
 
