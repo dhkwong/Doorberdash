@@ -37,37 +37,36 @@ export class CustomerloginregComponent implements OnInit {
   ngOnInit() {
 
   }
+  //currently using this method of formgroup
   createFormGroup() {
     return new FormGroup({
-      firstname: new FormControl,
-      lastname:new FormControl,
+      firstname: new FormControl(''),
+      lastname:new FormControl(''),
       address: new FormGroup({
-        street: new FormControl(),
-        city: new FormControl(),
-        state: new FormControl(),
-        zip: new FormControl(),
+        street: new FormControl(''),
+        city: new FormControl(''),
+        state: new FormControl(''),
+        zip: new FormControl(''),
       }),
-      email: new FormControl(),
-      password: new FormControl()
+      email: new FormControl('defaultemail@email.com'),
+      password: new FormControl('')
     })
   }
-  createFormGroupWithBuilder(formBuilder: FormBuilder) {
-    return formBuilder.group({
-      firstName : '',
-      lastname : '',
-      address: formBuilder.group({
-        street: '',
-        city: '',
-        state: '',
-        zip: ''
-      }),
-      email: 'email@email.com',
-      password: ''
-    });
-  }
+  // createFormGroupWithBuilder(formBuilder: FormBuilder) {
+  //   return formBuilder.group({
+  //     firstName : '',
+  //     lastname : '',
+  //     address: formBuilder.group({
+  //       street: '',
+  //       city: '',
+  //       state: '',
+  //       zip: ''
+  //     }),
+  //     email: 'email@email.com',
+  //     password: ''
+  //   });
+  // }
   login(form: NgForm) {
-
-
     let formvalue = form.value;
     this._httpService.customerLogin(formvalue)
       .subscribe(data => {
@@ -116,27 +115,32 @@ export class CustomerloginregComponent implements OnInit {
   //     );
   // }
   register() {
-    //theoretically create a shallow copy of the customer values from the form
+    //theoretically create a shallow copy of the customer values from the form to submit
     const formdata = Object.assign({}, this.customer.value)
-    let test = {
-       "address": { "street": "asdf", "city": "asdf", "state": "asdf", "zip": "1234" },
-        "email": "email1@emial.com",
-        "password": "pass123" }
     console.log("Register Stringify data: " + JSON.stringify(formdata))
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
     this._httpService.customerRegister(formdata)
       .subscribe(data => {
-
-        console.log("data: " + JSON.stringify(data))
-        if (data !== null) {
+        console.log("data: "+JSON.stringify(data))
+        if(data['error']!== null){
+          this.replyerrors = data['error']
+          console.log(this.replyerrors)
+          this._router.navigate(['/customer/login'])
+          
+        }else{
           this._router.navigate(['/customer/home'])
         }
+        // console.log("data: " + JSON.stringify(data))
+        // if (data !== null) {
+        //   this._router.navigate(['/customer/home'])
+        // }
       },
         //if error reroute to login
         error => {
-          console.log(error.message)
+          console.log("error object: "+JSON.stringify(error))
+          console.log("error in customerloginreg: "+error.message)
           //COMMENTING OUT so we can see error messages
-          // this._router.navigate(['/customer/login'])
+          this._router.navigate(['/customer/login'])
         }
 
       );

@@ -24,7 +24,7 @@ module.exports = {
         }
         if (info != undefined) {
           console.log(info.message);
-          res.json("error in restaurantRegister line 27" + info.message);
+          res.json({message: "error in restaurantRegister info.message "+ info.message, error: info.message});
         } else {
 
           //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
@@ -140,6 +140,7 @@ module.exports = {
   //WORKING
   customerRegister: (req, res, next) => {
     passport.authenticate('registerCustomer', (err, user, info) => {
+
       if (err) {
         console.log(err);
       }

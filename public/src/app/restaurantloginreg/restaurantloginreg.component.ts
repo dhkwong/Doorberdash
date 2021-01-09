@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from './../http.service';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { errorObject } from 'rxjs/internal-compatibility';
 @Component({
   selector: 'app-restaurantloginreg',
   templateUrl: './restaurantloginreg.component.html',
@@ -50,7 +51,18 @@ export class RestaurantloginregComponent implements OnInit {
       .subscribe(data => {
 
         console.log("data: "+JSON.stringify(data))
-        if(data!==null){
+        if('error' in data.body){
+          console.log("registration error: "+JSON.stringify(data.body['error']))
+          let err = data.body['error']
+          console.log("err: "+JSON.stringify(err))
+          this.replyerrors = err
+          
+          this._router.navigate(['/restaurant/login'])
+        }
+        // if(data!==null){
+        //   this._router.navigate(['/restaurant/home'])
+        // }
+        else{
           this._router.navigate(['/restaurant/home'])
         }
         // let loginresponse = data['login']
@@ -71,10 +83,11 @@ export class RestaurantloginregComponent implements OnInit {
         //if error reroute to login
         error => {
           console.log(error.message)
-          this._router.navigate(['/restaurant/login'])
+          this.replyerrors = error.message
+          // this._router.navigate(['/restaurant/login'])
         }
   
-      );
+      )
   }
   
   

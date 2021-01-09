@@ -204,7 +204,7 @@ passport.use('registerCustomer',
                         });
                     }
                 });
-            } catch (err) {
+            }catch (err) {
                 done(err);
             }
         }
