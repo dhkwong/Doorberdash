@@ -182,9 +182,10 @@ passport.use('registerCustomer',
                 }).then(user => {
                     if (user != null) {
                         console.log('email already taken');
-                        return done(null, false, { message: 'email already taken' });
+                        return done(null, false, { error:'email already taken' });
                     } else {
                         bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
+                            console.log("req.body: "+JSON.stringify(req.body))
                             //create new restaurant document to save
                             let newCustomer = new Customer(req.body)
                             newCustomer.password = hashedPassword
@@ -194,9 +195,23 @@ passport.use('registerCustomer',
                                     // note the return needed with passport local - remove this return for passport JWT to work
                                     return done(null, user);
                                 })
+                                //otherwise we get unhandled promise rejection
+                                .catch(err=>{
+                                    console.log("error registering customer in passport-auth: "+ err)
+                                    return done(null,err)
+                                })
 
                             //In case newCustomer.save() doesnt work
-                            //   User.create({ username, password: hashedPassword }).then(user => {
+                            //   Customer.create({
+                            //        firstname:req.body.firstname,
+                            //        lastname:req.body.lastname,
+                            //        street:req.body.address.street,
+                            //         city:req.body.address.city,
+                            //         state:req.body.address.state,
+                            //         zip:req.body.address.zip,
+                            //         email:email,
+                            //         password: hashedPassword
+                            //      }).then(user => {
                             //     console.log('user created');
                             //     // note the return needed with passport local - remove this return for passport JWT to work
                             //     return done(null, user);

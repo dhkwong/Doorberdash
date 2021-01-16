@@ -16,10 +16,10 @@ const passport = require('passport')
 require('./server/controllers/passport-auth')
 app.use(passport.initialize())
 // require(path.join(__dirname, 'server/controllers/loginreg'))(passport); //Load passport config
-const router = require('./server/routes');
 app.use(express.urlencoded({extended: true}));
 app.use(bp.urlencoded({ extended: false }))
 app.use(bp.json())
+const router = require('./server/routes');
 app.use(cors(
 //     {
 //     'origin':'*',

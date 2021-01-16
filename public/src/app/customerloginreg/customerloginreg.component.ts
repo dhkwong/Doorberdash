@@ -122,23 +122,21 @@ export class CustomerloginregComponent implements OnInit {
     this._httpService.customerRegister(formdata)
       .subscribe(data => {
         console.log("data: "+JSON.stringify(data))
-        if(data['error']!== null){
-          this.replyerrors = data['error']
-          console.log(this.replyerrors)
+        if('error' in data.body){
+          let err  = data.body['error']
+          this.replyerrors = err
+          console.log("replyerrors: "+JSON.stringify(this.replyerrors))
           this._router.navigate(['/customer/login'])
-          
         }else{
           this._router.navigate(['/customer/home'])
         }
-        // console.log("data: " + JSON.stringify(data))
-        // if (data !== null) {
-        //   this._router.navigate(['/customer/home'])
-        // }
       },
         //if error reroute to login
         error => {
           console.log("error object: "+JSON.stringify(error))
           console.log("error in customerloginreg: "+error.message)
+          let err = error.message
+          this.replyerrors = err
           //COMMENTING OUT so we can see error messages
           this._router.navigate(['/customer/login'])
         }

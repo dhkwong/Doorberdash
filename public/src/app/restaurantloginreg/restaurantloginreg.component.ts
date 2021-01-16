@@ -58,27 +58,9 @@ export class RestaurantloginregComponent implements OnInit {
           this.replyerrors = err
           
           this._router.navigate(['/restaurant/login'])
-        }
-        // if(data!==null){
-        //   this._router.navigate(['/restaurant/home'])
-        // }
-        else{
+        } else{
           this._router.navigate(['/restaurant/home'])
         }
-        // let loginresponse = data['login']
-        // //if registration
-        // if (loginresponse != true ){
-        //   //if no user found
-        //   console.log('registration failed: '+loginresponse)
-        //   //store error 
-        //   this.replyerrors = loginresponse
-        //   this._router.navigate(['/login'])
-        // }
-        //  else {
-        //   //else user found reroute to home
-        //   console.log("register in login.component navigating to /home")
-        //   this._router.navigate(['/customer/home']);
-        // }
       },
         //if error reroute to login
         error => {

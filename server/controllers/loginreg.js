@@ -140,7 +140,7 @@ module.exports = {
   //WORKING
   customerRegister: (req, res, next) => {
     passport.authenticate('registerCustomer', (err, user, info) => {
-
+      try{
       if (err) {
         console.log(err);
       }
@@ -193,10 +193,14 @@ module.exports = {
             res.header("JWT", token).json({ login: true, message: 'Customer created', customer: tempcustomer })
           })
             .catch(err => {
-              res.json({ error: err })
+              res.json({ message: "error in loginreg.js customerRegister", error: err })
             })
         });
       }
+    }
+    catch (error) {
+      res.json({ message: "error in loginreg.js restaurantRegister", error: error })
+    }
       //setup for callback capabilities
     })(req, res, next);
   },
