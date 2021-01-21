@@ -71,7 +71,7 @@ passport.use('registerRestaurant',
                     console.log(`user in passport auth: ${user}`)
                     if (user !== null) {
                         console.log('email already taken');
-                        return done(null, false, { message: 'email already taken' });
+                        return done(null, false, { message: 'email already taken',error:"email already taken" });
                     } else {
                         bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
                             //create new restaurant document to save
@@ -99,7 +99,9 @@ passport.use('registerRestaurant',
                                 console.log('user created');
                                 // note the return needed with passport local - remove this return for passport JWT to work
                                 return done(null, user);
-                            });
+                            }).catch(error=>{
+                                return done(error.error)
+                            })
                         });
                     }
                 });
@@ -177,7 +179,7 @@ passport.use('registerCustomer',
             try {
                 Customer.findOne({
                     
-                        email: email,
+                        email: email
                     
                 }).then(user => {
                     if (user != null) {
@@ -198,7 +200,10 @@ passport.use('registerCustomer',
                                 //otherwise we get unhandled promise rejection
                                 .catch(err=>{
                                     console.log("error registering customer in passport-auth: "+ err)
-                                    return done(null,err)
+                                    // return done(null,err)
+
+                                    // gives us the mongoose validation errors to pass to the front. null,err returns nothing
+                                    done(err)
                                 })
 
                             //In case newCustomer.save() doesnt work
@@ -220,7 +225,7 @@ passport.use('registerCustomer',
                     }
                 });
             }catch (err) {
-                done(err);
+               return done(err);
             }
         }
     )

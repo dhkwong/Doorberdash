@@ -143,6 +143,7 @@ module.exports = {
       try{
       if (err) {
         console.log(err);
+        res.json({ message: "error in loginreg.js customerRegister try block", error: err })
       }
       if (info != undefined) {
         console.log(info.message);
@@ -193,13 +194,15 @@ module.exports = {
             res.header("JWT", token).json({ login: true, message: 'Customer created', customer: tempcustomer })
           })
             .catch(err => {
+              console.log("err: "+JSON.stringify(err))
               res.json({ message: "error in loginreg.js customerRegister", error: err })
             })
         });
       }
     }
     catch (error) {
-      res.json({ message: "error in loginreg.js restaurantRegister", error: error })
+      console.log("error: "+error)
+      res.json({ message: "caught error in loginreg.js customerRegister", error: error })
     }
       //setup for callback capabilities
     })(req, res, next);

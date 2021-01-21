@@ -72,7 +72,7 @@ export class CustomerloginregComponent implements OnInit {
       .subscribe(data => {
         if (JSON.stringify(data) === '{"login":false}') {
           console.log("subscribe login data: " + JSON.stringify(data))
-          this._router.navigate(['/customer//login'])
+          this._router.navigate(['/customer/login'])
         } else {
           console.log("subscribe login data: " + JSON.stringify(data))
           this._router.navigate(['/customer/home'])
