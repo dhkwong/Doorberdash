@@ -163,6 +163,15 @@ module.exports = {
             email: req.body.email,
 
           };
+          //error handling
+          if(err){
+            //if error return formatted errors to be displayed. user contains errors since we pass them from passport-auth
+            const errors = Object.keys(user.errors).map(key => user.errors[key].message);
+            // console.log("loginreg customerRegister req.login err error: "+errors)
+            // console.log("loginreg customerRegister req.login err user: "+JSON.stringify(user))
+            res.json({error:errors})
+          }
+          else{
           Customer.findOne({
 
             _id: data._id,
@@ -197,6 +206,7 @@ module.exports = {
               console.log("err: "+JSON.stringify(err))
               res.json({ message: "error in loginreg.js customerRegister", error: err })
             })
+          }
         });
       }
     }

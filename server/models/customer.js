@@ -11,9 +11,20 @@ const CustomerSchema = new mongoose.Schema({
             type: String,
             uppercase: true,
             required: true,
-            enum: statesArray
+            enum: {values:statesArray,message: 'Please submit a valid USA state!'}
+            
         },
-        zip: Number
+        zip: {type: [Number],
+            required: true,
+            validate: {
+                validator: function(zip) {
+                    console.log(typeof zip)
+                  return (zip.length === 5 && typeof zip === 'number');
+                },
+                message: "Zip must be 5 digits"
+              }
+            }
+        //zip:Number
     },
     email:{type: String, required:true /*, regex for email here */},
     password:{type: String, required:true /*regex for pass here */}

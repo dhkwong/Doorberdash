@@ -11,7 +11,7 @@ const Customer = mongoose.model('Customer')
 const jwtsecret = 'tempjwtsecret',
     ExtractJWT = require('passport-jwt').ExtractJwt;
 
-    
+
 //jwt key info for jwt verification
 const opts = {
     //extracts token from header using jwt ExtractJWT
@@ -27,10 +27,10 @@ passport.use(
             console.log('extrating jwt from header in jwt-restaurant from passport-auth')
             console.log(jwt_payload)
             Restaurant.findOne({
-                
-                    //token only holds extracted and decrypted jwt userid
-                    _id: jwt_payload.id
-                
+
+                //token only holds extracted and decrypted jwt userid
+                _id: jwt_payload.id
+
             }).then(restaurant => {
                 if (restaurant) {
                     console.log('restaurant found in db in passport');
@@ -58,20 +58,20 @@ passport.use('registerRestaurant',
         //deactivate session as we're using JWT
         session: false,
         //enable req in localStrategy
-        passReqToCallback:true
+        passReqToCallback: true
     },
-        (req,email, password, done) => {
-            
+        (req, email, password, done) => {
+
             try {
                 Restaurant.findOne({
-                    
-                        email: email
-                    
+
+                    email: email
+
                 }).then(user => {
                     console.log(`user in passport auth: ${user}`)
                     if (user !== null) {
                         console.log('email already taken');
-                        return done(null, false, { message: 'email already taken',error:"email already taken" });
+                        return done(null, false, { message: 'email already taken', error: "email already taken" });
                     } else {
                         bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
                             //create new restaurant document to save
@@ -99,7 +99,7 @@ passport.use('registerRestaurant',
                                 console.log('user created');
                                 // note the return needed with passport local - remove this return for passport JWT to work
                                 return done(null, user);
-                            }).catch(error=>{
+                            }).catch(error => {
                                 return done(error.error)
                             })
                         });
@@ -122,9 +122,9 @@ passport.use('loginRestaurant',
         (email, password, done) => {
             try {
                 Restaurant.findOne({
-                    
-                        email: email
-                    
+
+                    email: email
+
                 }).then(restaurant => {
                     //no restaurant
                     if (restaurant === null) {
@@ -173,59 +173,58 @@ passport.use('registerCustomer',
         passwordField: 'password',
         session: false,
         //need this to pass req into localStrategy
-        passReqToCallback:true
+        passReqToCallback: true
     },
-        (req,email, password, done) => {
+        (req, email, password, done) => {
             try {
                 Customer.findOne({
-                    
-                        email: email
-                    
+
+                    email: email
+
                 }).then(user => {
                     if (user != null) {
                         console.log('email already taken');
-                        return done(null, false, { error:'email already taken' });
+                        // return done(null, false, { error:'email already taken' });
+                        return done({ error: 'email already taken' });
                     } else {
-                        bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
-                            console.log("req.body: "+JSON.stringify(req.body))
-                            //create new restaurant document to save
-                            let newCustomer = new Customer(req.body)
-                            newCustomer.password = hashedPassword
-                            newCustomer.save()
-                                .then(user => {
-                                    console.log('Customer created');
-                                    // note the return needed with passport local - remove this return for passport JWT to work
-                                    return done(null, user);
-                                })
-                                //otherwise we get unhandled promise rejection
-                                .catch(err=>{
-                                    console.log("error registering customer in passport-auth: "+ err)
-                                    // return done(null,err)
 
-                                    // gives us the mongoose validation errors to pass to the front. null,err returns nothing
-                                    done(err)
-                                })
+                        bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
+                            console.log("req.body: " + JSON.stringify(req.body))
+                            //create new restaurant document to save
+
+                            let newCustomer = new Customer(req.body)
+                            // newCustomer.password = hashedPassword
+                            // newCustomer.save()
+                            //     .then(user => {
+                            //         console.log('Customer created');
+                            //         // note the return needed with passport local - remove this return for passport JWT to work
+                            //         return done(null, user);
+                            //     })
+                            //     //otherwise we get unhandled promise rejection
+                            //     .catch(err=>{
+                            //         console.log("error registering customer in passport-auth: "+ err)
+                            //         // return done(null,err)
+
+                            //         // gives us the mongoose validation errors to pass to the front. null,err returns nothing
+                            //         done(err)
+                            //     })
 
                             //In case newCustomer.save() doesnt work
-                            //   Customer.create({
-                            //        firstname:req.body.firstname,
-                            //        lastname:req.body.lastname,
-                            //        street:req.body.address.street,
-                            //         city:req.body.address.city,
-                            //         state:req.body.address.state,
-                            //         zip:req.body.address.zip,
-                            //         email:email,
-                            //         password: hashedPassword
-                            //      }).then(user => {
-                            //     console.log('user created');
-                            //     // note the return needed with passport local - remove this return for passport JWT to work
-                            //     return done(null, user);
-                            //   });
+                            //works now
+                            Customer.create(newCustomer).then(user => {
+                                console.log('user created');
+                                // note the return needed with passport local - remove this return for passport JWT to work
+                                return done(null, user);
+                            }).catch(err=>{
+                                // const errors = Object.keys(err.errors).map(key => err.errors[key].message);
+                                return done(null, err)
+                            })
+                            
                         });
                     }
                 });
-            }catch (err) {
-               return done(err);
+            } catch (err) {
+                return done(err);
             }
         }
     )
@@ -242,9 +241,9 @@ passport.use('loginCustomer',
         (email, password, done) => {
             try {
                 Customer.findOne({
-                    
-                        email: email
-                    
+
+                    email: email
+
                 }).then(customer => {
                     //no customer found
                     if (customer === null) {
@@ -279,10 +278,10 @@ passport.use(
         try {
             console.log('extrating jwt from header in jwt-restaurant from passport-auth')
             Customer.findOne({
-                
-                    //token only holds the userid
-                    _id: jwt_payload.id,
-                
+
+                //token only holds the userid
+                _id: jwt_payload.id,
+
             }).then(customer => {
                 if (customer) {
                     console.log('customer found in db in passport');
