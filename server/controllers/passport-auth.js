@@ -193,6 +193,9 @@ passport.use('registerCustomer',
                             //create new restaurant document to save
 
                             let newCustomer = new Customer(req.body)
+                            //convert state to upper to fit enum. e.g ca to CA
+                            newCustomer.address.state = newCustomer.address.state.toUpperCase()
+
                             // newCustomer.password = hashedPassword
                             // newCustomer.save()
                             //     .then(user => {
@@ -212,19 +215,21 @@ passport.use('registerCustomer',
                             //In case newCustomer.save() doesnt work
                             //works now
                             Customer.create(newCustomer).then(user => {
-                                console.log('user created');
+                                console.log('user created: '+user);
                                 // note the return needed with passport local - remove this return for passport JWT to work
                                 return done(null, user);
-                            }).catch(err=>{
+                            })
+                            .catch(err=>{
                                 // const errors = Object.keys(err.errors).map(key => err.errors[key].message);
-                                return done(null, err)
+                                //need false or we get a promise error
+                                return done(null,false, err)
                             })
                             
                         });
                     }
                 });
             } catch (err) {
-                return done(err);
+                done(err);
             }
         }
     )

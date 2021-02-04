@@ -24,7 +24,7 @@ module.exports = {
         }
         if (info != undefined) {
           console.log(info.message);
-          res.json({message: "error in restaurantRegister info.message "+ info.message, error: info.message});
+          res.json({ message: "error in restaurantRegister info.message " + info.message, error: info.message });
         } else {
 
           //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
@@ -52,7 +52,7 @@ module.exports = {
                 delete temprestaurant._id
                 //if header doesnt work, use .setHeader("JWT",token)
                 //alternatively, could send the token in the response body to be moved to cookies from there
-                
+
                 // res.header("JWT",token)
                 // res.json({ message: 'Restaurant created', restaurant: temprestaurant })
                 console.log("temprestaurant: " + temprestaurant)
@@ -140,12 +140,48 @@ module.exports = {
   //WORKING
   customerRegister: (req, res, next) => {
     passport.authenticate('registerCustomer', (err, user, info) => {
-      try{
+      /**
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * WORKING HERE
+       * 
+       * 
+       * //ERROR: currently sees undefined user even if registration info is correct, meaning not registering correctly
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       */
+
+      //try catch returned error if no user was created
+      // try{
       if (err) {
         console.log(err);
-        res.json({ message: "error in loginreg.js customerRegister try block", error: err })
+        res.json({ message: "error in loginreg.js customerRegister", error: err })
       }
-      if (info != undefined) {
+      else if (user === null) {
+        res.json({ message: "error in loginreg.js customerRegister user undefined: " + err, error: err })
+      }
+      else if (info != undefined) {
         console.log(info.message);
         res.json(info.message);
       } else {
@@ -155,7 +191,7 @@ module.exports = {
         //"I could have passed this extra data through to the middleware as well, but I want Passport to only handle authentication, not user creation as well. Modularization"
         //user is passed from registerCustomer strategy in passport-auth.js where the entire document is passed forward, including _id
         req.logIn(user, err => {
-
+          console.log("loginreg customerRegister req.login user: " + JSON.stringify(user))
           const data = {
             _id: user._id,
             firstname: req.body.firstname,
@@ -163,57 +199,63 @@ module.exports = {
             email: req.body.email,
 
           };
+          console.log("loginreg customerRegister req.login data: " + JSON.stringify(data))
           //error handling
-          if(err){
+          if (err) {
             //if error return formatted errors to be displayed. user contains errors since we pass them from passport-auth
             const errors = Object.keys(user.errors).map(key => user.errors[key].message);
+            console.log("errors req.login customerReg loginreg: " + JSON.stringify(errors))
             // console.log("loginreg customerRegister req.login err error: "+errors)
             // console.log("loginreg customerRegister req.login err user: "+JSON.stringify(user))
-            res.json({error:errors})
+            res.json({ error: errors })
           }
-          else{
-          Customer.findOne({
+          // else{
+          Customer.findOne({ _id: data._id, })
 
-            _id: data._id,
+            .then(user => {
+              //previously added customer data here, but it's all in passport-auth now
+              // user
+              //   .update({
+              //     // first_name:data.first_name,
+              //     // last_name: data.last_name,
+              //     // email: data.email,
+              //     firstname : req.body.firstname,
+              //     lastname: req.body.lastname,
+              //     email: req.body.email
 
-          }).then(user => {
-            //previously added customer data here, but it's all in passport-auth now
-            // user
-            //   .update({
-            //     // first_name:data.first_name,
-            //     // last_name: data.last_name,
-            //     // email: data.email,
-            //     firstname : req.body.firstname,
-            //     lastname: req.body.lastname,
-            //     email: req.body.email
+              //   })
+              //   .then(() => {
+              //     //note that it does NOT login the user. Theoretically should have to do that front end. 
+              //     //_http.registerCustomer(newCustomer)
+              //     //_http.loginCustomer(newCustomerEmailAndPassword)
+              //     console.log('user created in db');
 
-            //   })
-            //   .then(() => {
-            //     //note that it does NOT login the user. Theoretically should have to do that front end. 
-            //     //_http.registerCustomer(newCustomer)
-            //     //_http.loginCustomer(newCustomerEmailAndPassword)
-            //     console.log('user created in db');
+              //     res.status(200).json({ message: 'user created' });
+              //   });
+              try {
+                const token = jwt.sign({ id: user._id }, jwtSecret)
+                let tempcustomer = user.toJSON()
+                //remove hashed pass before returning to client side
+                delete tempcustomer.password
+                res.header("JWT", token).json({ login: true, message: 'Customer created', customer: tempcustomer })
 
-            //     res.status(200).json({ message: 'user created' });
-            //   });
-            const token = jwt.sign({ id: user._id }, jwtSecret)
-            let tempcustomer = user.toJSON()
-            //remove hashed pass before returning to client side
-            delete tempcustomer.password
-            res.header("JWT", token).json({ login: true, message: 'Customer created', customer: tempcustomer })
-          })
+              } catch (error) {
+                res.json({ message: "error in customer.findOne customerRegister", error: err })
+              }
+            })
             .catch(err => {
-              console.log("err: "+JSON.stringify(err))
+              console.log("err: " + JSON.stringify(err))
               res.json({ message: "error in loginreg.js customerRegister", error: err })
             })
-          }
+          // }
         });
       }
-    }
-    catch (error) {
-      console.log("error: "+error)
-      res.json({ message: "caught error in loginreg.js customerRegister", error: error })
-    }
+      // }
+      // catch (error) {
+      //   console.log("loginReg customerRegistration error: "+error)
+      //   res.json({ message: "caught error in loginreg.js customerRegister", error: error })
+      // }
+
       //setup for callback capabilities
     })(req, res, next);
   },
