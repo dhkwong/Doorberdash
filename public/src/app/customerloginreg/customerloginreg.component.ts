@@ -123,7 +123,13 @@ export class CustomerloginregComponent implements OnInit {
       .subscribe(data => {
         console.log("data: "+JSON.stringify(data))
         if('error' in data.body){
+          
           let err  = data.body['error']
+          //iterate through messages to add to replyerrors
+          // for (const [key, value] of Object.entries(err)) {
+          //   console.log("errors: "+JSON.stringify(value))
+          //   this.replyerrors += JSON.stringify(value)
+          // }
           this.replyerrors = err
           console.log("replyerrors: "+JSON.stringify(this.replyerrors))
           this._router.navigate(['/customer/login'])

@@ -140,49 +140,19 @@ module.exports = {
   //WORKING
   customerRegister: (req, res, next) => {
     passport.authenticate('registerCustomer', (err, user, info) => {
-      /**
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * WORKING HERE
-       * 
-       * 
-       * //ERROR: currently sees undefined user even if registration info is correct, meaning not registering correctly
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       */
+  
 
       //try catch returned error if no user was created
       // try{
       if (err) {
-        console.log(err);
-        res.json({ message: "error in loginreg.js customerRegister", error: err })
+        console.log("err here: "+ JSON.stringify(err));
+        res.json({ message: "error in loginreg.js customerRegister: "+err, error: err })
       }
       else if (user === null) {
         res.json({ message: "error in loginreg.js customerRegister user undefined: " + err, error: err })
       }
       else if (info != undefined) {
-        console.log(info.message);
+        console.log("customerRegister info: "+info.message);
         res.json(info.message);
       } else {
 
@@ -201,8 +171,41 @@ module.exports = {
           };
           console.log("loginreg customerRegister req.login data: " + JSON.stringify(data))
           //error handling
+              /**
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * WORKING HERE
+       * 
+       * 
+       * //ERROR: testing err: Error: Failed to serialize user into session WORKING
+       * error 2: Email uniqueness from passort-auth not recieved by customerRegister
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       * 
+       */
           if (err) {
             //if error return formatted errors to be displayed. user contains errors since we pass them from passport-auth
+            console.log("testing err: "+err)
             const errors = Object.keys(user.errors).map(key => user.errors[key].message);
             console.log("errors req.login customerReg loginreg: " + JSON.stringify(errors))
             // console.log("loginreg customerRegister req.login err error: "+errors)

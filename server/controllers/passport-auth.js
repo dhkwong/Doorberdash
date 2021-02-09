@@ -185,7 +185,7 @@ passport.use('registerCustomer',
                     if (user != null) {
                         console.log('email already taken');
                         // return done(null, false, { error:'email already taken' });
-                        return done({ error: 'email already taken' });
+                        return done({ err: 'email already taken' });
                     } else {
 
                         bcrypt.hash(password, BCRYPT_SALT_ROUNDS).then(hashedPassword => {
@@ -217,12 +217,13 @@ passport.use('registerCustomer',
                             Customer.create(newCustomer).then(user => {
                                 console.log('user created: '+user);
                                 // note the return needed with passport local - remove this return for passport JWT to work
-                                return done(null, user);
+                               //return done(null,user)
+                                return done(user);
                             })
                             .catch(err=>{
                                 // const errors = Object.keys(err.errors).map(key => err.errors[key].message);
                                 //need false or we get a promise error
-                                return done(null,false, err)
+                                return done(null, false, err)
                             })
                             
                         });
