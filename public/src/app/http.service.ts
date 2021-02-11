@@ -116,8 +116,13 @@ export class HttpService {
 
   customerLogin(loginCredentials: any) {
     console.log('logging in at customerLogin client side')
-    return this._http.post('/api/customers/customerlogin', loginCredentials).pipe(
-      map((res: Response) => {
+    return this._http.post('/api/customers/customerlogin', loginCredentials,
+    //observe:'response' allows us to see the options parameter of the function call, which allows us to get headers for cookieService
+    {observe:'response'})
+    .pipe(
+      map((res
+        // : Response
+        ) => {
         //set jwt cookie
         //may be res.headers.get('Authorization). reference cutomerRegister
         this.cookieService.set('JWT', res.headers.get('JWT'))

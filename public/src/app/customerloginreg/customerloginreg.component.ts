@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./customerloginreg.component.css']
 })
 export class CustomerloginregComponent implements OnInit {
-  replyerrors: any;
+  replyerrors: any = [];
   //probably use reactive forms OR template driven form template is good for 1-2, reactive is good for many. like registration
   // customer: {
   //   firstname: string,
@@ -24,7 +24,7 @@ export class CustomerloginregComponent implements OnInit {
   //   password: string,
   // };
   customer: FormGroup
-
+  customerlogin: FormGroup
   constructor(
     private _httpService: HttpService,
     private _route: ActivatedRoute,
@@ -41,7 +41,7 @@ export class CustomerloginregComponent implements OnInit {
   createFormGroup() {
     return new FormGroup({
       firstname: new FormControl(''),
-      lastname:new FormControl(''),
+      lastname: new FormControl(''),
       address: new FormGroup({
         street: new FormControl(''),
         city: new FormControl(''),
@@ -50,6 +50,13 @@ export class CustomerloginregComponent implements OnInit {
       }),
       email: new FormControl('defaultemail@email.com'),
       password: new FormControl('')
+    })
+  }
+  loginFormGroup() {
+    return new FormGroup({
+      email: new FormControl(''),
+      password: new FormControl('')
+
     })
   }
   // createFormGroupWithBuilder(formBuilder: FormBuilder) {
@@ -70,6 +77,7 @@ export class CustomerloginregComponent implements OnInit {
     let formvalue = form.value;
     this._httpService.customerLogin(formvalue)
       .subscribe(data => {
+        let info = JSON.stringify(data)
         if (JSON.stringify(data) === '{"login":false}') {
           console.log("subscribe login data: " + JSON.stringify(data))
           this._router.navigate(['/customer/login'])
@@ -77,8 +85,37 @@ export class CustomerloginregComponent implements OnInit {
           console.log("subscribe login data: " + JSON.stringify(data))
           this._router.navigate(['/customer/home'])
         }
-      },
-        error => {
+      }, error => {
+          /**
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * working here
+           * //customer TypeError: Cannot read property 'get' of undefined. customer backend seems fine
+           *  possible formgroup error? maybe not?
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           * 
+           */
+          
+          console.log("customer login error: " + error)
+          //replyerrors is an array type
+          this.replyerrors.push(error)
           this._router.navigate(['/customer/login']);
         }
       )
@@ -121,26 +158,26 @@ export class CustomerloginregComponent implements OnInit {
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
     this._httpService.customerRegister(formdata)
       .subscribe(data => {
-        console.log("data: "+JSON.stringify(data))
-        if('error' in data.body){
-          
-          let err  = data.body['error']
+        console.log("data: " + JSON.stringify(data))
+        if ('error' in data.body) {
+
+          let err = data.body['error']
           //iterate through messages to add to replyerrors
           // for (const [key, value] of Object.entries(err)) {
           //   console.log("errors: "+JSON.stringify(value))
           //   this.replyerrors += JSON.stringify(value)
           // }
           this.replyerrors = err
-          console.log("replyerrors: "+JSON.stringify(this.replyerrors))
+          console.log("replyerrors: " + JSON.stringify(this.replyerrors))
           this._router.navigate(['/customer/login'])
-        }else{
+        } else {
           this._router.navigate(['/customer/home'])
         }
       },
         //if error reroute to login
         error => {
-          console.log("error object: "+JSON.stringify(error))
-          console.log("error in customerloginreg: "+error.message)
+          console.log("error object: " + JSON.stringify(error))
+          console.log("error in customerloginreg: " + error.message)
           let err = error.message
           this.replyerrors = err
           //COMMENTING OUT so we can see error messages

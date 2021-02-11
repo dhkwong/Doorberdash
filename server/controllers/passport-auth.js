@@ -164,7 +164,16 @@ passport.use('loginRestaurant',
  * 
  * 
  */
+//these are required otherwise you get error:user could not be serialized to session. Needed even if you don't use session. passport-local is by default session based. Doesnt necessarily matter here since the Node API is separate from the front end 
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
 
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
 //registers restaurant
 passport.use('registerCustomer',
     //Default localStrategy expects credentials in params username and password. Changed params to 'email' and 'password'
@@ -173,7 +182,7 @@ passport.use('registerCustomer',
         passwordField: 'password',
         session: false,
         //need this to pass req into localStrategy
-        passReqToCallback: true
+        passReqToCallback: true,
     },
         (req, email, password, done) => {
             try {
@@ -195,7 +204,8 @@ passport.use('registerCustomer',
                             let newCustomer = new Customer(req.body)
                             //convert state to upper to fit enum. e.g ca to CA
                             newCustomer.address.state = newCustomer.address.state.toUpperCase()
-
+                            //save password as hashed password
+                            newCustomer.password = hashedPassword
                             // newCustomer.password = hashedPassword
                             // newCustomer.save()
                             //     .then(user => {
@@ -215,17 +225,17 @@ passport.use('registerCustomer',
                             //In case newCustomer.save() doesnt work
                             //works now
                             Customer.create(newCustomer).then(user => {
-                                console.log('user created: '+user);
+                                console.log('user created: ' + user);
                                 // note the return needed with passport local - remove this return for passport JWT to work
-                               //return done(null,user)
-                                return done(user);
+                                return done(null, user);
                             })
-                            .catch(err=>{
-                                // const errors = Object.keys(err.errors).map(key => err.errors[key].message);
-                                //need false or we get a promise error
-                                return done(null, false, err)
-                            })
-                            
+                                .catch(err => {
+                                    const errors = Object.keys(err.errors).map(key => err.errors[key].message);
+                                    //need false or we get a promise error
+                                    console.log("Caught error in final catch customerRegister: " + JSON.stringify(errors))
+                                    return done(errors)
+                                })
+
                         });
                     }
                 });
@@ -259,9 +269,9 @@ passport.use('loginCustomer',
                         bcrypt.compare(password, customer.password).then(response => {
                             if (response !== true) {
                                 console.log('passwords do not match');
-                                return done(null, false, { message: 'passwords do not match' });
+                                return done(null, false, { message: 'passwords do not match', error:'Password does not match' });
                             }
-                            console.log('customer found & authenticated');
+                            console.log('customer found & authenticated: '+customer);
                             // note the return needed with passport local - remove this return for passport JWT
                             return done(null, customer);
                         })

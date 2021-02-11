@@ -9,8 +9,8 @@
     <div class="col-3">
     </div>
     <div class="col-5 pull-right" *ngIf="replyerrors">
-        <div *ngFor="let error of replyerrors | keyvalue">
-            Error: <b>{{error.value}}</b>
+        <div *ngFor="let error of replyerrors">
+            Error: <b>{{error}}</b>
         </div>
         <!-- {{replyerrors}} -->
     </div>

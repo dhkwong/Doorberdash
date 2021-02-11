@@ -151,10 +151,10 @@ module.exports = {
       else if (user === null) {
         res.json({ message: "error in loginreg.js customerRegister user undefined: " + err, error: err })
       }
-      else if (info != undefined) {
+      else  if (info != undefined) {
         console.log("customerRegister info: "+info.message);
         res.json(info.message);
-      } else {
+      } else if(user !== null){
 
         //req.logIn is a passport method that once completed, assigns the user data under req.user. it's purely for back end  
         //seems excessive since the registerCustomer Strategy already creates the user. The documentation argues that it's for modularization
@@ -171,38 +171,7 @@ module.exports = {
           };
           console.log("loginreg customerRegister req.login data: " + JSON.stringify(data))
           //error handling
-              /**
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * WORKING HERE
-       * 
-       * 
-       * //ERROR: testing err: Error: Failed to serialize user into session WORKING
-       * error 2: Email uniqueness from passort-auth not recieved by customerRegister
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       * 
-       */
+         
           if (err) {
             //if error return formatted errors to be displayed. user contains errors since we pass them from passport-auth
             console.log("testing err: "+err)
@@ -266,7 +235,8 @@ module.exports = {
   customerLogin: (req, res, next) => {
     passport.authenticate('loginCustomer', (err, user, info) => {
       if (err) {
-        console.log(err)
+        console.log("customer login error: "+err)
+        res.json({login:false, error:err})
       }
       if (info != undefined) {
         //info means that the authentication failed, so return the error message
@@ -278,6 +248,11 @@ module.exports = {
 
         req.logIn(user, err => {
           //mongoose findOne query
+          console.log("customerLogin user: "+JSON.stringify(user))
+          if(err){
+            
+            res.json({error:err})
+          }else{
           Customer.findOne({
 
             _id: user._id
@@ -290,14 +265,17 @@ module.exports = {
             //   token: token,
             //   message: 'Customer user found & logged in'
             // });
-            let tempcustomer = user.toJSON()
+            let tempcustomer = user
+            console.log("tempcustomer: "+tempcustomer)
             delete tempcustomer.password
-            res.header("JWT", token).json({ login: true, customer: tempcustomer })
+            res.header("JWT", token)
+            res.json({ login: true, customer: tempcustomer })
           })
             .catch(err => {
-              res.json({ error: err })
+              console.log("customerLogin req.logIn catch err: "+err)
+              res.json({login:false, error: err })
             })
-
+          }
         });
       }
 
