@@ -268,8 +268,13 @@ module.exports = {
             let tempcustomer = user
             console.log("tempcustomer: "+tempcustomer)
             delete tempcustomer.password
+            //pass header
             res.header("JWT", token)
-            res.json({ login: true, customer: tempcustomer })
+            //pass customer
+            res.json({ login: true
+              //dont actually need to pass customer since the token's in the header 
+              // , customer: tempcustomer 
+            })
           })
             .catch(err => {
               console.log("customerLogin req.logIn catch err: "+err)

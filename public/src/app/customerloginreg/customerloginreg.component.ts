@@ -77,13 +77,13 @@ export class CustomerloginregComponent implements OnInit {
     let formvalue = form.value;
     this._httpService.customerLogin(formvalue)
       .subscribe((data:any) => {
-        let info = data
-        //reset replyerror
+        // let info = data
+        //reset replyerror for new errors
         this.replyerrors = []
         // if (JSON.stringify(data) === '{"login":false}') {
         if  ('error' in data.body) {
           console.log("subscribe login data error: " + JSON.stringify(data))
-          this.replyerrors.push(info.body.error)
+          this.replyerrors.push(data.body.error)
           this._router.navigate(['/customer/login'])
         } else {
           console.log("subscribe login data: " + JSON.stringify(data))

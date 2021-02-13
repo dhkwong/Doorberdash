@@ -37,7 +37,7 @@ export class HttpService {
   restaurantRegister(newRestaurant: any) {
     console.log('registering restaurant client side')
     return this._http.post('/api/restaurants/restaurantregister', newRestaurant
-      ,{
+      , {
         observe: 'response'
       }).pipe(map((res) => {
         //WORKING gets headers
@@ -49,7 +49,7 @@ export class HttpService {
         //passes response to component
         return res
       }))
- 
+
   }
 
   //TESTING logs in restaurant user
@@ -85,19 +85,19 @@ export class HttpService {
   customerRegister(newCustomer: any) {
     console.log('registering customer client side')
     return this._http.post('/api/customers/customerregister', newCustomer
-    ,{
-      observe: 'response'
-    }).pipe(map((res) => {
-      //WORKING gets headers
-      console.log(JSON.stringify("headers: " + JSON.stringify(res.headers.get('JWT'))))
-      //may not need to delete header if it doesn't persist to client side
-      //can set cookie here optimally or move to customerloginreg component
-      this.cookieService.set('JWT', res.headers.get('JWT'))
-      console.log("testing cookie in httpservice reg:" + JSON.stringify(this.cookieService.get('JWT')))
-      //passes response to component
-      return res
-    }))
-    
+      , {
+        observe: 'response'
+      }).pipe(map((res) => {
+        //WORKING gets headers
+        console.log(JSON.stringify("headers: " + JSON.stringify(res.headers.get('JWT'))))
+        //may not need to delete header if it doesn't persist to client side
+        //can set cookie here optimally or move to customerloginreg component
+        this.cookieService.set('JWT', res.headers.get('JWT'))
+        console.log("testing cookie in httpservice reg:" + JSON.stringify(this.cookieService.get('JWT')))
+        //passes response to component
+        return res
+      }))
+
     // ).pipe(
     //   //have to .pipe(map()) in order to modify the response of the http.post request
     //   map((res: Response) => {
@@ -117,21 +117,21 @@ export class HttpService {
   customerLogin(loginCredentials: any) {
     console.log('logging in at customerLogin client side')
     return this._http.post('/api/customers/customerlogin', loginCredentials,
-    //observe:'response' allows us to see the options parameter of the function call, which allows us to get headers for cookieService
-    {observe:'response'})
-    .pipe(
-      map((res
-        // : Response
+      //observe:'response' allows us to see the options parameter of the function call, which allows us to get headers for cookieService
+      { observe: 'response' })
+      .pipe(
+        map((res
+          // : Response
         ) => {
-        //set jwt cookie
-        //may be res.headers.get('Authorization). reference cutomerRegister
-        this.cookieService.set('JWT', res.headers.get('JWT'))
-        //remove JWT header. May be .delete('Authorization) 
-        res.headers.delete('JWT')
-        return res
+          //set jwt cookie
+          //may be res.headers.get('Authorization). reference cutomerRegister
+          this.cookieService.set('JWT', res.headers.get('JWT'))
+          //remove JWT header. May be .delete('Authorization) 
+          res.headers.delete('JWT')
+          return res
 
-      })
-    )
+        })
+      )
   }
   /**
   * 
@@ -294,6 +294,10 @@ export class HttpService {
   getCustomer(cid: any) {
     console.log("getting one customer in http service")
     return this._http.get(`/api/customers/${cid}`)
+  }
+  getLoggedInCustomer() {
+    console.log("getting logged in customer in http service")
+    return this._http.get('/api/customers/findcustomer')
   }
   //creates customer
   createCustomer(newCustomer: any) {
