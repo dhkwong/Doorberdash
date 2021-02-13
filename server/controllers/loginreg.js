@@ -240,8 +240,8 @@ module.exports = {
       }
       if (info != undefined) {
         //info means that the authentication failed, so return the error message
-        console.log(info.message)
-        res.json(info.message)
+        console.log("info.message customerLogin: "+info.message)
+        res.json({error:info.message})
       } else {
         //else authentication succeeded and continue
         //passport req.logIn creates a req.user field with the logged in user's data. user._id, user.order, user.name, ect
@@ -251,7 +251,7 @@ module.exports = {
           console.log("customerLogin user: "+JSON.stringify(user))
           if(err){
             
-            res.json({error:err})
+            res.json({login:false, error:err})
           }else{
           Customer.findOne({
 

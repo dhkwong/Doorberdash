@@ -76,48 +76,52 @@ export class CustomerloginregComponent implements OnInit {
   login(form: NgForm) {
     let formvalue = form.value;
     this._httpService.customerLogin(formvalue)
-      .subscribe(data => {
-        let info = JSON.stringify(data)
-        if (JSON.stringify(data) === '{"login":false}') {
-          console.log("subscribe login data: " + JSON.stringify(data))
+      .subscribe((data:any) => {
+        let info = data
+        //reset replyerror
+        this.replyerrors = []
+        // if (JSON.stringify(data) === '{"login":false}') {
+        if  ('error' in data.body) {
+          console.log("subscribe login data error: " + JSON.stringify(data))
+          this.replyerrors.push(info.body.error)
           this._router.navigate(['/customer/login'])
         } else {
           console.log("subscribe login data: " + JSON.stringify(data))
           this._router.navigate(['/customer/home'])
         }
       }, error => {
-          /**
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * working here
-           * //customer TypeError: Cannot read property 'get' of undefined. customer backend seems fine
-           *  possible formgroup error? maybe not?
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           * 
-           */
-          
-          console.log("customer login error: " + error)
-          //replyerrors is an array type
-          this.replyerrors.push(error)
-          this._router.navigate(['/customer/login']);
-        }
+        /**
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * working here
+         * //customer TypeError: Cannot read property 'get' of undefined. customer backend seems fine
+         *  possible formgroup error? maybe not?
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+
+        console.log("customer login error: " + error)
+        //replyerrors is an array type
+        this.replyerrors.push(error)
+        this._router.navigate(['/customer/login']);
+      }
       )
   }
 
