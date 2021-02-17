@@ -1,15 +1,14 @@
 <p>customerloginreg works!</p>
 <div class="container-fluid text-right">
-        <a class="mr-5" routerLink="/restaurant/login">
-            <button type="button" class="btn btn-dark">Restaurant login</button>
-        </a>
+    <a class="mr-5" routerLink="/restaurant/login">
+        <button type="button" class="btn btn-dark">Restaurant login</button>
+    </a>
 </div>
 <div class="container text-align center">
-        <h1>Customer Login and Registration</h1>
-    </div>
+    <h1>Customer Login and Registration</h1>
+</div>
 <div class="row">
-    <div class="col-3">
-    </div>
+    
     <div class="col-5 pull-right" *ngIf="replyerrors">
         <div *ngFor="let error of replyerrors">
             Error: <b>{{error}}</b>
@@ -89,7 +88,8 @@
                 <label class="mr-2">Password</label>
                 <input formControlName="password" />
                 <p></p>
-                <button class="btn btn-secondary rounded ml-2" type="submit" [disabled]="customer.pristine">Save</button>
+                <button class="btn btn-secondary rounded ml-2" type="submit"
+                    [disabled]="customer.pristine">Save</button>
                 <a class="btn btn-secondary rounded ml-2" routerLink="/customer/login">Cancel</a>
             </form>
         </div>

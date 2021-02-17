@@ -1,1 +1,41 @@
 <p>customerfindrestaurant works!</p>
+<div class="container-fluid" *ngIf="restaurants">
+    <p>
+    </p>
+        <h3 class="font-italic text-muted mb-4"> Some Restaurants Near You!</h3>
+    <div class="row no-gutters">
+        <div class="p-3 w-25 h-25" *ngFor="let restaurant of restaurants">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body p-0"><img src="https://images.otstatic.com/prod/23641903/1/medium.jpg" alt=""
+                        class="w-100 card-img-top">
+                    <div class="p-4">
+                        <h5 class="mb-0">{{restaurant.name}}</h5>
+                        <p class="small text-muted">{{restaurant.description}}</p>
+                        <!-- <ul class="social mb-0 list-inline mt-3">
+                            <li class="list-inline-item m-0"><a href="#" class="social-link"><i
+                                        class="fa fa-facebook-f"></i></a></li>
+                            <li class="list-inline-item m-0"><a href="#" class="social-link"><i
+                                        class="fa fa-twitter"></i></a></li>
+                            <li class="list-inline-item m-0"><a href="#" class="social-link"><i
+                                        class="fa fa-instagram"></i></a></li>
+                        </ul> -->
+                        <p></p>
+                        <a href="#" class="btn btn-default btn-xs border border-secondary"> Order Here</a>
+                    </div>
+                    
+                </div>
+            </div>
+            <!-- <div class="card">
+                <div class="card-body">
+                    <h5>{{restaurant.name}}</h5>
+                    <p>{{restaurant.description}}</p>
+                    <a href="#" class="btn btn-primary">
+
+                        Order here
+
+                    </a>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>

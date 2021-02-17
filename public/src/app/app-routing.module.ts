@@ -23,7 +23,7 @@ const routes: Routes = [
   
 
   // login component holds registration component as well
-  { path: '', pathMatch: 'full', redirectTo: 'blank' },
+  { path: '', pathMatch: 'full', redirectTo: 'customer/login' },
   //restaurant routes
   {
     path: 'restaurant', children: [
