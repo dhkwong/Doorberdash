@@ -6,6 +6,7 @@ import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.c
 import { CustomerupdateComponent } from './customerupdate/customerupdate.component';
 import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component'
 import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
+import { CustomerfindrestaurantComponent } from './customerfindrestaurant/customerfindrestaurant.component';
 
 //import components
 
@@ -37,6 +38,7 @@ const routes: Routes = [
       { path: 'login', component: CustomerloginregComponent },
       { path: 'home', component: CustomerhomeComponent },
       { path: 'update', component: CustomerupdateComponent },
+      {path:'findrestaurant', component:CustomerfindrestaurantComponent},
     ]
   },
 { path: '**', component: RestaurantloginregComponent }

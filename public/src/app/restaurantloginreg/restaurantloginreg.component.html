@@ -1,7 +1,13 @@
 <p>restaurantloginreg works!</p>
 
-
-<div class="container text-align center"><h1>Restaurant Login and Registration</h1></div>
+<div class="container-fluid text-right">
+            <a class="mr-5" routerLink="/customer/login">
+                <button type="button" class="btn btn-dark">Customer login</button>
+            </a>
+</div>
+<div class="container text-align center">
+    <h1>Restaurant Login and Registration</h1>
+</div>
 <div class="row">
     <div class="col-3">
     </div>
@@ -39,9 +45,9 @@
                 <label class="mr-2" for="password">Password</label>
                 <input type="text" name="password" id="registerpassword" ngModel />
                 <p></p>
-                
+
                 <input class="btn btn-dark rounded" type="submit" value="Register" />
-                
+
                 <a class="btn btn-secondary rounded ml-2" routerLink="/login">Cancel</a>
             </form>
         </div>

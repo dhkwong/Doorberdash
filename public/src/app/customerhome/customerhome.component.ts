@@ -27,5 +27,8 @@ export class CustomerhomeComponent implements OnInit {
       console.log("found customer in customerhome: "+this.customer)
     })
   }
+  logOut(){
+    //destroy JWT token
+  }
 
 }
