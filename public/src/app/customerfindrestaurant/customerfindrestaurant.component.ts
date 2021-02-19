@@ -30,6 +30,13 @@ export class CustomerfindrestaurantComponent implements OnInit {
     })
   }
 
+  // orderFromRestaurant(id:any){
+  //   this._httpService.getRestaurantById(id).subscribe(data=>{
+  //     console.log("restaurant found in orderFromRestaurant")
+  //     this._router.navigate(['/customer/${id}/order'])
+  //   })
+  // }
+
   logOut(){
 
   }

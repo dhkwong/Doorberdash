@@ -7,6 +7,7 @@ import { CustomerupdateComponent } from './customerupdate/customerupdate.compone
 import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component'
 import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
 import { CustomerfindrestaurantComponent } from './customerfindrestaurant/customerfindrestaurant.component';
+import { CustomerorderfromrestaurantComponent } from './customerorderfromrestaurant/customerorderfromrestaurant.component';
 
 //import components
 
@@ -39,6 +40,7 @@ const routes: Routes = [
       { path: 'home', component: CustomerhomeComponent },
       { path: 'update', component: CustomerupdateComponent },
       {path:'findrestaurant', component:CustomerfindrestaurantComponent},
+      {path:':id/order', component:CustomerorderfromrestaurantComponent},
     ]
   },
 { path: '**', component: RestaurantloginregComponent }

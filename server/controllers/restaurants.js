@@ -34,7 +34,16 @@ module.exports = {
     all: async (req, res) => {
         try {
             const restaurants = await Restaurant.find();
-            res.json({ restaurants: restaurants });
+            let temprestaurant = restaurants
+            //remove password to sanitize data
+            temprestaurant.forEach(function(item){
+                console.log("pass: "+item.password)
+                //password cannot be configured so we change it to undefined
+                item.password = undefined
+                return item
+            })
+            console.log("temprestaurant: "+temprestaurant)
+            res.json({ restaurants: temprestaurant });
         }
         catch (err) {
             res.json(err);
@@ -77,7 +86,10 @@ module.exports = {
         Restaurant.findById({ _id: req.params.id })
             .populate('customer')
             .then((data) => {
-                res.json({ restaurant: data })
+                let temprestaurant = data
+                delete temprestaurant.password
+                //return restaurant data without password
+                res.json({ restaurant: temprestaurant })
             })
             .catch(err => res.json(err));
     },

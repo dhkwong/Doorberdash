@@ -155,6 +155,13 @@ export class HttpService {
 
     return this._http.get(`/api/restaurants`)
   }
+
+  //gets a restaurant data by ID
+  getRestaurantById(id:any){
+    console.log("gettting restaurant in http service by ID")
+    return this._http.get('/api/restaurants/${id}/getrestaurantbyid')
+
+  }
   // get ONE logged in restaurant
   getRestaurant() {
     //header set in tokeninterceptor from cookie for jwt validation

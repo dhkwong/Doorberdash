@@ -24,6 +24,7 @@ router
   .post('/restaurantregister', loginreg.restaurantRegister)
   //WORKING finds restaurant through Authorization 'JWT' token in header for id
   .get('/findrestaurant', restaurants.findLoggedInRestaurant)
+  .get('/:id/getrestaurantbyid', restaurants.getOneById)
 
   /* restaurant logic */
   //organize routes by restaurants.js

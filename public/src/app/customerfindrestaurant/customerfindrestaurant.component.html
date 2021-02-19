@@ -1,4 +1,7 @@
 <p>customerfindrestaurant works!</p>
+<div class="container-fluid text-right">
+    <a  routerLink="/customer/home" class="btn btn-default btn-xs border border-secondary">Home</a>
+</div>
 <div class="container-fluid" *ngIf="restaurants">
     <p>
     </p>
@@ -9,6 +12,7 @@
                 <div class="card-body p-0"><img src="https://images.otstatic.com/prod/23641903/1/medium.jpg" alt=""
                         class="w-100 card-img-top">
                     <div class="p-4">
+                        {{restaurant._id}}
                         <h5 class="mb-0">{{restaurant.name}}</h5>
                         <p class="small text-muted">{{restaurant.description}}</p>
                         <!-- <ul class="social mb-0 list-inline mt-3">
@@ -20,22 +24,11 @@
                                         class="fa fa-instagram"></i></a></li>
                         </ul> -->
                         <p></p>
-                        <a href="#" class="btn btn-default btn-xs border border-secondary"> Order Here</a>
+                        <a [routerLink]="['/customer/', restaurant._id,'order']" class="btn btn-default btn-xs border border-secondary"> Order Here</a>
                     </div>
                     
                 </div>
             </div>
-            <!-- <div class="card">
-                <div class="card-body">
-                    <h5>{{restaurant.name}}</h5>
-                    <p>{{restaurant.description}}</p>
-                    <a href="#" class="btn btn-primary">
-
-                        Order here
-
-                    </a>
-                </div>
-            </div> -->
         </div>
     </div>
 </div>

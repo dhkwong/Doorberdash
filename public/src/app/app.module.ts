@@ -16,6 +16,7 @@ import { RestaurantupdateComponent } from './restaurantupdate/restaurantupdate.c
 import { RestaurantloginregComponent } from './restaurantloginreg/restaurantloginreg.component';
 import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component';
 import { CustomerfindrestaurantComponent } from './customerfindrestaurant/customerfindrestaurant.component';
+import { CustomerorderfromrestaurantComponent } from './customerorderfromrestaurant/customerorderfromrestaurant.component';
 
 
 
@@ -29,6 +30,7 @@ import { CustomerfindrestaurantComponent } from './customerfindrestaurant/custom
     RestaurantloginregComponent,
     CustomerloginregComponent,
     CustomerfindrestaurantComponent,
+    CustomerorderfromrestaurantComponent,
 
   ],
   imports: [
