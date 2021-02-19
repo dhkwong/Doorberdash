@@ -88,6 +88,7 @@ module.exports = {
             .then((data) => {
                 let temprestaurant = data
                 delete temprestaurant.password
+                console.log("getting one restaurant in restaurants.js: "+temprestaurant)
                 //return restaurant data without password
                 res.json({ restaurant: temprestaurant })
             })

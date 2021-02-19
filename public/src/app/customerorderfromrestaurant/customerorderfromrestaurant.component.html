@@ -1,5 +1,23 @@
 <p>customerorderfromrestaurant works!</p>
 <div *ngIf="restaurant">
-    {{restaurant}}
+    <div class="pos-f-t text-center">
+        <div class="collapse" id="navbarToggleExternalContent">
+          <div class="bg-dark p-4">
+            <h5 class="text-white h4">Collapsed content</h5>
+            <span class="text-muted">Toggleable via the navbar brand.</span>
+          </div>
+        </div>
+        
+        <nav class="navbar navbar-dark bg-dark text-right border border-primary">
+          <button class="navbar-toggler border border-danger" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class=" container-fluid text-center">
+
+              <h3 class="text-white p-4 border border-primary">{{restaurant.name}}</h3>
+          </div>
+        </nav>
+      </div>
+    {{restaurant.name}}
 
 </div>

@@ -27,7 +27,8 @@ export class CustomerorderfromrestaurantComponent implements OnInit {
       this._httpService.getRestaurantById(id).subscribe(data=>{
         this.restaurant = data
         this.restaurant = this.restaurant.restaurant
-        console.log(data)
+
+        console.log("data: "+data)
       })
 
     })
