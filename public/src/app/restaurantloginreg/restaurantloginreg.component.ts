@@ -27,11 +27,23 @@ export class RestaurantloginregComponent implements OnInit {
     let formvalue = form.value;
     // console.log("username: " + this.loginUser.username + " Pass: " + this.loginUser.password)
     this._httpService.restaurantLogin(formvalue)
-    .subscribe(data => {
+    .subscribe((data:any) => {
       //login fails
-      if (JSON.stringify(data) === '{"login":false}') {
+      // if  ('error' in data.body) {
+      //   console.log("subscribe login data error: " + JSON.stringify(data))
+      //   this.replyerrors.push(data.body.error)
+      //   this._router.navigate(['/restaurant/login'])
+      // }
+      // else 
+      this.replyerrors = []
+      if("error" in data.body){
+        console.log("error in login: "+data.body.error)
+        this.replyerrors.push(data.body.error)
+        this._router.navigate['/restaurant/login']
+      }
+      else if (JSON.stringify(data.body) === '{"login":false}') {
       console.log("subscribe login data: " + JSON.stringify(data))
-      this._router.navigate(['/restaurantloginreg'])
+      this._router.navigate(['/restaurant/login'])
       }else{
         //login succeeds
         console.log("subscribe login data: " + JSON.stringify(data))

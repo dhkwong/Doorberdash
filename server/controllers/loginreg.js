@@ -78,10 +78,11 @@ module.exports = {
     passport.authenticate('loginRestaurant', (err, user, info) => {
       if (err) {
         console.log(err);
+        res.json({login:false,error:err})
       }
       if (info != undefined) {
         console.log(info.message);
-        res.json(info.message);
+        res.json({login:false,error: info.message});
       } else {
         req.logIn(user, err => {
           Restaurant.findOne({
@@ -130,7 +131,7 @@ module.exports = {
             res.header("JWT", token).json({ login: true, restaurant: temprestaurant })
           })
             .catch(err => {
-              res.json({ error: err })
+              res.json({login:false, error: err })
             })
         });
       }

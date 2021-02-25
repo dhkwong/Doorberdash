@@ -23,7 +23,7 @@ export class RestauranthomeComponent implements OnInit {
   findRestaurant(){
     this._httpService.getRestaurant().subscribe(restaurant=>{
       this.restaurant = restaurant
-      this.restaurant = this.restaurant.restaurant
+      // this.restaurant = this.restaurant.restaurant
       console.log("logged in restaurant in restauranthome"+ JSON.stringify(this.restaurant))
     })
   }

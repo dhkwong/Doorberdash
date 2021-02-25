@@ -17,6 +17,8 @@ import { RestaurantloginregComponent } from './restaurantloginreg/restaurantlogi
 import { CustomerloginregComponent } from './customerloginreg/customerloginreg.component';
 import { CustomerfindrestaurantComponent } from './customerfindrestaurant/customerfindrestaurant.component';
 import { CustomerorderfromrestaurantComponent } from './customerorderfromrestaurant/customerorderfromrestaurant.component';
+import { RestaurantupdatemenuComponent} from './restaurantupdatemenu/restaurantupdatemenu.component';
+import { CustomerplaceorderComponent } from './customerplaceorder/customerplaceorder.component';
 
 
 
@@ -31,6 +33,8 @@ import { CustomerorderfromrestaurantComponent } from './customerorderfromrestaur
     CustomerloginregComponent,
     CustomerfindrestaurantComponent,
     CustomerorderfromrestaurantComponent,
+    RestaurantupdatemenuComponent,
+    CustomerplaceorderComponent,
 
   ],
   imports: [
