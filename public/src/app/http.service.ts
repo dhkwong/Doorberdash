@@ -179,6 +179,10 @@ export class HttpService {
     console.log("getting dish from restaurant menu in http service")
     return this._http.get(`/api/restaurants/${id}/${did}/dish`)
   }
+  addDishToRestaurant(dish:any){
+    console.log("adding dish to restaurant in http service")
+    return this._http.put(`/api/restaurants/dish`,dish)
+  }
   // create a restaurant
   //outdated by restaurantRegister
   createRestaurant(newRestaurant: any) {
@@ -196,9 +200,9 @@ export class HttpService {
     return this._http.get(`/api/restaurants/${id}/dish`, dish)
   }
   // delete dish from restaurant menu
-  deleteDish(id: any, did: any) {
+  deleteDish(did: any) {
     console.log("deleting dish from restaurant menu in http service")
-    return this._http.get(`/api/restaurants/${id}/${did}/dish`)
+    return this._http.delete(`/api/restaurants/${did}/dish`)
   }
   // delete restaurant
   deleteRestaurant(id: any) {

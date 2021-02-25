@@ -19,6 +19,7 @@ import { CustomerfindrestaurantComponent } from './customerfindrestaurant/custom
 import { CustomerorderfromrestaurantComponent } from './customerorderfromrestaurant/customerorderfromrestaurant.component';
 import { RestaurantupdatemenuComponent} from './restaurantupdatemenu/restaurantupdatemenu.component';
 import { CustomerplaceorderComponent } from './customerplaceorder/customerplaceorder.component';
+import { RestauranteditdishComponent } from './restauranteditdish/restauranteditdish.component';
 
 
 
@@ -35,6 +36,7 @@ import { CustomerplaceorderComponent } from './customerplaceorder/customerplaceo
     CustomerorderfromrestaurantComponent,
     RestaurantupdatemenuComponent,
     CustomerplaceorderComponent,
+    RestauranteditdishComponent,
 
   ],
   imports: [

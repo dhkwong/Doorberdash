@@ -217,11 +217,11 @@ module.exports = {
                 res.json({ error: info.message })
                 // res.end()
             } else {
-                console.log("dish created and added: " + req.body)
-                // newdish.save()
+                console.log("dish created and added: " + JSON.stringify(req.body))
+               
                 //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
                 Restaurant.updateOne({ _id: restaurant._id, 'dish.name': { $ne: req.body.name } },
-                    { $addToSet: { dish: newdish } })
+                    { $addToSet: { dish: req.body } })
                     .then((updatedRestaurant) => {
                         //validator for dish update. Model.n is how many values were changed. It will always be 1 since we only add dishes one at a time
                         if (updatedRestaurant.n === 1) {
@@ -267,6 +267,7 @@ module.exports = {
             }
         })(req, res, next)
     },
+    
 
     /*
     *

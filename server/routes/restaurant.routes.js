@@ -35,6 +35,7 @@ router
   //WORKING WITH PASSPORT AUTHENTICATION get one dish from restaurant
   .get('/:did/getdish',restaurants.getDishFromLoggedInRestaurant)
   //WORKING WITH PASSPORT has to be BEFORE put /:id since otherwise it reads "dish" as an id
+  //adds one dish to logged in restauraunt's menu
   .put('/dish', restaurants.addDishToLoggedInRestaurant)
   //WORKING WITH PASSPORT update restaurant
   .put('/', restaurants.update)

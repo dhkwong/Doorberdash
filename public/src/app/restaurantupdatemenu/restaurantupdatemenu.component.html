@@ -1,10 +1,58 @@
 <p>restaurantupdatemenu works!</p>
-<div *ngIf="restaurant">
-    <div *ngIf="menu">
-        menu here
-        {{menu}}
+<div class="container-fluid" *ngIf="restaurant">
+<h1 class="text-secondary">Restaurant: {{restaurant.name}}</h1>
+<div *ngIf="menu">
+<table class="table m-0" >
+    <thead>
+        <tr>
 
-    </div>
-{{restaurant.name}}
+            <th scope="col">Dish</th>
+            <th scope="col">Description</th>
+            <th scope="col">Time to Cook</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody *ngFor="let dish of menu">
+        <tr>
 
+            <td>{{dish.name}}</td>
+            <td>{{dish.description}}</td>
+            <td>{{dish.time}}</td>
+            <td>
+                <!-- Call to action buttons -->
+                <ul class="list-inline m-0">
+                    <li class="list-inline-item">
+                        <button (click)="deleteDish(dish._id)" class="btn btn-danger btn-sm rounded-1" type="button" data-toggle="tooltip"
+                            data-placement="top" title="Delete">X</button>
+                    </li>
+                    <li class="list-inline-item">
+                        <button (click)="editDish(dish._id)" class="btn btn-primary btn-sm rounded-1" type="button" data-toggle="tooltip"
+                            data-placement="top" title="Edit">Edit</button>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<div class="container" *ngIf="dish">
+    <h3>Add New dish</h3>
+    <form #form="ngForm" (ngSubmit)="addDish(form)">
+        <div class="form-group">
+            <!-- references template variable #form -->
+            <label for="form">Dish Name</label>
+
+            <input type="text" class="form-control" id="name" name="name" [(ngModel)]="dish.name" required>
+            <label for="form">Dish Description </label>
+            <input type="text" class="form-control" id="description" name="description" [(ngModel)]="dish.description "
+                required>
+            <label for="form">Time to prepare</label>
+            <input type="text" class="form-control" id="time" name="time" [(ngModel)]="dish.time" required>
+        </div>
+
+
+        <button type="submit" class="btn btn-dark">Submit Dish</button>
+    </form>
+</div>
 </div>
