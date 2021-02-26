@@ -1,0 +1,23 @@
+<p>restaurantupdatedish works!</p>
+<div *ngIf="dish">
+    {{dish.name}}
+    
+        <h3>Add New dish</h3>
+        <form #form="ngForm" (ngSubmit)="updateDish(form)">
+            <div class="form-group">
+                <!-- references template variable #form -->
+                <label for="form">Dish Name</label>
+    
+                <input type="text" class="form-control" id="name" name="name" [(ngModel)]="dish.name" required>
+                <label for="form">Dish Description </label>
+                <input type="text" class="form-control" id="description" name="description" [(ngModel)]="dish.description "
+                    required>
+                <label for="form">Time to prepare</label>
+                <input type="text" class="form-control" id="time" name="time" [(ngModel)]="dish.time" required>
+            </div>
+    
+    
+            <button type="submit" class="btn btn-dark">Update Dish</button>
+        </form>
+    
+</div>

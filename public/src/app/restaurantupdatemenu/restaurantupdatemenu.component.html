@@ -18,6 +18,7 @@
             <td>{{dish.name}}</td>
             <td>{{dish.description}}</td>
             <td>{{dish.time}}</td>
+           
             <td>
                 <!-- Call to action buttons -->
                 <ul class="list-inline m-0">
@@ -26,7 +27,7 @@
                             data-placement="top" title="Delete">X</button>
                     </li>
                     <li class="list-inline-item">
-                        <button (click)="editDish(dish._id)" class="btn btn-primary btn-sm rounded-1" type="button" data-toggle="tooltip"
+                        <button  [routerLink]="['/restaurant/update', dish._id,'dish']" class="btn btn-primary btn-sm rounded-1" type="button" data-toggle="tooltip"
                             data-placement="top" title="Edit">Edit</button>
                     </li>
                 </ul>

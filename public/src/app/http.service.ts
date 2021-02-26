@@ -175,29 +175,33 @@ export class HttpService {
     return this._http.get(`/api/restaurants/${id}/dish`)
   }
   //get ONE dish from restaurant
-  getDish(id: any, did: any) {
+  getDish(did: any) {
     console.log("getting dish from restaurant menu in http service")
-    return this._http.get(`/api/restaurants/${id}/${did}/dish`)
+    return this._http.get(`/api/restaurants/${did}/getdish`)
   }
+  // add dish to restaurant menu
+  // addDish(id: any, dish: any) {
+  //   console.log("getting dish from restaurant menu in http service")
+  //   return this._http.get(`/api/restaurants/${id}/dish`, dish)
+  // }
   addDishToRestaurant(dish:any){
     console.log("adding dish to restaurant in http service")
     return this._http.put(`/api/restaurants/dish`,dish)
   }
   // create a restaurant
   //outdated by restaurantRegister
-  createRestaurant(newRestaurant: any) {
-    console.log("creating restaurant in http service")
-    return this._http.get(`/api/restaurants`, newRestaurant)
-  }
+  // createRestaurant(newRestaurant: any) {
+  //   console.log("creating restaurant in http service")
+  //   return this._http.get(`/api/restaurants`, newRestaurant)
+  // }
   // update restaurant
   updateRestaurant(id: any, updatedRestaurant) {
     console.log("getting customer from restaurant")
     return this._http.get(`/api/restaurants/${id}`, updatedRestaurant)
   }
-  // add dish to restaurant menu
-  addDish(id: any, dish: any) {
-    console.log("getting dish from restaurant menu in http service")
-    return this._http.get(`/api/restaurants/${id}/dish`, dish)
+  updateDishInRestaurant(did:any,dish:any){
+    console.log("updating dish in restaurant menu in http service")
+    return this._http.put(`/api/restaurants/${did}/editdish`,dish)
   }
   // delete dish from restaurant menu
   deleteDish(did: any) {

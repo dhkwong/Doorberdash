@@ -197,7 +197,13 @@ module.exports = {
 
                 Restaurant.findOne({ _id: restaurant.id }, { dish: { $elemMatch: { _id: req.params.did } } })
                     .then(dish => {
-                        res.json({ dish: dish })
+                        //dish is a Document, so we have to convert to object for manipulation
+                        let newdish = dish.toObject()
+                        //delete restaurant ID
+                        delete newdish._id
+                        
+                        console.log("retrieved dish: "+JSON.stringify(newdish))
+                        res.json({ dish: newdish.dish[0] })
                     })
             }
         })(req, res, next)
@@ -237,6 +243,41 @@ module.exports = {
                     })
             }
         })(req, res, next);
+    },
+    //TESTING 
+    updateDishInLoggedInRestaurant:(req,res,next)=>{
+        passport.authenticate('jwt-restaurant',{session:false},(err,restaurant,info)=>{
+            if (err) {
+                console.log({ err: err })
+            }
+            //checking for authorization issues in jwt-restaurant strategy
+            if (info != undefined) {
+                console.log(info.message)
+                res.json({ error: info.message })
+                // res.end()
+            } else {
+                console.log("editing dish: "+JSON.stringify(req.body)+JSON.stringify(req.params.did))
+                Restaurant.updateOne({_id:restaurant._id,'dish':{$elemMatch:{'_id':req.params.did}}},{$set:{
+                    "dish.$.name":req.body.name,
+                    "dish.$.description":req.body.description,
+                    "dish.$.time":req.body.time
+                }})
+                .then((updatedDish)=>{
+                    console.log("updating dish results: "+JSON.stringify(updatedDish))
+                    if(updatedDish.n ===1){
+                        res.json(true)
+                    }else{
+                        res.json({error: "update failed"})
+                    }
+                })
+                .catch( err=>{
+                    console.log("updateDishInLoggedInRestaurant: "+err)
+                    res.json({error:err})
+                }
+
+                )
+            }
+        })(req,res,next)
     },
 
     //WORKING delete dish from a restaurant menu
