@@ -244,7 +244,7 @@ module.exports = {
             }
         })(req, res, next);
     },
-    //TESTING 
+    //WORKING error handling not fully fleshed out and tested yet
     updateDishInLoggedInRestaurant:(req,res,next)=>{
         passport.authenticate('jwt-restaurant',{session:false},(err,restaurant,info)=>{
             if (err) {
@@ -256,8 +256,8 @@ module.exports = {
                 res.json({ error: info.message })
                 // res.end()
             } else {
-                console.log("editing dish: "+JSON.stringify(req.body)+JSON.stringify(req.params.did))
-                Restaurant.updateOne({_id:restaurant._id,'dish':{$elemMatch:{'_id':req.params.did}}},{$set:{
+                console.log("editing dish: "+JSON.stringify(req.body))
+                Restaurant.updateOne({_id:restaurant._id,'dish':{$elemMatch:{'_id':req.body.id}}},{$set:{
                     "dish.$.name":req.body.name,
                     "dish.$.description":req.body.description,
                     "dish.$.time":req.body.time

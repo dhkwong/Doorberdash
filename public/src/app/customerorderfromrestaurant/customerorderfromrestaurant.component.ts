@@ -8,7 +8,8 @@ import {HttpService} from '../http.service'
   styleUrls: ['./customerorderfromrestaurant.component.css']
 })
 export class CustomerorderfromrestaurantComponent implements OnInit {
-  restaurant:any
+  restaurant:any[]
+  order:any;
 
   errors:any
   constructor(
@@ -24,11 +25,12 @@ export class CustomerorderfromrestaurantComponent implements OnInit {
     this._route.paramMap.subscribe((params)=>{
       let id = params.get('id')
       console.log("restaurant id: "+id)
-      this._httpService.getRestaurantById(id).subscribe(data=>{
-        this.restaurant = data
-        this.restaurant = this.restaurant.restaurant
+      //make new backend function, getMenuFromRestaurantById
+      this._httpService.getMenuFromRestaurantById(id).subscribe((data:any)=>{
+        this.restaurant= data.menu
+        // this.restaurant = this.restaurant.restaurant
 
-        console.log("data: "+data)
+        console.log("data: "+JSON.stringify(data))
       })
 
     })

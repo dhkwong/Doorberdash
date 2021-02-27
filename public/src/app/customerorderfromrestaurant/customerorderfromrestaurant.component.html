@@ -1,34 +1,73 @@
 <p>customerorderfromrestaurant works!</p>
 <div *ngIf="restaurant">
-    <div class="pos-f-t text-center">
-        <div class="collapse" id="navbarToggleExternalContent">
-          <div class="bg-dark p-4">
-            <h5 class="text-white h4">Collapsed content</h5>
-            <span class="text-muted">Toggleable via the navbar brand.</span>
-          </div>
-        </div>
-
-        
-        <nav class="navbar navbar-dark bg-dark text-right inline-block">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <a class="text-white" routerLink="/customer/login">Logout</a>
-          <div class="container-fluid d-flex justify-content-center ">
-            <div class="row-6  text-left"></div>
-              <h2 class="text-white p-4 ">{{restaurant.name}}</h2>
-          </div>
-        </nav>
+  <div class="pos-f-t text-center">
+    <div class="collapse" id="navbarToggleExternalContent">
+      <div class="bg-dark p-4">
+        <h5 class="text-white h4">Collapsed content</h5>
+        <span class="text-muted">Toggleable via the navbar brand.</span>
       </div>
-    <div class="container-fluid">
-      <h2 class="pl-4 pt-4">Menu</h2>
-      <!-- Order Form here -->
-      <h3>Order Form here</h3>
-     <form #order = "ngForm" >
-
-     </form>
-
-      
     </div>
+
+
+    <nav class="navbar navbar-dark bg-dark text-right inline-block">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent"
+        aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="text-white" routerLink="/customer/login">Logout</a>
+      <div class="container-fluid d-flex justify-content-center ">
+        <div class="row-6  text-left"></div>
+        <h2 class="text-white p-4 ">{{restaurant.name}}</h2>
+      </div>
+    </nav>
+  </div>
+  <div class="container-fluid">
+    <h2 class="pl-4 pt-4">Menu</h2>
+    <!-- Order Form here -->
+    <h3>Order Form here</h3>
+    <form #order="ngForm">
+
+    </form>
+    <table class="table m-0">
+      <thead>
+        <tr>
+
+          <th scope="col">Dish</th>
+          <th scope="col">Description</th>
+          <th scope="col">Time to Cook</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let dish of restaurant">
+        <tr>
+
+          <td>{{dish.name}}</td>
+          <td>{{dish.description}}</td>
+          <td>{{dish.time}}</td>
+
+          <td>
+            <!-- Call to action buttons -->
+            <ul class="list-inline m-0">
+
+              <li class="list-inline-item">
+                <input (click)="orderDish(dish._id)" class="rounded-1" type="number"
+                  data-toggle="tooltip" data-placement="top" title="Delete" value="0">
+              </li>
+              <li class="list-inline-item">
+                <button (click)="orderDish(dish._id)" class="btn btn-danger btn-sm rounded-1" type="button"
+                  data-toggle="tooltip" data-placement="top" title="Delete">Order</button>
+              </li>
+              <li class="list-inline-item">
+                <button [routerLink]="['/restaurant/update', dish._id,'dish']" class="btn btn-primary btn-sm rounded-1"
+                  type="button" data-toggle="tooltip" data-placement="top" title="Edit">Edit</button>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+  </div>
 
 </div>

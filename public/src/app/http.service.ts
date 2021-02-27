@@ -157,7 +157,7 @@ export class HttpService {
   }
 
   //gets a restaurant data by ID
-  getRestaurantById(id:any){
+  getRestaurantById(id: any) {
     console.log("gettting restaurant in http service by ID")
     return this._http.get(`/api/restaurants/${id}/getrestaurantbyid`)
 
@@ -184,9 +184,9 @@ export class HttpService {
   //   console.log("getting dish from restaurant menu in http service")
   //   return this._http.get(`/api/restaurants/${id}/dish`, dish)
   // }
-  addDishToRestaurant(dish:any){
+  addDishToRestaurant(dish: any) {
     console.log("adding dish to restaurant in http service")
-    return this._http.put(`/api/restaurants/dish`,dish)
+    return this._http.put(`/api/restaurants/dish`, dish)
   }
   // create a restaurant
   //outdated by restaurantRegister
@@ -199,9 +199,9 @@ export class HttpService {
     console.log("getting customer from restaurant")
     return this._http.get(`/api/restaurants/${id}`, updatedRestaurant)
   }
-  updateDishInRestaurant(did:any,dish:any){
+  updateDishInRestaurant(dish: any) {
     console.log("updating dish in restaurant menu in http service")
-    return this._http.put(`/api/restaurants/${did}/editdish`,dish)
+    return this._http.put(`/api/restaurants/editdish`, dish)
   }
   // delete dish from restaurant menu
   deleteDish(did: any) {
@@ -323,6 +323,11 @@ export class HttpService {
   updateCustomer(cid: any, newCustomer: any) {
     console.log("updating customer in http service")
     return this._http.put(`/api/customers/${cid}`, newCustomer)
+  }
+  //for customers to retrieve menus from restaurant use
+  getMenuFromRestaurantById(id: any) {
+    console.log("customer getting restaurant menu in http service")
+    return this._http.get(`/api/customers/${id}/menu`)
   }
   //deletes customer
   deleteCustomer(cid: any) {

@@ -6,8 +6,8 @@
         <form #form="ngForm" (ngSubmit)="updateDish(form)">
             <div class="form-group">
                 <!-- references template variable #form -->
+                <input type="hidden" id="id" name="id" value="dish._id" [(ngModel)]="dish._id">
                 <label for="form">Dish Name</label>
-    
                 <input type="text" class="form-control" id="name" name="name" [(ngModel)]="dish.name" required>
                 <label for="form">Dish Description </label>
                 <input type="text" class="form-control" id="description" name="description" [(ngModel)]="dish.description "
@@ -18,6 +18,7 @@
     
     
             <button type="submit" class="btn btn-dark">Update Dish</button>
+            <button routerLink="/restaurant/update/menu" class="btn btn-secondary ml-2">Cancel</button>
         </form>
     
 </div>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const customers = require('./../controllers/customers');
+
 const loginreg = require('../controllers/loginreg')
 
 router
@@ -12,6 +13,8 @@ router
 
     .get('/', customers.all)
     .get('/:id', customers.getOneById)
+    //get menu for customer
+    .get('/:id/menu', customers.getMenuFromRestaurantById)
     //now customerregister
     .post('/', customers.create)
     //need to add jwt verification 

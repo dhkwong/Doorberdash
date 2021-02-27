@@ -37,7 +37,7 @@ router
   //WORKING WITH PASSPORT has to be BEFORE put /:id since otherwise it reads "dish" as an id
   .put('/dish', restaurants.addDishToLoggedInRestaurant)
   //edits dish in logged in restaurant's menu
-  .put('/:did/editdish', restaurants.updateDishInLoggedInRestaurant)
+  .put('/editdish', restaurants.updateDishInLoggedInRestaurant)
   //adds one dish to logged in restauraunt's menu
   //WORKING WITH PASSPORT update restaurant
   .put('/', restaurants.update)

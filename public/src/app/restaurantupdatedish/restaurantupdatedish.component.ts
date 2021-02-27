@@ -28,6 +28,7 @@ export class RestaurantupdatedishComponent implements OnInit {
       this._httpService.getDish(did).subscribe(data=>{
         this.dish = data
         this.dish = this.dish.dish
+        console.log("got dish: "+JSON.stringify(this.dish))
       })
 
     })
@@ -35,12 +36,12 @@ export class RestaurantupdatedishComponent implements OnInit {
 
   //TESTING UPDATED LOGGED IN DISH IN RESTAURANTS.JS
   updateDish(form:NgForm){
-    this._httpService.updateDishInRestaurant(this.did,form.value).subscribe((data:any)=>{
-      console.log("updatedata: "+JSON.stringify(data))
+    this._httpService.updateDishInRestaurant(form.value).subscribe((data:any)=>{
+      console.log("formdata: "+JSON.stringify(form.value))
       if(data === true){
         this._router.navigate(['/restaurant/update/menu'])
       }else if(data.error){
-        this.replyerrors = data.console.error;
+        this.replyerrors = data.error;
         window.location.reload()
         
       }
