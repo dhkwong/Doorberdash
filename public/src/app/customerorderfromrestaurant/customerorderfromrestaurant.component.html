@@ -25,7 +25,12 @@
     <h2 class="pl-4 pt-4">Menu</h2>
     <!-- Order Form here -->
     <h3>Order Form here</h3>
+
     <form #order="ngForm">
+      <div>
+        change the form below so that each click adds to a map of order:order count.
+        that way it's easier to add and delete from the order as well as add to the final order.
+      </div>
 
     </form>
     <table class="table m-0">
@@ -39,6 +44,7 @@
         </tr>
       </thead>
       <tbody *ngFor="let dish of restaurant">
+
         <tr>
 
           <td>{{dish.name}}</td>
@@ -48,8 +54,17 @@
           <td>
             <!-- Call to action buttons -->
             <ul class="list-inline m-0">
-
               <li class="list-inline-item">
+                <input class="rounded-1" type="number" value="0" #order>
+
+                <button (click)="addDish(dish.name, order.value)" class="btn btn-danger btn-sm rounded-1"
+                  type="button">Order</button>
+              </li>
+              <li class="list-inline-item">
+                <button [routerLink]="['/restaurant/update', dish._id,'dish']" class="btn btn-primary btn-sm rounded-1"
+                  type="button" data-toggle="tooltip" data-placement="top" title="Edit">Edit</button>
+              </li>
+              <!-- <li class="list-inline-item">
                 <input (click)="orderDish(dish._id)" class="rounded-1" type="number"
                   data-toggle="tooltip" data-placement="top" title="Delete" value="0">
               </li>
@@ -60,12 +75,21 @@
               <li class="list-inline-item">
                 <button [routerLink]="['/restaurant/update', dish._id,'dish']" class="btn btn-primary btn-sm rounded-1"
                   type="button" data-toggle="tooltip" data-placement="top" title="Edit">Edit</button>
-              </li>
+              </li> -->
             </ul>
           </td>
         </tr>
       </tbody>
     </table>
+    <div *ngIf="orders">
+      <div  *ngFor="let item of orders | keyvalue">
+
+        Order: {{item.key}} | Count: {{item.value}}
+
+
+      </div>
+
+    </div>
 
 
   </div>
