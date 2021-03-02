@@ -96,7 +96,7 @@ module.exports = {
         })(req, res, next)
     },
        //authenticates by Customer since it is used only by customer
-   //TESTING returns an array of dish objects 
+   //WORKING returns an array of dish objects 
    getMenuFromRestaurantById: (req,res,next)=>{
     passport.authenticate('jwt-customer',{session:false},(err, restaurant, info)=>{
         console.log("restaurant id for menu: "+JSON.stringify(req.params))
