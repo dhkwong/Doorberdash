@@ -686,6 +686,27 @@ module.exports = {
             }
         })(req, res, next)
     },
+
+    //TESTING adds all orders in an array of orders to restaurant under a customer
+    //req.body contains orders array and restaurant id as .orders and .id respectively
+    addOrders:(req,res,next)=>{
+        passport.authenticate('jwt-customer',{session:false},(err,restaurant,info)=>{
+            if(err){
+                res.json({error:err})
+            }
+            if(info!=undefined){
+                console.log("info error at restaurants.js addOrders: "+JSON.stringify(info))
+            } else{
+                //find restaurant 
+                //find customer
+                for(let dish in req.body.orders){
+                    //use the restaurant menu to compare with the array of orders given and see if they match by ID to menu
+                    //iterate through each dish and add
+                }
+
+            }
+        })
+    },
     //WORKING Adds ONE order to a customer
     // addOrder: (req, res) => {
 

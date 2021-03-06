@@ -55,9 +55,9 @@
             <!-- Call to action buttons -->
             <ul class="list-inline m-0">
               <li class="list-inline-item">
-                <input class="rounded-1" type="number" value="0" #order>
+                <input class="rounded-1" type="number" value="0" #count>
 
-                <button (click)="addDish(dish.name, order.value)" class="btn btn-danger btn-sm rounded-1"
+                <button (click)="addDish(dish.name, count.value)" class="btn btn-danger btn-sm rounded-1"
                   type="button">Order</button>
               </li>
               <li class="list-inline-item">
@@ -81,11 +81,15 @@
         </tr>
       </tbody>
     </table>
+    <div>
+      <h1 class="text-secondary">My Order</h1>
+    </div>
     <div *ngIf="orders">
       <div  *ngFor="let item of orders | keyvalue">
-
-        Order: {{item.key}} | Count: {{item.value}}
-
+        
+        Dish: {{item.key}} | Count: {{item.value}}
+        <p></p>
+        <hr> 
 
       </div>
 

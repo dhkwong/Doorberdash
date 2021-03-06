@@ -57,4 +57,8 @@ export class CustomerorderfromrestaurantComponent implements OnInit {
     }
 
     }
+    submitOrder(){
+      console.log("submitting order: "+this.orders)
+      //pass the restaurant ID in the body
+    }
 }

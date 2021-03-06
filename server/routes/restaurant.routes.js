@@ -66,6 +66,8 @@ router
   .get('/:id/:cid/order', restaurants.getCustomerOrders)
   //adds one order to customer
   // .put('/:id/:cid/order', restaurants.addOrder)
+  //adds all orders to customer in restaurant
+  .put('/order',restaurants.addOrders)
   //better addOrder uses jwt and pulls dish ID from restaurant. uses /:did/getdish logic
   .put('/:cid/:did/order', restaurants.jwtAddOrder)
   //deletes one order from customer
