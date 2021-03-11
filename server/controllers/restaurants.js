@@ -36,13 +36,13 @@ module.exports = {
             const restaurants = await Restaurant.find();
             let temprestaurant = restaurants
             //remove password to sanitize data
-            temprestaurant.forEach(function(item){
-                console.log("pass: "+item.password)
+            temprestaurant.forEach(function (item) {
+                console.log("pass: " + item.password)
                 //password cannot be configured so we change it to undefined
                 item.password = undefined
                 return item
             })
-            console.log("temprestaurant: "+temprestaurant)
+            console.log("temprestaurant: " + temprestaurant)
             res.json({ restaurants: temprestaurant });
         }
         catch (err) {
@@ -88,7 +88,7 @@ module.exports = {
             .then((data) => {
                 let temprestaurant = data
                 delete temprestaurant.password
-                console.log("getting one restaurant in restaurants.js: "+temprestaurant)
+                console.log("getting one restaurant in restaurants.js: " + temprestaurant)
                 //return restaurant data without password
                 res.json({ restaurant: temprestaurant })
             })
@@ -201,8 +201,8 @@ module.exports = {
                         let newdish = dish.toObject()
                         //delete restaurant ID
                         delete newdish._id
-                        
-                        console.log("retrieved dish: "+JSON.stringify(newdish))
+
+                        console.log("retrieved dish: " + JSON.stringify(newdish))
                         res.json({ dish: newdish.dish[0] })
                     })
             }
@@ -224,7 +224,7 @@ module.exports = {
                 // res.end()
             } else {
                 console.log("dish created and added: " + JSON.stringify(req.body))
-               
+
                 //$ne checks to see if the dish name is NOT EQUAL to any other dish in the array...may be redundant with $addtoSet
                 Restaurant.updateOne({ _id: restaurant._id, 'dish.name': { $ne: req.body.name } },
                     { $addToSet: { dish: req.body } })
@@ -245,8 +245,8 @@ module.exports = {
         })(req, res, next);
     },
     //WORKING error handling not fully fleshed out and tested yet
-    updateDishInLoggedInRestaurant:(req,res,next)=>{
-        passport.authenticate('jwt-restaurant',{session:false},(err,restaurant,info)=>{
+    updateDishInLoggedInRestaurant: (req, res, next) => {
+        passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
             if (err) {
                 console.log({ err: err })
             }
@@ -256,28 +256,30 @@ module.exports = {
                 res.json({ error: info.message })
                 // res.end()
             } else {
-                console.log("editing dish: "+JSON.stringify(req.body))
-                Restaurant.updateOne({_id:restaurant._id,'dish':{$elemMatch:{'_id':req.body.id}}},{$set:{
-                    "dish.$.name":req.body.name,
-                    "dish.$.description":req.body.description,
-                    "dish.$.time":req.body.time
-                }})
-                .then((updatedDish)=>{
-                    console.log("updating dish results: "+JSON.stringify(updatedDish))
-                    if(updatedDish.n ===1){
-                        res.json(true)
-                    }else{
-                        res.json({error: "update failed"})
+                console.log("editing dish: " + JSON.stringify(req.body))
+                Restaurant.updateOne({ _id: restaurant._id, 'dish': { $elemMatch: { '_id': req.body.id } } }, {
+                    $set: {
+                        "dish.$.name": req.body.name,
+                        "dish.$.description": req.body.description,
+                        "dish.$.time": req.body.time
                     }
                 })
-                .catch( err=>{
-                    console.log("updateDishInLoggedInRestaurant: "+err)
-                    res.json({error:err})
-                }
+                    .then((updatedDish) => {
+                        console.log("updating dish results: " + JSON.stringify(updatedDish))
+                        if (updatedDish.n === 1) {
+                            res.json(true)
+                        } else {
+                            res.json({ error: "update failed" })
+                        }
+                    })
+                    .catch(err => {
+                        console.log("updateDishInLoggedInRestaurant: " + err)
+                        res.json({ error: err })
+                    }
 
-                )
+                    )
             }
-        })(req,res,next)
+        })(req, res, next)
     },
 
     //WORKING delete dish from a restaurant menu
@@ -308,7 +310,7 @@ module.exports = {
             }
         })(req, res, next)
     },
-    
+
 
     /*
     *
@@ -510,7 +512,7 @@ module.exports = {
                             dbrestaurant.save();
                             //returns dbrestaurant
                             return res.json({ updatedRestaurantCustomers: dbrestaurant.customer })
-                            // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmYmVkOGY1M2QwNWVkNDRkMWYwODkxNyIsImlhdCI6MTYwNjM0MzcyNH0.owWmWiNvrTBnDGgnQ2PgrgoA6wmw941ad8CzAuLUVTg
+                            
                         }
                     })
                     .catch(err => {
@@ -577,21 +579,7 @@ module.exports = {
             })
 
     },
-    /*
-*
-*
-* 
-* 
-* 
-* 
-* 
-* 
-* WORKING HERE
-* 
-* 
-* 
-* 
-*/
+
     //WORKINFOR JWT AND PULLS DIRECTLY FROM EXISTING DISHES IN MENU
     jwtAddOrder: (req, res, next) => {
         passport.authenticate('jwt-restaurant', { session: false }, (err, restaurant, info) => {
@@ -686,26 +674,108 @@ module.exports = {
             }
         })(req, res, next)
     },
+    /*
+*
+*
+* 
+* 
+*
+*
+*
+* 
+* 
+* 
+* 
+* WORKING HERE
+* 
+* 
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+* 
+* 
+*/
 
     //TESTING adds all orders in an array of orders to restaurant under a customer
     //req.body contains orders array and restaurant id as .orders and .id respectively
-    addOrders:(req,res,next)=>{
-        passport.authenticate('jwt-customer',{session:false},(err,restaurant,info)=>{
-            if(err){
-                res.json({error:err})
+    addOrders: (req, res, next) => {
+        passport.authenticate('jwt-customer', { session: false }, (err, customer, info) => {
+            console.log(req.body)
+            if (err) {
+                res.json({ error: err })
             }
-            if(info!=undefined){
-                console.log("info error at restaurants.js addOrders: "+JSON.stringify(info))
-            } else{
+            if (info != undefined) {
+                console.log("info error at restaurants.js addOrders: " + JSON.stringify(info))
+            } else {
+                Restaurant.findOne({ '_id': req.body.id })
+                    .then(restaurant => {
+
+                        //TODO
+                        //FIND IF CUSTOMER EXISTS.
+                        console.log("restaurant menu: " + JSON.stringify(restaurant))
+                        //object with list of key:value pairs
+                        let fullorder = req.body.orders
+                        //array of dish documents to push
+                        let orderarray = []
+
+                        //check each dish in the order
+                       for(let dishname in fullorder){
+                            //see if the name matches. 
+                            //.findOne() returns either the mongo document(objects are truthy) or undefined(falsy)
+                            //MAY NEED TO FINDONE()
+                            // let restaurantdish = restaurant.toJSON().dish.find(dish => { dish['name'] === dishname })
+                            try{
+                                let restaurantdish = restaurant.findOne({'customer.name':dishname})
+                            }
+                            finally{
+                                let len = order[key]
+                                if (restaurantdish) {
+                                    for (let i = 0; i < len; i++) {
+                                        orderarray.push(restaurantdish)
+                                    }
+                                }
+                            }
+                        }
+
+                        let temp = restaurant.toJSON()
+                        //get index of customer by jwt customer id
+                        var index = temp.customer.findIndex(function (findcustomer) {
+                            return findcustomer._id == customer.id
+                        })
+                        
+                        if (index == -1) {
+                            res.json({ error: "Customer does not exist" })
+                        }
+                        else {
+                            //loop through each dish
+                            for(let dish in orderarray){
+                                //add each dish to the customer's order
+                                restaurant.customer[index].push(dish)
+                            }
+                            //save changes
+                            restaurant.save();
+                            //returns dbrestaurant
+                            return res.json({ updatedRestaurantCustomers: restaurant.customer })
+                           
+                        }
+                    })
                 //find restaurant 
                 //find customer
-                for(let dish in req.body.orders){
-                    //use the restaurant menu to compare with the array of orders given and see if they match by ID to menu
-                    //iterate through each dish and add
-                }
+                // for (let dish in req.body.orders) {
+                //     //use the restaurant menu to compare with the array of orders given and see if they match by ID to menu
+                //     //iterate through each dish and add
+                // }
 
             }
-        })
+        })(req,res,next)
     },
     //WORKING Adds ONE order to a customer
     // addOrder: (req, res) => {

@@ -10,7 +10,7 @@ import { HttpService } from '../http.service'
 export class CustomerorderfromrestaurantComponent implements OnInit {
   restaurant: any[]
   orders: any={};
-
+  id:any;
   errors: any
   constructor(
     private _route: ActivatedRoute,
@@ -26,6 +26,7 @@ export class CustomerorderfromrestaurantComponent implements OnInit {
     this._route.paramMap.subscribe((params) => {
       let id = params.get('id')
       console.log("restaurant id: " + id)
+      this.id = id
       //make new backend function, getMenuFromRestaurantById
       this._httpService.getMenuFromRestaurantById(id).subscribe((data: any) => {
         this.restaurant = data.menu
@@ -59,6 +60,14 @@ export class CustomerorderfromrestaurantComponent implements OnInit {
     }
     submitOrder(){
       console.log("submitting order: "+this.orders)
-      //pass the restaurant ID in the body
+      if(Object.keys(this.orders).length>0){
+        this._httpService.addOrders(this.orders,this.id).subscribe((updatedcustomer)=>{
+          console.log(JSON.stringify(updatedcustomer))
+          //reroute 
+        })
+      }else{
+        //else reroute
+      }
+      
     }
 }

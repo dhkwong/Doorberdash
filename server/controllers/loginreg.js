@@ -230,6 +230,10 @@ module.exports = {
       // }
 
       //setup for callback capabilities
+      //after creating the function above with parameters (req,res,next), the (req,res,next) arguments are immediately passed into it below. something only possible with functions stored to variables or property. This is equivalent to
+      // var obj = {};
+      // obj.queryString = function() { ... };
+      // obj.queryString(); 
     })(req, res, next);
   },
   //WORKING

@@ -46,6 +46,18 @@ router
   //WORKING DOES NOT NEED PASSPORT delete restaurant 
   .delete('/:id', restaurants.delete)
 
+  /* customer orders routes */
+  //get all orders from customer
+  .get('/:id/:cid/order', restaurants.getCustomerOrders)
+  //adds one order to customer
+  // .put('/:id/:cid/order', restaurants.addOrder)
+  //adds all orders to customer in restaurant
+  .put('/order',restaurants.addOrders)
+  //better addOrder uses jwt and pulls dish ID from restaurant. uses /:did/getdish logic
+  .put('/:cid/:did/order', restaurants.jwtAddOrder)
+  //deletes one order from customer
+  // .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
+  .delete('/:cid/:did/order', restaurants.deleteOrder)
 
   /* restaurant customer logic */
   //WORKING gets all customers from a restaurant
@@ -61,17 +73,5 @@ router
   // .delete('/:id/:cid', restaurants.deleteCustomer)
   .delete('/:cid/customers',restaurants.deleteCustomer)
 
-  /* customer orders routes */
-  //get all orders from customer
-  .get('/:id/:cid/order', restaurants.getCustomerOrders)
-  //adds one order to customer
-  // .put('/:id/:cid/order', restaurants.addOrder)
-  //adds all orders to customer in restaurant
-  .put('/order',restaurants.addOrders)
-  //better addOrder uses jwt and pulls dish ID from restaurant. uses /:did/getdish logic
-  .put('/:cid/:did/order', restaurants.jwtAddOrder)
-  //deletes one order from customer
-  // .delete('/:id/:cid/:did/order/', restaurants.deleteOrder)
-  .delete('/:cid/:did/order', restaurants.deleteOrder)
 
 module.exports = router;

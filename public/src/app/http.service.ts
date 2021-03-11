@@ -333,7 +333,7 @@ export class HttpService {
   addOrders(orders:any, id:any){
     console.log("customer sending order in http service")
     //pass array of orders and restaurant id into req.body for backend handling
-    return this._http.put(`/api/customer/order`,orders,id)
+    return this._http.put(`/api/restaurants/order`,{orders:orders,id:id})
   }
   //deletes customer
   deleteCustomer(cid: any) {
