@@ -512,7 +512,7 @@ module.exports = {
                             dbrestaurant.save();
                             //returns dbrestaurant
                             return res.json({ updatedRestaurantCustomers: dbrestaurant.customer })
-                            
+
                         }
                     })
                     .catch(err => {
@@ -718,64 +718,80 @@ module.exports = {
                 Restaurant.findOne({ '_id': req.body.id })
                     .then(restaurant => {
 
-                        //TODO
-                        //FIND IF CUSTOMER EXISTS.
                         console.log("restaurant menu: " + JSON.stringify(restaurant))
                         //object with list of key:value pairs
                         let fullorder = req.body.orders
                         //array of dish documents to push
                         let orderarray = []
 
-                        //check each dish in the order
-                       for(let dishname in fullorder){
-                            //see if the name matches. 
-                            //.findOne() returns either the mongo document(objects are truthy) or undefined(falsy)
-                            //MAY NEED TO FINDONE()
-                            // let restaurantdish = restaurant.toJSON().dish.find(dish => { dish['name'] === dishname })
-                            try{
-                                let restaurantdish = restaurant.findOne({'customer.name':dishname})
-                            }
-                            finally{
-                                let len = order[key]
-                                if (restaurantdish) {
-                                    for (let i = 0; i < len; i++) {
-                                        orderarray.push(restaurantdish)
-                                    }
-                                }
-                            }
+
+                        let temprestaurant = restaurant.toJSON()
+                        //FIND IF CUSTOMER EXISTS.
+                        //object is truthy, undefined/null would be falsy
+                        if (temprestaurant.customer.find((restaurantcustomer) => { restaurantcustomer.id === customer.id })) {
+                            //if true
+                            console.log("customer exists")
+                            insertOrder()
+                        }else{
+                            //insert customer into restaurant
+                            Restaurant.findOne({ _id: restaurant.id })
+                            .then((restaurant)=>{
+                                //push customer id into restaurant array of customers
+                                restaurant.customer.push(mongodb.ObjectID(customer.id))
+                                insertOrder()
+                            })
                         }
 
-                        let temp = restaurant.toJSON()
-                        //get index of customer by jwt customer id
-                        var index = temp.customer.findIndex(function (findcustomer) {
-                            return findcustomer._id == customer.id
-                        })
-                        
-                        if (index == -1) {
-                            res.json({ error: "Customer does not exist" })
-                        }
-                        else {
-                            //loop through each dish
-                            for(let dish in orderarray){
-                                //add each dish to the customer's order
-                                restaurant.customer[index].push(dish)
+                        let insertOrder = (function () {
+                            //check each dish in the order and populate orderarray
+                            for (let dishname in fullorder) {
+                                //find restaurant dish that matches the dish in the order
+                                
+                                    let restaurantdish = restaurant.findOne({ 'dish.name': dishname })
+                               
+                                    let len = order[key]
+                                    if (restaurantdish) {
+                                        for (let i = 0; i < len; i++) {
+                                            orderarray.push(restaurantdish)
+                                        }
+                                    }
+                                
                             }
-                            //save changes
-                            restaurant.save();
-                            //returns dbrestaurant
-                            return res.json({ updatedRestaurantCustomers: restaurant.customer })
-                           
-                        }
+                            //push all in order array to restaurant at customer
+
+                            let temp = restaurant.toJSON()
+                            let temprestaurant = Restaurant.findOne({ '_id': req.body.id }, { customer: { $elemMatch: { _id: customer.id } } })
+                            .then(customer=>{
+                                for(let order in fullorder){
+                                    customer.order.push(order)
+                                }
+                                customer.save()
+                                res.json({customer:customer})
+                            })
+                            // //get index of customer by jwt customer id
+                            // var index = temp.customer.findIndex(function (findcustomer) {
+                            //     return findcustomer._id == customer.id
+                            // })
+
+                            // if (index == -1) {
+                            //     res.json({ error: "Customer does not exist" })
+                            // }
+                            // else {
+                            //     //loop through each dish
+                            //     for (let dish in orderarray) {
+                            //         //add each dish to the customer's order
+                            //         restaurant.customer[index].push(dish)
+                            //     }
+                            //     //save changes
+                            //     restaurant.save();
+                            //     //returns dbrestaurant
+                            //     return res.json({ updatedRestaurantCustomers: restaurant.customer })
+                            // }
+                        }())
                     })
-                //find restaurant 
-                //find customer
-                // for (let dish in req.body.orders) {
-                //     //use the restaurant menu to compare with the array of orders given and see if they match by ID to menu
-                //     //iterate through each dish and add
-                // }
 
             }
-        })(req,res,next)
+        })(req, res, next)
     },
     //WORKING Adds ONE order to a customer
     // addOrder: (req, res) => {
